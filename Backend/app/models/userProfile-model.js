@@ -12,10 +12,49 @@ const userProfileSchema=new Schema({
     dob:Date,
     gender:String,
     phNo:String,
-    bloodGroup:String,
+    blood:{
+        bloodType:String,
+        bloodGroup:String
+    },
     lastBloodDonationDate:Date,
-    address:String,
-    geo:[String,String],
+    address:
+    {
+    building:{
+        type:String,
+        required:true
+     },
+     locality:{
+         type:String,
+         required:true
+      },
+     city:{
+         type:String,
+         required:true
+      },
+     state:{
+         type:String,
+         required:true
+      },
+     pincode:{
+         type:String,
+         required:true
+     },
+     country:{
+         type:String,
+         required:true
+     }
+    },
+    geoLocation:{
+         type:{
+             type:String,
+             required:true,
+             enum:['Point']
+         },
+         coordinates: {      
+             required:true,
+             type:[Number]       //geospatial data
+         }
+        },
     weight:Number,
     testedPositiveForHiv:String,
     tattoBodyPiercing:String

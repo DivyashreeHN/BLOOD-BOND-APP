@@ -21,7 +21,8 @@ const userCltr=require('./app/controllers/users-controller')
 const bloodRequestCltr=require('./app/controllers/blood-request-controller')
 //IMPORTING USERPROFILE-CONTROLLER
 const userProfilecltr=require('./app/controllers/users-profile-controller')
-
+const bloodBankCtrlr=require('./BloodBond/app/controllers/bloodBankController')
+const bloodInventoryCtrlr=require('./BloodBond/app/controllers/bloodInventoryController')
 
 //2)***(VALIDATORS)***//
 
@@ -33,11 +34,15 @@ const {userRegisterValidationSchema,userLoginValidationSchema}=require('./app/va
 const userProfileValidationSchema=require('./app/validators/userProfile-validation-schema')
 //IMPORTING REVIEW VALIDATION-SCHEMA
 const reviewValidationSchema=require('./app/validators/review-validation-schema')
+const {bloodBankValidationSchema,approvalStatusValidationSchema}=require('./BloodBond/app/validators/bloodBankValidations')
+const bloodInventoryValidationSchema=require('./BloodBond/app/validators/bloodInventoryValidations')
+
 
 //3)***(AUTHENTICATION && AUTHORIZATION)***//
 
 //IMPORTING AUTHENTICATION AND AUTHORIZATION
-const {authenticateUser,authorizeUser,assignUserRole}=require('./app/middlewares/auth')
+const {authenticateUser,authorizeUser}=require('./app/middlewares/auth')
+const upload=require('./BloodBond/app/middlewares/multer')
 
 
 //4)***(ROUTERS)***//
@@ -60,6 +65,17 @@ app.get('/api/blood/request',authenticateUser,authorizeUser(['user']),bloodReque
 app.get('/api/blood/request/list',authenticateUser,authorizeUser(['user']),bloodRequestCltr.list)
 app.put('/api/blood/request/:id',authenticateUser,authorizeUser(['user']),checkSchema(bloodRequestValidationSchema),bloodRequestCltr.update)
 app.delete('/api/blood/request/:id',authenticateUser,authorizeUser(['user']),bloodRequestCltr.delete)
+
+//ROUTES FOR BLOODBANK MODEL
+app.post('/api/bloodbanks',authenticateUser,authorizeUser(['bloodbank']),upload.fields([{name:'license',maxCount:1},{name:'photos',maxCount:4}]),checkSchema(bloodBankValidationSchema),bloodBankCtrlr.create)
+app.get('/api/bloodbanks/pending',authenticateUser,authorizeUser(['admin']),bloodBankCtrlr.listForApproval)
+app.put('/api/bloodbanks/pending/:id',authenticateUser,authorizeUser(['admin']),checkSchema(approvalStatusValidationSchema),bloodBankCtrlr.toApprove)
+app.get('/api/bloodbanks/show/:id',authenticateUser,authorizeUser(['admin','user','bloodbank']),bloodBankCtrlr.show)
+app.get('/api/bloodbanks/list',authenticateUser,authorizeUser(['admin','user']),bloodBankCtrlr.listAll)
+app.delete('/api/bloodbanks/remove/:id',authenticateUser,authorizeUser(['admin','bloodBank']),bloodBankCtrlr.delete)
+
+//ROUTES FOR BLOOD INVENTORY MODEL
+app.post('/api/bloodinventries/:id',authenticateUser,authorizeUser(['bloodbank']),checkSchema(bloodInventoryValidationSchema),bloodInventoryCtrlr.create)
 
 app.listen(port,()=>
 {
