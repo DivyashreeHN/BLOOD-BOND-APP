@@ -21,8 +21,8 @@ const userCltr=require('./app/controllers/users-controller')
 const bloodRequestCltr=require('./app/controllers/blood-request-controller')
 //IMPORTING USERPROFILE-CONTROLLER
 const userProfilecltr=require('./app/controllers/users-profile-controller')
-const bloodBankCtrlr=require('./BloodBond/app/controllers/bloodBankController')
-const bloodInventoryCtrlr=require('./BloodBond/app/controllers/bloodInventoryController')
+const bloodBankCtrlr=require('./Backend/app/controllers/bloodBankController')
+const bloodInventoryCtrlr=require('./Backend/app/controllers/bloodInventoryController')
 
 //2)***(VALIDATORS)***//
 
@@ -34,15 +34,15 @@ const {userRegisterValidationSchema,userLoginValidationSchema}=require('./app/va
 const userProfileValidationSchema=require('./app/validators/userProfile-validation-schema')
 //IMPORTING REVIEW VALIDATION-SCHEMA
 const reviewValidationSchema=require('./app/validators/review-validation-schema')
-const {bloodBankValidationSchema,approvalStatusValidationSchema}=require('./BloodBond/app/validators/bloodBankValidations')
-const bloodInventoryValidationSchema=require('./BloodBond/app/validators/bloodInventoryValidations')
+const {bloodBankValidationSchema,approvalStatusValidationSchema}=require('./Backend/app/validators/bloodBankValidations')
+const bloodInventoryValidationSchema=require('./Backend/app/validators/bloodInventoryValidations')
 
 
 //3)***(AUTHENTICATION && AUTHORIZATION)***//
 
 //IMPORTING AUTHENTICATION AND AUTHORIZATION
 const {authenticateUser,authorizeUser}=require('./app/middlewares/auth')
-const upload=require('./BloodBond/app/middlewares/multer')
+const upload=require('./Backend/app/middlewares/multer')
 
 
 //4)***(ROUTERS)***//
