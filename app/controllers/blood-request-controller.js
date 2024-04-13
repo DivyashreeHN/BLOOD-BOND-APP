@@ -5,7 +5,7 @@ const bloodRequestCltr={}
 
 //who has profile he can request for blood for multiple blood request
 bloodRequestCltr.create=async(req,res)=>
-{
+  {
     const errors=validationResult(req)
     if(!errors.isEmpty())
     {

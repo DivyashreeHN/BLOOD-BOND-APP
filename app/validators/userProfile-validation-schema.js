@@ -1,5 +1,6 @@
 const Profile=require('../models/userProfile-model')
 const User=require('../models/user-model')
+
 const userProfileValidationSchema={
     firstName:{
         notEmpty:{
@@ -79,13 +80,22 @@ const userProfileValidationSchema={
         trim:true,
        
     },
-    bloodGroup:{
+    blood:{
         notEmpty:{
-            errorMessage:'Blood group cannot be empty'
+            errorMessage:'blood is required'
         },
-        isIn:{
-            options:[['A+','A-','B+','B-','AB+','AB-','O+','O-']],
-            errorMessage:'Blood group should be within options'
+        isObject:{
+            errorMessage:'blood field should be an object'
+        },
+        custom: {
+            options: function(value) {
+                if (!value || !value.bloodType || !value.bloodGroup) {
+                    throw new Error('bloodType and bloodGroup fields are required');
+                }
+                else{
+                    return true
+                }
+            }
         }
     },
     lastBloodDonationDate:{
@@ -95,15 +105,6 @@ const userProfileValidationSchema={
         isDate:{
             errorMessage:'Blood donate date must be a valid Date'
         }
-    },
-    address:{
-        notEmpty:{
-            errorMessage:'address cannot be empty'
-        },
-        isString:{
-            errorMessage:'Address must be a string'
-        },
-        trim:true
     },
     weight:{
         notEmpty:{
@@ -130,6 +131,17 @@ const userProfileValidationSchema={
         options:[['Yes','No']],
         errorMessage:'the value should be yes/no'
         }
-    }
+    },
+    address: {
+        custom: {
+            options: function (value) {
+                if (!value || !value.building || !value.locality || !value.city || !value.state || !value.pincode || !value.country) {
+                    throw new Error('Building, locality, city, state, pincode, and country fields are required');
+                } else {
+                    return true;
+                }
+            }
+        }
+}
 }
 module.exports=userProfileValidationSchema
