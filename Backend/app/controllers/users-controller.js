@@ -16,12 +16,22 @@ userCltr.register=async(req,res)=>
     try{
         const body=req.body
         const count=await User.countDocuments()
-        //console.log(count)
+       
+        
+        const user=new User(body) 
+        if(count>=1&&body.role=='admin'){
+            return res.status(400).json({ 
+                errors: [{ msg: 'you are not authorized to access this role'}] 
+            });
+            
+        }
         if(count===0)
         {
-            req.body.role='admin'
+            user.role='admin'
         }
-        const user=new User(body) 
+        else{
+            user.role=body.role
+        }
         const salt= await bcryptjs.genSalt()
         const encriptedPassword=await bcryptjs.hash(user.password,salt)
         user.password=encriptedPassword
@@ -32,7 +42,7 @@ userCltr.register=async(req,res)=>
     catch(err)
     {
         console.log(err)
-        res.status(500).json({notice:'internal server error'})
+        res.status(500).json({errors:[{msg:'Internal Server Error'}]})
     }
 }
 
@@ -48,12 +58,12 @@ userCltr.login=async(req,res)=>
         const user=await User.findOne({email:body.email})
         if(!user)
         {
-            return res.status(404).json({error:'invalid email'})
+            return res.status(404).json({errors:[{msg:'invalid email/password'}]})
         }
         const checkPassword=await bcryptjs.compare(body.password,user.password)
         if(!checkPassword)
         {
-            return res.status(404).json({notice:'invalid password'})
+            return res.status(404).json({errors:[{msg:'invalid email/password'}]})
         }
         const tokenData={
             id:user._id,
@@ -66,7 +76,7 @@ userCltr.login=async(req,res)=>
     catch(err)
     {
         console.log(err)
-        return res.status(500).json({notice:'internal server error'})
+        return res.status(500).json({errors:[{msg:'Internal Server Error'}]})
     }
     }
     
@@ -78,7 +88,7 @@ userCltr.account=async(req,res)=>
     }
     catch(err)
     {
-        res.status(500).json({error:'internal server error'})
+        res.status(500).json({errors:[{msg:'Internal Server Error'}]})
     }
 
 }

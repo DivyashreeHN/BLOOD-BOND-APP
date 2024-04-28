@@ -5,6 +5,8 @@ const _=require('lodash')
 const BloodInventory=require('../models/bloodInventoryModel')
 const bloodBankCtrlr={}
 bloodBankCtrlr.create=async(req,res)=>{
+    console.log('body',req.body)
+    console.log('files',req.files)
     const errors=validationResult(req)
     if(!errors.isEmpty()){
         return res.status(400).json({errors:errors.array()})
@@ -13,6 +15,8 @@ bloodBankCtrlr.create=async(req,res)=>{
     try{
         const {body}=req
         const {files}=req
+        console.log('files', files)
+        console.log('body', body)
         // console.log(req.file)
         const user=await BloodBank.findOne({user:req.user.id})
         
@@ -41,14 +45,14 @@ bloodBankCtrlr.create=async(req,res)=>{
         blood:body.blood,
         openingHours:{
             opensAt:{
-                hour:body.openingHours.closesAt.hour,
-                minutes:body.openingHours.closesAt.minutes,
-                period:body.openingHours.closesAt.period
-            },
-            closesAt:{
                 hour:body.openingHours.opensAt.hour,
                 minutes:body.openingHours.opensAt.minutes,
                 period:body.openingHours.opensAt.period
+            },
+            closesAt:{
+                hour:body.openingHours.closesAt.hour,
+                minutes:body.openingHours.closesAt.minutes,
+                period:body.openingHours.closesAt.period
             }
         },
         services:body.services,

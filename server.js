@@ -9,31 +9,31 @@ app.use(express.json())
 app.use(cors())
 
 //DB CONNECTION
-const configureDB=require('./config/db')
+const configureDB=require('./Backend/config/db')
 configureDB()
  
 
 //1)***(CONTROLLERS)***//
 
 //IMPORTING USER-CONTROLLER
-const userCltr=require('./app/controllers/users-controller')
+const userCltr=require('./Backend/app/controllers/users-controller')
 //IMPORTING BLOOD-REQUEST-CONTROLLER
-const bloodRequestCltr=require('./app/controllers/blood-request-controller')
+const bloodRequestCltr=require('./Backend/app/controllers/blood-request-controller')
 //IMPORTING USERPROFILE-CONTROLLER
-const userProfilecltr=require('./app/controllers/users-profile-controller')
+const userProfilecltr=require('./Backend/app/controllers/users-profile-controller')
 const bloodBankCtrlr=require('./Backend/app/controllers/bloodBankController')
 const bloodInventoryCtrlr=require('./Backend/app/controllers/bloodInventoryController')
 
 //2)***(VALIDATORS)***//
 
 //IMPORTING BLOOD-REQUEST-VALIDATION-SCHEMA
-const bloodRequestValidationSchema=require('./app/validators/bloodRequest-validation-schema')
+const bloodRequestValidationSchema=require('./Backend/app/validators/bloodRequest-validation-schema')
 //IMPORTING USER-VALIDATION-SCHEMA
-const {userRegisterValidationSchema,userLoginValidationSchema}=require('./app/validators/user-validation-schema')
+const {userRegisterValidationSchema,userLoginValidationSchema}=require('./Backend/app/validators/user-validation-schema')
 //IMPORTING USERPROFILE-VALIDATION-SCEHMA
-const userProfileValidationSchema=require('./app/validators/userProfile-validation-schema')
+const userProfileValidationSchema=require('./Backend/app/validators/userProfile-validation-schema')
 //IMPORTING REVIEW VALIDATION-SCHEMA
-const reviewValidationSchema=require('./app/validators/review-validation-schema')
+const reviewValidationSchema=require('./Backend/app/validators/review-validation-schema')
 const {bloodBankValidationSchema,approvalStatusValidationSchema}=require('./Backend/app/validators/bloodBankValidations')
 const bloodInventoryValidationSchema=require('./Backend/app/validators/bloodInventoryValidations')
 
@@ -41,7 +41,7 @@ const bloodInventoryValidationSchema=require('./Backend/app/validators/bloodInve
 //3)***(AUTHENTICATION && AUTHORIZATION)***//
 
 //IMPORTING AUTHENTICATION AND AUTHORIZATION
-const {authenticateUser,authorizeUser}=require('./app/middlewares/auth')
+const {authenticateUser,authorizeUser}=require('./Backend/app/middlewares/auth')
 const upload=require('./Backend/app/middlewares/multer')
 
 

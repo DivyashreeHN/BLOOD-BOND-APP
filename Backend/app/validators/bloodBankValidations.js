@@ -66,7 +66,7 @@ const bloodBankValidationSchema={
                 throw new Error('Invalid closesAt value');
             }
 
-            // Additional validation logic for opensAt and closesAt values can be added here
+           // Additional validation logic for opensAt and closesAt values can be added here
 
             return true;
         }
@@ -92,48 +92,70 @@ services:{
         }
     },
 
-    license:{
-        custom:{
-            options:function(value,{req}){
-                if(req.files&&req.files.license){
-                    return true
-                }
-                if((!Array.isArray(value))){
-                    throw new Error('license should be array')
-                }
-                if(value.length<1){
-                    throw new Error('license one photo is required')
-                }
-                   else{
-                    throw new Error('License is required')
-                }
-            }
-        }
-    },
-    photos:{
-        custom:{
-            options:function(value,{req}){
-                if(!(req.files&&req.files.photos)){
-                    throw new Error('photo is required')
-                }
-                if(req.files.length<1){
-                    throw new Error('Atleast one photo is required')
-                }
-                else{
-                    return true
-                }
-            }
-        }
-    },
-    isApproved:{
-        notEmpty:{
-            errorMessage:'Approval status is required'
-        },
-        isIn:{
-            options:[['pending','approved','declined']]
-        }
-    }
+    // license:{
+    //     custom:{
+    //         options:function(value,{req}){
+    //             if ((req.files && req.files.license)) {
+    //                 return true
+    //             }
+    //             // if((!Array.isArray(value))){
+    //             //     throw new Error('license should be array')
+    //             // }
+    //             if(value.length<1){
+    //                 throw new Error('license is required')
+    //             }
+    //                else{
+    //                 return true
+    //             }
+    //         }
+    //     }
+    // },
+//     photos: {
+        
+//         custom:{
+//             options:function(value,{req}){
+//                 if((req.files&&req.files.photos)){
+//                     return true
+//                 }
+//                 // if((!Array.isArray(value))){
+//                 //     throw new Error('photo should be array')
+//                 // }
+//                 if(value.length<1){
+//                     throw new Error('photo is required')
+//                 }
+//                    else{
+//                     return true
+//     //             }
+//             }
+//         }
+//         }
+//     }
 }
+    
+    // photos:{
+    //     custom:{
+    //         options:function(value,{req}){
+    //             if(!(req.files&&req.files.photos)){
+    //                 throw new Error('photo is required')
+    //             }
+    //             if(req.files.length<1){
+    //                 throw new Error('Atleast one photo is required')
+    //             }
+    //             else{
+    //                 return true
+    //             }
+    //         }
+    //     }
+    // }
+    // isApproved:{
+    //     notEmpty:{
+    //         errorMessage:'Approval status is required'
+    //     },
+    //     isIn:{
+    //         options:[['pending','approved','declined']]
+    //     }
+    // }
+
 const approvalStatusValidationSchema={
     isApproved:{
         notEmpty:{

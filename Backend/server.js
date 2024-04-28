@@ -51,7 +51,7 @@ const upload=require('./app/middlewares/multer')
 //ROUTE FOR USER-REGISTER AND LOGIN AND ACCOUNT
 app.post('/api/user/register',checkSchema(userRegisterValidationSchema),userCltr.register)
 app.post('/api/user/login',checkSchema(userLoginValidationSchema),userCltr.login)
-app.get('/api/user/account',authenticateUser,authorizeUser(['admin']),userCltr.account)
+app.get('/api/user/account',authenticateUser,userCltr.account)
 
 //ROUTE FOR USER-PROFILE(CRUD)
 app.post('/api/user/profile',authenticateUser,authorizeUser(['user']),checkSchema(userProfileValidationSchema),userProfilecltr.create)
