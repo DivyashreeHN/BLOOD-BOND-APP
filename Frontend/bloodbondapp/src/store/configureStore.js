@@ -6,7 +6,7 @@ const configureStore=()=>
 {
     const store =createStore(combineReducers({
         profiles:profileReducer,
-        bloodbanks:bloodbankReducer
+        bloodbanks:bloodbankReducer,
 
     }),applyMiddleware  (thunk))
     return store
