@@ -37,8 +37,8 @@ export default function ProfileForm()
         {
             setForm((prevForm)=>
         (
-            {...prevForm,address:{...prevForm.address,[name.split('.')[1]]:value}})
-            )
+            {...prevForm,address:{...prevForm.address,[name.split('.')[1]]:value}}
+        ))
         }
         else{
         setForm({...form,[name]:value})

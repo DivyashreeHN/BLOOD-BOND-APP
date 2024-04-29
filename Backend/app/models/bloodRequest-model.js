@@ -8,15 +8,56 @@ const bloodRequestSchema=new Schema({
         ref:User
     },
     patientName:String,
-    bloodType:String,
-    bloodGroup:String,
+    blood:{
+        bloodType:String,
+        bloodGroup:String
+        },
     units:Number,
     date:Date,
     atendeePhNumber:String,
-    donationAddress:String,
     critical:String,
-    geo:[String,String],
+    donationAddress:
+    {
+    building:{
+        type:String,
+        required:true
+     },
+     locality:{
+         type:String,
+         required:true
+      },
+     city:{
+         type:String,
+         required:true
+      },
+     state:{
+         type:String,
+         required:true
+      },
+     pincode:{
+         type:String,
+         required:true
+     },
+     country:{
+         type:String,
+         required:true
+     }
+    },
+    geoLocation:{
+         type:{
+             type:String,
+             required:true,
+             enum:['Point']
+         },
+         coordinates: {      
+             required:true,
+             type:[Number]       //geospatial data
+         }
+        },
     requestType:[String]
 },{timestamps:true})
+
+
+
 const BloodRequest=model('BloodRequest',bloodRequestSchema)
 module.exports=BloodRequest

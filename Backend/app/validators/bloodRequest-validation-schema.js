@@ -20,24 +20,24 @@ const bloodRequestValidationSchema={
             }
         }
     },
-    bloodType:{
+    blood:{
         notEmpty:{
-            errorMessage:'blood type is required'
+            errorMessage:'blood is required'
         },
-        isIn:{
-            options:[['plasma','platelets','rbc']],
-            errorMessage:'blood type should be within options'
-        }
-    },
-    bloodGroup:{
-        notEmpty:{
-            errorMessage:'blood group is required'
+        isObject:{
+            errorMessage:'blood field should be an object'
         },
-        isIn:{
-            options:[['A+','A-','B+','B-','O+','O-','AB+','AB-']],
-            errorMessage:'blood type should be within options'
-        }
-    },
+        custom: {
+            options: function(value) {
+                if (!value || !value.bloodType || !value.bloodGroup) {
+                    throw new Error('bloodType and bloodGroup fields are required');
+                }
+                else{
+                    return true
+                }
+            }
+        },
+},
     units:{
         notEmpty:{
             errorMessage:'units must required'
@@ -90,14 +90,6 @@ const bloodRequestValidationSchema={
             }
         }
     },
-    donationAddress:{
-        notEmpty:{
-            errorMessage:'donationaddres cannot be empty'
-        },
-        isString:{
-            errorMessage:'donationaddress should be in a string format'
-        }
-    },
     critical:{
         notEmpty:{
             errorMessage:'the condition cannot be empty'
@@ -114,6 +106,17 @@ const bloodRequestValidationSchema={
         isIn:{
             options:[['user','bloodbank','both']]
         }
-    }
+    },
+    donationAddress: {
+        custom: {
+            options: function (value) {
+                if (!value || !value.building || !value.locality || !value.city || !value.state || !value.pincode || !value.country) {
+                    throw new Error('Building, locality, city, state, pincode, and country fields are required');
+                } else {
+                    return true;
+                }
+            }
+        }
+}
 }
 module.exports=bloodRequestValidationSchema

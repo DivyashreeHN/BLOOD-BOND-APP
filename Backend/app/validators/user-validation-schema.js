@@ -71,8 +71,7 @@ const userLoginValidationSchema={
             errorMessage:'password length should be within 8 to 128 character'
         },
         trim:true
-    }
-    
+    }  
 }
 module.exports=
 {
