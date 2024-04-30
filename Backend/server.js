@@ -4,6 +4,7 @@ const express=require('express')
 const cors=require('cors')
 const {checkSchema}=require('express-validator')
 const app=express()
+const axios=require('axios')
 const port=3080
 app.use(express.json())
 app.use(cors())
@@ -59,7 +60,7 @@ const upload=require('./app/middlewares/multer')
 //ROUTE FOR USER-REGISTER AND LOGIN AND ACCOUNT
 app.post('/api/user/register',checkSchema(userRegisterValidationSchema),userCltr.register)
 app.post('/api/user/login',checkSchema(userLoginValidationSchema),userCltr.login)
-app.get('/api/user/account',authenticateUser,authorizeUser(['admin']),userCltr.account)
+app.get('/api/user/account',authenticateUser,userCltr.account)
 
 //ROUTE FOR USER-PROFILE(CRUD)
 app.post('/api/user/profile',authenticateUser,authorizeUser(['user']),checkSchema(userProfileValidationSchema),userProfilecltr.create)

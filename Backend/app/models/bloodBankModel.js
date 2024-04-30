@@ -57,8 +57,8 @@ const bloodBankSchema=new Schema({
         }
     },
     services:[String],
-    license:[String],
-    photos:[String],
+    license:[{type:String}],
+    photos:[{type:String}],
     isApproved:{
     type:String,
     default:'pending'
