@@ -116,13 +116,7 @@ export default function BloodBankForm(){
         Object.entries(form.photos).forEach((ele) =>
           formData.append("photos", ele[1])
         );
-        // form.license.forEach((licenseFile, index) => {
-        //     formData.append(`license[${index}]`, licenseFile);
-        // });
-    
-        // form.photos.forEach((photoFile, index) => {
-        //     formData.append(`photos[${index}]`, photoFile);
-        // });
+        
     
         console.log(formData);
     
@@ -161,7 +155,8 @@ export default function BloodBankForm(){
                 isApproved: ''
             });
         };
-        dispatch(startAddBloodBank(formData, clearForm));
+        dispatch(startAddBloodBank(formData, clearForm,form));
+        
     }
     
         

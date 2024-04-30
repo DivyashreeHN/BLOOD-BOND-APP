@@ -3,10 +3,13 @@ const BloodBank=require('../models/bloodBankModel')
 const axios=require('axios')
 const _=require('lodash')
 const BloodInventory=require('../models/bloodInventoryModel')
+const cloudinary=require('../middlewares/cloudinary')
 const bloodBankCtrlr={}
 bloodBankCtrlr.create=async(req,res)=>{
-    console.log('body',req.body)
-    console.log('files',req.files)
+    // console.log('body',req.body)
+    // console.log('files',req.files)
+    // console.log(process.env.GEOAPIFYKEY)
+    // console.log(process.env.CLOUDINARY_API_KEY)
     const errors=validationResult(req)
     if(!errors.isEmpty()){
         return res.status(400).json({errors:errors.array()})
@@ -34,6 +37,29 @@ bloodBankCtrlr.create=async(req,res)=>{
         const {features}=mapResponse.data
         console.log(features[0])
         const {lon,lat}=features[0].properties
+        // if (!req.files || Object.keys(req.files).length === 0) {
+        //     return res.status(400).json({ message: 'No files were uploaded.' });
+        // }
+        // const singleImageUpload = async (file) => {
+        //     const result = await cloudinary.uploader.upload(file.path, { folder: 'CloudImages' });
+        //     return {
+        //         url: result.secure_url,
+        //         cloudinary_id: result.public_id
+        //     }
+        // }
+        // const multipleImagesUpload = async (files) => {
+        //     const uploadedImages = [];
+        //     for (const file of files) {
+        //         const result = await cloudinary.uploader.upload(file.path, { folder: 'CloudImages' });
+        //         uploadedImages.push({
+        //             url: result.secure_url,
+        //             cloudinary_id: result.public_id
+        //         });
+        //     }
+        //     return uploadedImages;
+        // }
+        // const license = await singleImageUpload(req.files.license[0])
+        // const photos = await multipleImagesUpload(req.files.photos)
         const bloodBank=new BloodBank({name:body.name,
             user:req.user.id,
         phoneNumber:body.phoneNumber,
@@ -57,11 +83,23 @@ bloodBankCtrlr.create=async(req,res)=>{
         },
         services:body.services,
         isApproved:'pending',
+        // license:license.url,
+        // photos: photos.map(pic => pic.url)
         license:files.license&&files.license.map(files=>files.path),
         photos: files.photos&&files.photos.map(files=>files.path)
     })
         
         await bloodBank.save()
+        res.status(201).json(bloodBank)
+    }catch(err){
+        console.log(err)
+        res.status(500).json({error:'Internal Server Error'})
+    }
+}
+bloodBankCtrlr.display=async(req,res)=>{
+    const userID=req.user.id
+    try{
+        const bloodBank=await BloodBank.find({user:userID})
         res.status(201).json(bloodBank)
     }catch(err){
         console.log(err)

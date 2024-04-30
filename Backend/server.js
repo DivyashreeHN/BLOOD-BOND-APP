@@ -87,6 +87,7 @@ app.get('/api/bloodbanks/pending',authenticateUser,authorizeUser(['admin']),bloo
 app.put('/api/bloodbanks/pending/:id',authenticateUser,authorizeUser(['admin']),checkSchema(approvalStatusValidationSchema),bloodBankCtrlr.toApprove)
 app.get('/api/bloodbanks/show/:id',authenticateUser,authorizeUser(['admin','user','bloodbank']),bloodBankCtrlr.show)
 app.get('/api/bloodbanks/list',authenticateUser,authorizeUser(['admin','user']),bloodBankCtrlr.listAll)
+app.get('/api/bloodbanks/display',authenticateUser,authorizeUser(['bloodbank']),bloodBankCtrlr.display)
 app.delete('/api/bloodbanks/remove/:id',authenticateUser,authorizeUser(['admin','bloodBank']),bloodBankCtrlr.delete)
 
 //Route for getting bloodbank req for bloodbank
