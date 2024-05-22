@@ -1,43 +1,81 @@
 import BloodBankForm from "./bloodbankForm"
-import {useState,useEffect} from 'react'
+import BloodInventoryForm from "../bloodInventoryComponent/bloodInventoryForm"
+import BloodInventoryTable from "../bloodInventoryComponent/bloodInventoryTable"
+import { useState, useEffect } from 'react'
 import { useDispatch, useSelector } from "react-redux"
 import { startFetchingBloodBank } from "../../actions/bloodbankActions"
-import { Card, Button } from 'react-bootstrap'
-export default function BloodBankDashboard(){
-    const dispatch=useDispatch()
-    const bloodBank=useSelector((state)=>{
+import { Card, Button,Container,Row,Col } from 'react-bootstrap'
+import {Link} from 'react-router-dom'
+
+export default function BloodBankDashboard() {
+    const [inventory, setInventory] = useState(false)
+    const [showForm, setShowForm] = useState(false)
+    const [showInventoryTable, setShowInventoryTable] = useState(false)
+    const dispatch = useDispatch()
+    const bloodBank = useSelector((state) => {
         return state.bloodbanks.bloodbank
     })
-    console.log(bloodBank.length)
-    const [showForm,setShowForm]=useState(false)
-    useEffect(()=>{
-       dispatch(startFetchingBloodBank())
-    },[])
-    const handleClick=()=>{
-        setShowForm(true)
+    const id = bloodBank[0]?._id
+    useEffect(() => {
+        dispatch(startFetchingBloodBank())
+    }, [])
+
+    const handleClick = () => {
+        setShowForm(!showForm)
     }
+    const formatUrl = (path) => {
+        // Replace backslashes with forward slashes
+        const formattedPath = path.replace(/\\/g, '/')
+        console.log(formattedPath)
+        // Prefix with base URL
+        return `http://localhost:3080/${formattedPath}`
+    }
+
+
+    // const handleInventory = () => {
+    //     console.log('creating inventory ....')
+    //     console.log('id', id)
+    //     setInventory(!inventory)
+    //     console.log(inventory)
+    // }
+
+    // const toggleShowInventory = () => {
+    //     setShowInventoryTable(!showInventoryTable)
+    // }
+
     return(
         <div className="row">
             <h3>BloodBankDashboard</h3>
-        {bloodBank?.length===0?(<div>
-            <button className='btn btn-primary' onClick={handleClick}>Add BloodBank</button>
+            {showForm ? (
+                <div col-md-6>
+                    <BloodBankForm />
+                </div>
+            ) : (
+                <>
+                {bloodBank?.length===0?(<div>
+            <button className='bg-danger text-white' onClick={handleClick}>Add BloodBank</button>
         </div>):(bloodBank?.map((ele,index)=>{
+            console.log("License URL:", ele.license)
+            console.log("Photos URLs:", ele.photos)
             return <div key={index}>
-                <Card style={{ width: '18rem', margin: '1rem' }}>
+                <Container>
+                <Row className="justify-content-center">
+                <Col md={6}>
+                <Card className="bg-danger text-white">
                 <Card.Body>
                 <Card.Title>{ele.name}</Card.Title>
                 <Card.Text>
                 {ele.license && (
                  <div>
                  <h6>License:</h6>
-                 <img src={ele.license} alt="License" />
+                 <img className="img-fluid"src={formatUrl(ele.license[0])} alt="License" />
                  </div>
                  )}
                  {ele.photos && (
                  <div>
                  <h6>Photos:</h6>
                  {ele.photos.map((photo, i) => (
-                 <img key={i} src={photo} alt={`Photo ${i}`} />
+                 <img className="img-fluid mb-2" key={i} src={formatUrl(photo)} alt={`Photo ${i}`} />
                  ))}
                 </div>
                  )}
@@ -48,13 +86,20 @@ export default function BloodBankDashboard(){
                         return <p key={i}>{service}</p>
                     })}
                 </Card.Text>
+                <div className="d-flex justify-content-between">
+                                    <Button className="btn btn-light" style={{ marginRight: '10px' }} as={Link} to={`/bloodbank/${ele._id}/blood-inventory-form`} variant="primary">Create Inventory</Button>
+                                    <Button className="btn btn-light" style={{ marginLeft: '10px' }} as={Link} to={`/bloodbank/${ele._id}/show-inventory`} variant="primary">Show Inventory</Button>
+                </div>
                 </Card.Body>
                 </Card>
+                </Col>
+                </Row>
+                </Container>
             </div>
         }))}
-        {showForm&& ( <div col-md-6>
-                    <BloodBankForm />
-                </div>)}
+                </>)
+        
+            }
             </div>
     )
 }

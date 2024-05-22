@@ -42,10 +42,14 @@ export default function UserLoginForm(){
         }
         console.log(userDetails)
         userDispatch({type:'SET_USER',payload:userDetails.data})
-        }catch(err){
-            userDispatch({type:'SET_SERVER_ERRORS',payload:err.response.data.errors})
-        }
+        userDispatch({type:'SET_SERVER_ERRORS',payload:[]})
+        } catch (err) {
+            if (err.response && err.response.data && err.response.data.errors) {
+                console.log(err.response.data.errors);
+                userDispatch({ type: 'SET_SERVER_ERRORS', payload: err.response.data.errors });
+            } 
     }
+}
     return(
         <div>
             <h2>User Login Form</h2>

@@ -1,8 +1,10 @@
-import { useState } from "react"
-import { Row, Col } from 'reactstrap';
-import { useDispatch} from 'react-redux'
+import { useState } from "react";
+import { useDispatch } from 'react-redux';
+import { Card, Row, Col, Container } from 'react-bootstrap';
 import { startAddBloodBank } from "../../actions/bloodbankActions";
-export default function BloodBankForm(){
+
+export default function BloodBankForm() {
+        
     const dispatch=useDispatch()
     const [form,setForm]=useState({
         name:'',
@@ -81,9 +83,12 @@ export default function BloodBankForm(){
         setForm({ ...form, [name]: value });
     }
     
+           
+        
+
     const handleSubmit = async (e) => {
         e.preventDefault();
-        console.log(form)
+        console.log(form);
         const formData = new FormData();
         formData.append('name', form.name);
         formData.append('phoneNumber', form.phoneNumber);
@@ -158,15 +163,16 @@ export default function BloodBankForm(){
         dispatch(startAddBloodBank(formData, clearForm,form));
         
     }
-    
-        
-    
-        
-    
-    return(
-        <>
-        <form onSubmit={handleSubmit}>
-            <Row>
+
+    return (
+        <Container>
+            <Row className="justify-content-center">
+                <Col md={8}>
+                    <Card className="bg-danger text-white">
+                        <Card.Body>
+                            <Card.Title>Blood Bank Form</Card.Title>
+                            <form onSubmit={handleSubmit}>
+                            <Row>
                 <Col md={6}>
                 <div className="form-group">
                 <label className="form-label" htmlFor="name">
@@ -379,7 +385,11 @@ export default function BloodBankForm(){
                     </div>
                 </Col>
                 </Row>
-        </form>
-        </>
-    )
+                 </form>
+                        </Card.Body>
+                    </Card>
+                </Col>
+            </Row>
+        </Container>
+    );
 }
