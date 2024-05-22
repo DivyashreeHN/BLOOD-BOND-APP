@@ -1,5 +1,5 @@
 const Profile=require('../models/userProfile-model')
-const User=require('../models/user-model')
+//const User=require('../models/user-model')
 
 const userProfileValidationSchema={
     firstName:{
@@ -11,7 +11,7 @@ const userProfileValidationSchema={
         },
         trim:true
     },
-    LastName:{
+    lastName:{
         notEmpty:{
             errorMessage:'lastname cannot be empty '
         },
@@ -19,7 +19,6 @@ const userProfileValidationSchema={
             errorMessage:"lastname should be a string"
         },
         trim:true
-
     },
     dob:{
         notEmpty:{
@@ -74,6 +73,9 @@ const userProfileValidationSchema={
                 {
                     throw new Error('phNo is not valid')
                 }
+                else{
+                    return true
+                }
             }
 
         },
@@ -119,7 +121,7 @@ const userProfileValidationSchema={
             errorMessage:'the value cannot be empty'
         },
         isIn:{
-        options:[['Yes','No']],
+        options:[['yes','no']],
         errorMessage:'the value should be yes/no'
         }
     },
@@ -128,14 +130,17 @@ const userProfileValidationSchema={
             errorMessage:'the value cannot be empty'
         },
         isIn:{
-        options:[['Yes','No']],
+        options:[['yes','no']],
         errorMessage:'the value should be yes/no'
         }
     },
     address: {
         custom: {
             options: function (value) {
-                if (!value || !value.building || !value.locality || !value.city || !value.state || !value.pincode || !value.country) {
+                if (!value || typeof value !== 'object') {
+                    throw new Error('Address field should be an object');
+                }
+                if (!value.building || !value.locality || !value.city || !value.state || !value.pincode || !value.country) {
                     throw new Error('Building, locality, city, state, pincode, and country fields are required');
                 } else {
                     return true;

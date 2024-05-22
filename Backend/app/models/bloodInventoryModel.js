@@ -18,7 +18,6 @@ donationDate:Date,
 expiryDate:Date,
 status:{
     type:String,
-    enum:['available','booked','expired'],
     default:'available'
 }
 },{timestamps:true})

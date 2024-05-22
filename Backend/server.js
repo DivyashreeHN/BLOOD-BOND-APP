@@ -4,10 +4,13 @@ const express=require('express')
 const cors=require('cors')
 const {checkSchema}=require('express-validator')
 const app=express()
+const path = require('path')
 const axios=require('axios')
 const port=3080
 app.use(express.json())
 app.use(cors())
+
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')))
 
 //DB CONNECTION
 const configureDB=require('./config/db')
@@ -78,7 +81,9 @@ app.delete('/api/bloodbanks/remove/:id',authenticateUser,authorizeUser(['admin',
 
 //ROUTES FOR BLOOD INVENTORY MODEL
 app.post('/api/bloodinventries/:id',authenticateUser,authorizeUser(['bloodbank']),checkSchema(bloodInventoryValidationSchema),bloodInventoryCtrlr.create)
-
+app.get('/api/bloodinventries/:id',authenticateUser,authorizeUser(['bloodbank']),bloodInventoryCtrlr.list)
+app.delete('/api/bloodinventries/:id',authenticateUser,authorizeUser(['bloodbank']),bloodInventoryCtrlr.delete)
+app.put('/api/bloodinventries/:id',authenticateUser,authorizeUser(['bloodbank']),checkSchema(bloodInventoryValidationSchema),bloodInventoryCtrlr.update)
 app.listen(port,()=>
 {
     console.log('Blood-Bond-App is successfully running on the port',port)
