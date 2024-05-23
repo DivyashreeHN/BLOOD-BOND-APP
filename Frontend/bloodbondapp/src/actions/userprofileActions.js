@@ -51,7 +51,7 @@ export const startFetchingProfile=()=>{
                     }
                 })
                 dispatch(displayUserProfile(response.data))
-                console.log(" user profile received from bac in fron",response.data)
+                console.log(" user profile",response.data)
             }
         catch(err){
                 console.log(err)

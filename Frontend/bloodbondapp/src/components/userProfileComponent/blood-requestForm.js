@@ -7,9 +7,15 @@ export default function BloodRequestForm() {
     function reducer(state, action) {
         switch (action.type) {
             case "ADD_BLOODREQUEST":
+<<<<<<< HEAD
                 return [...state, action.payload];
             default:
                 return state;
+=======
+                return [...state, action.payload]
+            default:
+                return state
+>>>>>>> 0c0108e00081d257199244c0c7f41c2cae8ea7e3
         }
     }
 
@@ -317,5 +323,9 @@ export default function BloodRequestForm() {
             </form>
         </>
     );
+<<<<<<< HEAD
 }
 
+=======
+}
+>>>>>>> 0c0108e00081d257199244c0c7f41c2cae8ea7e3

@@ -161,7 +161,7 @@ bloodBankCtrlr.delete=async(req,res)=>{
         const id=req.params.id
         const bloodbank=await BloodBank.findOne({_id:id})
         if(!bloodbank){
-            throw new Error('This blood already does not exist')
+            throw new Error('This bloodBank already does not exist')
         }
         const bloodBank=await BloodBank.findByIdAndDelete({_id:id})
         res.status(500).json(bloodBank)

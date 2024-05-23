@@ -4,10 +4,13 @@ const express=require('express')
 const cors=require('cors')
 const {checkSchema}=require('express-validator')
 const app=express()
+const path = require('path')
 const axios=require('axios')
 const port=3080
 app.use(express.json())
 app.use(cors())
+//i merged changes
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')))
 
 
 //DB CONNECTION
@@ -96,7 +99,7 @@ app.get('/api/bloodbanks/request',authenticateUser,authorizeUser(['bloodbank']),
 
 //ROUTES FOR BLOOD INVENTORY MODEL
 app.post('/api/bloodinventries/:id',authenticateUser,authorizeUser(['bloodbank']),checkSchema(bloodInventoryValidationSchema),bloodInventoryCtrlr.create)
-
+//i merged local and remote changes
 //RESPONSE added by admin
 
 app.post('/api/response',authenticateUser,authorizeUser(['admin']),checkSchema(responseValidationSchema),responseCtrl.createByAdmin)
@@ -104,6 +107,11 @@ app.post('/api/response',authenticateUser,authorizeUser(['admin']),checkSchema(r
 //RESPONSE EDITTED BY USER 
 
 app.put('/api/response/:id',authenticateUser,authorizeUser(['user']),checkSchema(responseValidationSchema),responseCtrl.userResponse)
+
+
+app.get('/api/bloodinventries/:id',authenticateUser,authorizeUser(['bloodbank']),bloodInventoryCtrlr.list)
+app.delete('/api/bloodinventries/:id',authenticateUser,authorizeUser(['bloodbank']),bloodInventoryCtrlr.delete)
+app.put('/api/bloodinventries/:id',authenticateUser,authorizeUser(['bloodbank']),checkSchema(bloodInventoryValidationSchema),bloodInventoryCtrlr.update)
 
 app.listen(port,()=>
 {

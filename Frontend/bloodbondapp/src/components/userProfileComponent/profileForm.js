@@ -92,7 +92,11 @@ export default function ProfileForm()
     const handleSubmit = async (e) => {
         e.preventDefault();
         
+<<<<<<< HEAD
         console.log('it is form',form)
+=======
+        console.log(form)
+>>>>>>> 0c0108e00081d257199244c0c7f41c2cae8ea7e3
         try{
         dispatch(startAddProfile(form,clearForm));
         }  
@@ -268,10 +272,83 @@ export default function ProfileForm()
         </div>
 </Col><br></br>
 
+<<<<<<< HEAD
 
 {/* 16) blood */}
 
 <label style={{textAlign:'left'}}>blood</label>  
+=======
+{/* 13) gender */}
+
+<Col md={6}>
+    <div className="form-group">
+        <label style={{ textAlign: "left" }}>gender</label><br />
+        <input type="radio" 
+        value="male" 
+        checked={form.gender === "male"} 
+        onChange={handleRadioChange} 
+        id="male" 
+        name="gender" />
+        <label htmlFor="male">male</label>{" "}
+
+        <input type="radio" 
+        value="female" 
+        checked={form.gender === "female"} 
+        onChange={handleRadioChange} 
+        id="female" name="gender" />
+        <label htmlFor="female">female</label>
+    </div>
+</Col>
+
+{/* 14) tattoBodyPiercing */}
+
+<Col md={6}>
+    <div className="form-group">
+        <label style={{ textAlign: "left" }}>tattoBodyPiercing</label><br />
+        <input type="radio" 
+        value="yes" 
+        checked={form.tattoBodyPiercing === "yes"} 
+        onChange={handleRadioChange} 
+        id="yes" 
+        name="tattoBodyPiercing" />
+        <label htmlFor="yes">yes</label>{" "}
+
+        <input type="radio" 
+        value="no" 
+        checked={form.tattoBodyPiercing === "no"} 
+        onChange={handleRadioChange} 
+        id="no" name="tattoBodyPiercing" />
+        <label htmlFor="no">no</label>
+    </div>
+</Col>
+
+{/*  15) testedPositiveForHiv  */}
+
+<Col md={6}>
+    <div className="form-group">
+        <label style={{ textAlign: "left" }}>testedPositiveForHiv</label><br />
+        <input type="radio" 
+        value="yes" 
+        checked={form.testedPositiveForHiv === "yes"} 
+        onChange={handleRadioChange} 
+        id="yes" 
+        name="testedPositiveForHiv" />
+        <label htmlFor="yes">yes</label>{" "}
+
+        <input type="radio" 
+        value="no" 
+        checked={form.testedPositiveForHiv === "no"} 
+        onChange={handleRadioChange} 
+        id="no" 
+        name="testedPositiveForHiv" />
+        <label htmlFor="no">no</label>
+    </div>
+</Col>
+
+{/* 16) blood */}
+
+            <label style={{textAlign:'left'}}>blood</label>  
+>>>>>>> 0c0108e00081d257199244c0c7f41c2cae8ea7e3
                 <Col md={6}>
                 <div className="form-group">
                     <label className='form-label' htmlFor='bloodType'>bloodType</label>
@@ -307,6 +384,7 @@ export default function ProfileForm()
                 </div>
             </Col>
 
+<<<<<<< HEAD
 {/* 13) gender */}
 <Col xs={12} md={6}>
     <div className="form-group" style={{ width: '100%' }}>
@@ -410,6 +488,8 @@ export default function ProfileForm()
 
 
 
+=======
+>>>>>>> 0c0108e00081d257199244c0c7f41c2cae8ea7e3
 
 {/* <label style={{textAlign: 'left'}}>blood</label>  
             <div className="row">
@@ -460,6 +540,12 @@ export default function ProfileForm()
 </Row>
 
        </form>
+<<<<<<< HEAD
        </>
     )
 }
+=======
+       </>
+    )
+}
+>>>>>>> 0c0108e00081d257199244c0c7f41c2cae8ea7e3

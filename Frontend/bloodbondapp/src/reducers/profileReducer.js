@@ -14,6 +14,7 @@ const initialState = {
         return {...state,profileDisplayData:action.payload}
       }
       
+<<<<<<< HEAD
       case 'DISPLAY_USER_PROFILE':{
         return {...state,singleProfile:action.payload}
       }
@@ -32,6 +33,11 @@ const initialState = {
             singleProfile: state.singleProfile._id === action.payload._id ? action.payload : state.singleProfile
         };
     }
+=======
+      case 'DISPLAY_USER_PROFILE':{ 
+        return {...state,singleProfile:action.payload}
+      }
+>>>>>>> 0c0108e00081d257199244c0c7f41c2cae8ea7e3
         case 'SET_SERVER_ERRORS':{
           return {...state,serverErrors:action.payload}
         }
@@ -41,5 +47,9 @@ const initialState = {
   }
 }
   
+<<<<<<< HEAD
   export default profileReducer
   
+=======
+  export default profileReducer
+>>>>>>> 0c0108e00081d257199244c0c7f41c2cae8ea7e3
