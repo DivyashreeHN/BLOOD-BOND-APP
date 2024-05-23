@@ -1,24 +1,22 @@
 import React from 'react';
-import 'bootstrap/dist/css/bootstrap.min.css'
 import ReactDOM from 'react-dom/client';
+import 'bootstrap/dist/css/bootstrap.min.css';
 import './index.css';
 import App from './App';
-import {BrowserRouter} from "react-router-dom"
-import {Provider} from "react-redux"
+import { BrowserRouter } from 'react-router-dom';
+import { Provider } from 'react-redux';
 import configureStore from './store/configureStore';
-const store=configureStore()
+// import { ThemeProvider } from 'react-bootstrap';
 
+const store = configureStore();
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
-<BrowserRouter>
-<Provider store={store}>
-  <App/>
-</Provider>
-</BrowserRouter>
-  
-    
-  
+  <BrowserRouter>
+    <Provider store={store}>
+      {/* <ThemeProvider> */}
+        <App />
+      {/* </ThemeProvider> */}
+    </Provider>
+  </BrowserRouter>
 );
-
-

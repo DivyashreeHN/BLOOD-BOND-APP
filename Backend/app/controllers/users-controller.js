@@ -19,7 +19,8 @@ userCltr.register=async(req,res)=>
        
         
         const user=new User(body) 
-        if(count>=1&&body.role=='admin'){
+        if(count>=1&&body.role=='admin')
+        {
             return res.status(400).json({ 
                 errors: [{ msg: 'you are not authorized to access this role'}] 
             });

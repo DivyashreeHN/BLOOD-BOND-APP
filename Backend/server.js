@@ -9,6 +9,7 @@ const port=3080
 app.use(express.json())
 app.use(cors())
 
+
 //DB CONNECTION
 const configureDB=require('./config/db')
 configureDB()

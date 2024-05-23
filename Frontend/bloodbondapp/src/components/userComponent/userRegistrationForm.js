@@ -27,27 +27,18 @@ export default function UserRegistrationForm(){
     const handleSubmit=async(e)=>{
         e.preventDefault()
         try{
-            const response=await axios.post(`http://localhost:3080/api/user/register`,form)
+            const response=await axios.post('http://localhost:3080/api/user/register',form)
             console.log(response.data)
             userDispatch({type:'REGISTER_USER',payload:response.data})
+            userDispatch({type:'SET_SERVER_ERRORS',payload:[]})
             setSuccessfulRegistration(true)
         }catch(err){
-            if(err instanceof yup.ValidationError){
-                const yupErrors={}
-                err.inner.forEach((e)=>{
-                    yupErrors[e.path]=e.message
-                    
-                })
-                console.log(yupErrors)
-                setFormErrors(yupErrors)
-            }
-            else{
+            
                 console.log(err)
                 userDispatch({type:'SET_SERVER_ERRORS',payload:err.response.data.errors})
             }
            
         }
-    }
     return(
         <>
         {successfulRegistration?(<div>
@@ -117,6 +108,6 @@ export default function UserRegistrationForm(){
             </div>):(" ")}
         </div>)}
         
-        </>
-    )
+        </>
+    )
 }

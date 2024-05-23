@@ -2,6 +2,9 @@ const {validationResult}=require('express-validator')
 const Profile = require('../models/userProfile-model')
 const _=require('lodash')
 const axios=require('axios')
+const { lastName } = require('../validators/userProfile-validation-schema')
+
+
 
 const userProfilecltr={}
 
@@ -12,13 +15,16 @@ userProfilecltr.create=async(req,res)=>
     {
         return res.status(400).json({errors:errors.array()})
     }
+    try{
+        const {body}=req
+        console.log('body',body)
     const userId=await Profile.findOne({user:req.user.id})
      if(userId)
      {
         return res.status(400).json({error:'user cannot create more than one profile'})
      } 
-    try{
-    const body=req.body
+    
+   
     const address=_.pick(req.body.address,['building','locality','city','state','pincode','country'])
         const searchString=`${address.building}%2C%20${address.locality}%2C%20${address.city}%2C%20${address.state}%2C%20${address.pincode}%2C%20${address.country}`
         const mapResponse=await axios.get(`https://api.geoapify.com/v1/geocode/search?text=${searchString}&apiKey=${process.env.GEOAPIFYKEY}`)
@@ -29,14 +35,17 @@ userProfilecltr.create=async(req,res)=>
         const {features}=mapResponse.data
         console.log(features[0])
         const {lon,lat}=features[0].properties
+
         const profile=new Profile({
             ...body,
             address:req.body.address,
+            lastName:"hn",
             geoLocation:{
                 type:'Point',
                 coordinates:[lon,lat]
             }
         })
+        console.log('lastname',lastName)
         profile.user=req.user.id
         await profile.save()
     res.status(201).json(profile)
@@ -47,6 +56,9 @@ userProfilecltr.create=async(req,res)=>
         res.status(500).json({notice:'internal server error'})
     }
 }
+
+
+
 
 //user prfoile for displaying it to admin
 userProfilecltr.display=async(req,res)=>
@@ -64,17 +76,30 @@ userProfilecltr.display=async(req,res)=>
 }
 
 //to display particular user profile
-userProfilecltr.show=async(req,res)=>
-{
-    const profile=await Profile.findOne({user:req.user.id})
-    console.log(profile)
-    if(!profile)
-    {
-        throw new Error('profile not found')
-    }
-    res.json(profile)
+// userProfilecltr.show=async(req,res)=>
+// {
+//     const profile=await Profile.findOne({user:req.user.id})
+//     console.log(profile)
+//     if(!profile)
+//     {
+//         throw new Error('profile not found')
+//     }
+//     res.json(profile)
 
+// }
+userProfilecltr.show=async(req,res)=>{
+    const userID=req.user.id
+    try{
+        const profile=await Profile.find({user:userID})
+        res.status(201).json(profile)
+        console.log('single profile from backend',profile)
+    }catch(err){
+        console.log(err)
+       
+        res.status(500).json({error:'Internal Server Error'})
+    }
 }
+
 
 //user can update his profile only
 userProfilecltr.update=async(req,res)=>

@@ -1,12 +1,14 @@
 import {useState} from 'react'
-import UserContainer from './components/userComponent/userContainer';
-import UserLoginForm from './components/userComponent/userLoginForm';
-import BloodBankDashboard from './components/bloodbankComponent/bloodbankDashboard';
-import './App.css';
+import UserContainer from './components/userComponent/userContainer'
+import UserLoginForm from './components/userComponent/userLoginForm'
+import BloodBankDashboard from './components/bloodbankComponent/bloodbankDashboard'
+import ProfileDashboard from './components/userProfileComponent/profileDashboard'
+import AdminDashboard from './components/adminComponent/adminDashboard'
+import './App.css'
 import {Routes,Route,Link} from 'react-router-dom'
-import { useReducer } from 'react';
-import userReducer from './reducers/userReducer';
-import UserContext from './contexts/userContext';
+import { useReducer } from 'react'
+import userReducer from './reducers/userReducer'
+import UserContext from './contexts/userContext'
 function App() {
   const userinitialstate={
     userDetails:[],
@@ -27,12 +29,14 @@ const [users,userDispatch]=useReducer(userReducer,userinitialstate)
         <Route path='/register' element={<UserContainer/>}/>
         <Route path='/login' element={<UserLoginForm col-md-6/>}/>
         <Route path='/bloodbank/dashboard' element={<BloodBankDashboard/>}/>
+        <Route path='/user/dashboard' element={<ProfileDashboard/>}/>
+        <Route path='/admin/dashboard' element={<AdminDashboard/>}/>
       </Routes>):
       (<Link to='/register' onClick={handleShowRegistration}>Register Now</Link>)}
     </div>
-    </UserContext.Provider>
-    
-  );
+    </UserContext.Provider> 
+  )
 }
+export default App
 
-export default App;
+

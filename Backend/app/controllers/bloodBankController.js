@@ -29,9 +29,9 @@ bloodBankCtrlr.create=async(req,res)=>{
 
         const address=_.pick(req.body.address,['building','locality','city','state','pincode','country'])
         const searchString=`${address.building}%2C%20${address.locality}%2C%20${address.city}%2C%20$${address.state}%2C%20$${address.pincode}%2C%20${address.country}`
-        const mapResponse=await axios.get(`https://api.geoapify.com/v1/geocode/search?text=${searchString}&apiKey=${process.env.GEOAPIFYKEY}`)
-        
-        if(mapResponse.data.features.length==0){
+        const mapResponse=await axios.get(`https://api.geoapify.com/v1/geocode/search?text=${searchString}&apiKey=${process.env.GEOAPIFYKEY}`) 
+        if(mapResponse.data.features.length==0)
+        {
             return res.status(400).json({errors:[{msg:"Invalid address",path:"Invalid address"}]})
         }
         const {features}=mapResponse.data
