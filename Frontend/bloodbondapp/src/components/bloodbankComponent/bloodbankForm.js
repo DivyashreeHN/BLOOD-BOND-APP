@@ -163,12 +163,6 @@ export default function BloodBankForm() {
         dispatch(startAddBloodBank(formData, clearForm,form));
         
     }
-<<<<<<< HEAD
-        return(
-        <>
-        <form onSubmit={handleSubmit}>
-            <Row>
-=======
 
     return (
         <Container>
@@ -179,7 +173,6 @@ export default function BloodBankForm() {
                             <Card.Title>Blood Bank Form</Card.Title>
                             <form onSubmit={handleSubmit}>
                             <Row>
->>>>>>> 0c0108e00081d257199244c0c7f41c2cae8ea7e3
                 <Col md={6}>
                 <div className="form-group">
                 <label className="form-label" htmlFor="name">
@@ -192,7 +185,6 @@ export default function BloodBankForm() {
                 name="name"
                 className="form-control"/>
             </div></Col>
-
             <Col md={6}>
             <div className="form-group">
                 <label className="form-label" htmlFor="phone">PhoneNumber</label>
@@ -203,7 +195,6 @@ export default function BloodBankForm() {
                 name="phoneNumber"
                 className="form-control"/>
             </div></Col>
-
             <Col md={6}>
                 <div className="form-group">
                     <label className="form-label" htmlFor="building">Building No</label>
@@ -214,7 +205,6 @@ export default function BloodBankForm() {
                     name="address.building"
                     className="form-control"/>
                 </div></Col>
-
                 <Col md={6}>
                 <div className="form-group">
                     <label className="form-label" htmlFor="locality">locality</label>
@@ -225,7 +215,6 @@ export default function BloodBankForm() {
                     name="address.locality"
                     className="form-control"/>
                 </div></Col>
-
                 <Col md={6}>
                     <div className="form-group">
                         <label className="form-label" htmlFor="city">City</label>
@@ -237,7 +226,6 @@ export default function BloodBankForm() {
                         className="form-control"/>
                     </div>
                 </Col>
-
                 <Col md={6}>
                     <div className="form-group">
                         <label className="form-label" htmlFor="state"> State</label>
@@ -259,7 +247,6 @@ export default function BloodBankForm() {
                     name="address.pincode"
                     className="form-control"/>
                 </Col>
-
                 <Col md={6}>
                     <div className="form-group">
                         <label className="form-label" htmlFor="country">Country</label>
@@ -271,7 +258,6 @@ export default function BloodBankForm() {
                         className="form-control"/>
                     </div>
                 </Col>
-
                 <label style={{textAlign: "left"}}>OpensAt</label>
                 <Col md={4}>
                     <div className="form-group">
@@ -284,7 +270,6 @@ export default function BloodBankForm() {
                         className="form-control"/>
                     </div>
                 </Col>
-
                 <Col md={4}>
                     <div className="form-group">
                         <label className="form-label" htmlFor="minutes">minutes</label>
@@ -296,7 +281,6 @@ export default function BloodBankForm() {
                         className="form-control"/>
                     </div>
                 </Col>
-
                 <Col md={4}>
                     <div className="form-group">
                         <label className="form-label" htmlFor="period">Period</label>
@@ -308,7 +292,6 @@ export default function BloodBankForm() {
                         className="form-control"/>
                     </div>
                 </Col>
-
                 <label style={{textAlign:'left'}}>ClosesAt</label>
                 <Col md={4}>
                     <div className="form-group">
@@ -321,7 +304,6 @@ export default function BloodBankForm() {
                         className="form-control"/>
                     </div>
                 </Col>
-
                 <Col md={4}>
                     <div className="form-group">
                         <label className="form-label" htmlFor="cminutes">minutes</label>
@@ -333,7 +315,6 @@ export default function BloodBankForm() {
                         className="form-control"/>
                     </div>
                 </Col>
-
                 <Col md={4}>
                     <div className="form-group">
                         <label className="form-label" htmlFor="cperiod">Period</label>
@@ -345,7 +326,6 @@ export default function BloodBankForm() {
                         className="form-control"/>
                     </div>
                     </Col>
-
                     <Col md={12}>
                     <div className="form-group">
                     <label className="form-label" htmlFor="license">License</label>
@@ -356,7 +336,6 @@ export default function BloodBankForm() {
                     className="form-control"/>
                     </div>
                     </Col>
-
                     <Col md={12}>
                     <div className="form-group">
                     <label className="form-label" htmlFor="photos">Photos</label>
@@ -368,7 +347,6 @@ export default function BloodBankForm() {
                     className="form-control"/>
                     </div>
                     </Col>
-
                     <Col md={12}>
                     <div className="form-group">
                         <label className="form-label" htmlFor="services">Services</label>
@@ -386,7 +364,6 @@ export default function BloodBankForm() {
                             onChange={handleRadioChange}
                             id="pending"
                             name="isApproved"/>
-                            
                             <label htmlFor="pending">Pending</label>{" "}
                             <input type="radio"
                             value={form.isApproved}

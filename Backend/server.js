@@ -36,7 +36,7 @@ const bloodRequestValidationSchema=require('./app/validators/bloodRequest-valida
 //IMPORTING USER-VALIDATION-SCHEMA
 const {userRegisterValidationSchema,userLoginValidationSchema}=require('./app/validators/user-validation-schema')
 //IMPORTING USERPROFILE-VALIDATION-SCEHMA
-const userProfileValidationSchema=require('./app/validators/userProfile-validation-schema')
+const {userProfileValidationSchema,updateProfileValidationSchema}=require('./app/validators/userProfile-validation-schema')
 //IMPORTING REVIEW VALIDATION-SCHEMA
 const reviewValidationSchema=require('./app/validators/review-validation-schema')
 const {bloodBankValidationSchema,approvalStatusValidationSchema}=require('./app/validators/bloodBankValidations')
@@ -71,7 +71,7 @@ app.post('/api/user/profile',authenticateUser,authorizeUser(['user']),checkSchem
 app.get('/api/user/profiles',authenticateUser,authorizeUser(['admin']),userProfilecltr.display)
 app.get('/api/user/profile',authenticateUser,authorizeUser(['user']),userProfilecltr.show)
 app.delete('/api/user/profile/:id',authenticateUser,authorizeUser(['user']),userProfilecltr.delete)
-app.put('/api/user/profile/:id',authenticateUser,authorizeUser(['user']),checkSchema(userProfileValidationSchema),userProfilecltr.update)
+app.put('/api/user/profile/:id',authenticateUser,authorizeUser(['user']),checkSchema(updateProfileValidationSchema),userProfilecltr.update)
 
 //ROUTE FOR BLOOD-REQUEST(CRUD)
 app.post('/api/blood/request',authenticateUser,authorizeUser(['user']),checkSchema(bloodRequestValidationSchema),bloodRequestCltr.create)
@@ -81,6 +81,8 @@ app.get('/api/blood/request',authenticateUser,authorizeUser(['bloodbank'])) // t
 app.get('/api/blood/request/list'),authenticateUser,authorizeUser(['bloodbank']) //this is for request type is bloodbank[doubt]
 app.put('/api/blood/request/:id',authenticateUser,authorizeUser(['user']),checkSchema(bloodRequestValidationSchema),bloodRequestCltr.update)
 app.delete('/api/blood/request/:id',authenticateUser,authorizeUser(['user']),bloodRequestCltr.delete)
+
+app.get('/api/blood/request/user',authenticateUser,authorizeUser(['user']),bloodRequestCltr.listHisRequest) //to see request made by him(his request)
 
 //For Admin
 app.get('/api/blood/requests',authenticateUser,authorizeUser(['admin']),bloodRequestCltr.admin)

@@ -1,97 +1,131 @@
-import React, { useReducer, useState } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { Row, Col } from "reactstrap";
 import axios from "axios";
+import BloodRequestContext from "../../contexts/bloodRequestContext";
+import { useDispatch } from "react-redux";
 
-export default function BloodRequestForm() {
-    // Reducer function
-    function reducer(state, action) {
-        switch (action.type) {
-            case "ADD_BLOODREQUEST":
-<<<<<<< HEAD
-                return [...state, action.payload];
-            default:
-                return state;
-=======
-                return [...state, action.payload]
-            default:
-                return state
->>>>>>> 0c0108e00081d257199244c0c7f41c2cae8ea7e3
-        }
-    }
+export default function BloodRequestForm({ formTitle, bloodRequestData }) {
+    const dispatch = useDispatch();
+    const { bloodRequests, bloodRequestDispatch } = useContext(BloodRequestContext);
 
-    // Initial state for form
     const initialFormState = {
-        patientName: '',
+        patientName: "",
         blood: {
-            bloodType: '',
-            bloodGroup: ''
+            bloodType: "",
+            bloodGroup: ""
         },
-        units: '',
-        date: '',
-        atendeePhNumber: '',
-        critical: '',
+        units: "",
+        date: "",
+        atendeePhNumber: "",
+        critical: "",
         donationAddress: {
-            building: '',
-            locality: '',
-            city: '',
-            state: '',
-            pincode: '',
-            country: ''
+            building: "",
+            locality: "",
+            city: "",
+            state: "",
+            pincode: "",
+            country: ""
         },
-        requestType: ''
+        requestType: ""
     };
 
-    // State for form data and dispatch function
     const [form, setForm] = useState(initialFormState);
-    const [bloodRequests, dispatch] = useReducer(reducer, []);
 
-    // Form change handlers
     const handleChange = (e) => {
         const { name, value } = e.target;
-        if (name.includes('.')) {
-            const [fieldName, nestedField] = name.split('.');
-            setForm(prevForm => ({
+        const keys = name.split('.');
+
+        if (keys.length === 2) {
+            setForm((prevForm) => ({
                 ...prevForm,
-                [fieldName]: {
-                    ...prevForm[fieldName],
-                    [nestedField]: value
-                }
+                [keys[0]]: {
+                    ...prevForm[keys[0]],
+                    [keys[1]]: value,
+                },
             }));
         } else {
-            setForm(prevForm => ({
+            setForm((prevForm) => ({
                 ...prevForm,
-                [name]: value
-            }))
+                [name]: value,
+            }));
         }
-    }
+    };
 
     const handleRadioChange = (e) => {
-        const { name, value } = e.target
-        setForm({ ...form, [name]: value })
-    }
+        const { name, value } = e.target;
+        setForm((prevForm) => ({
+            ...prevForm,
+            blood: {
+                ...prevForm.blood,
+                [name]: value
+            }
+        }));
+    };
 
     const clearForm = () => {
-        setForm(initialFormState)
-    }
+        setForm(initialFormState);
+    };
+
+    useEffect(() => {
+        if (bloodRequestData) {
+            setForm({
+                ...bloodRequestData,
+                date: new Date(bloodRequestData.date).toISOString().split("T")[0],
+                blood: {
+                    bloodGroup: bloodRequestData.blood?.bloodGroup || "",
+                    bloodType: bloodRequestData.blood?.bloodType || ""
+                },
+                donationAddress: {
+                    building: bloodRequestData.donationAddress?.building || "",
+                    locality: bloodRequestData.donationAddress?.locality || "",
+                    city: bloodRequestData.donationAddress?.city || "",
+                    state: bloodRequestData.donationAddress?.state || "",
+                    pincode: bloodRequestData.donationAddress?.pincode || "",
+                    country: bloodRequestData.donationAddress?.country || ""
+                }
+            });
+        } else {
+            clearForm();
+        }
+    }, [bloodRequestData]);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         console.log('form', form);
         try {
-            const response = await axios.post('http://localhost:3080/api/blood/request', form, {
-                headers: {
-                    'Content-Type': 'application/json',
-                    Authorization: localStorage.getItem('token')
-                }
-            });
-
-            const data = response.data;
-            console.log(data); // Log the response data if needed
-
-            dispatch({ type: "ADD_BLOODREQUEST", payload: form });
-            clearForm();
-        } catch (err) {
-            console.error(err, 'error in submitting form');
+            const formattedForm = {
+                ...form,
+                date: new Date(form.date).toISOString().split('T')[0],
+            };
+            if (bloodRequestData && bloodRequestData._id) {
+                const response = await axios.put(`http://localhost:3080/api/blood/request/${bloodRequestData._id}`, form, {
+                    headers: {
+                        'Content-Type': 'application/json',
+                        Authorization: localStorage.getItem('token')
+                    }
+                });
+    
+                const data = response.data;
+                console.log('blood request edited data', data); // Log the response data if needed
+    
+                bloodRequestDispatch({ type: "EDIT_USER_BLOOD_REQUEST", payload: data });
+                clearForm();
+            } else {
+                const response = await axios.post('http://localhost:3080/api/blood/request', form, {
+                    headers: {
+                        'Content-Type': 'application/json',
+                        Authorization: localStorage.getItem('token')
+                    }
+                });
+    
+                const data = response.data;
+                console.log('blood request data', data); // Log the response data if needed
+    
+                bloodRequestDispatch({ type: "ADD_BLOOD_REQUEST", payload: data });
+                clearForm();
+            }
+        } catch (error) {
+            console.error('Error in submitting form:', error);
         }
     };
 
@@ -129,41 +163,43 @@ export default function BloodRequestForm() {
 
  {/* blood >>>here i want to fetch (type and group) in available from bloodinventory*/}
 
- <label style={{textAlign:'left'}}>blood</label>  
-                <Col md={6}>
-        <div className="form-group">
-        <label className='form-label' htmlFor='bloodType'>bloodType</label>
-        <select value={form.blood && form.blood.bloodType}
-            onChange={handleChange}
-            id='bloodType'
-            name='blood.bloodType'
-            className='form-select'>
-            <option value="">Select BloodType</option>
-            <option value="plasma">plasma</option>
-            <option value="platelet">platelet</option>
-            <option value="rbc">rbc</option>
-            </select>
-            </div>
-            </Col>
+ <label style={{textAlign:'left'}}>blood</label>
+                    <Col md={6}>
+                        <div className="form-group">
+                            <label className='form-label' htmlFor='bloodType'>Blood Type</label>
+                            <select value={form.blood&&form.blood.bloodType}
+                                onChange={handleChange}
+                                id='bloodType'
+                                name='blood.bloodType'
+                                className='form-select'>
+                                <option value="">Select Blood Type</option>
+                                <option value="plasma">Plasma</option>
+                                <option value="platelet">Platelet</option>
+                                <option value="rbc">RBC</option>
+                            </select>
+                        </div>
+                    </Col>
 
-            <Col md={6}>
-        <div className='form-group'>
-        <label className='form-label' htmlFor='bloodGroup'>bloodGroup</label>
-        <select value={form.blood && form.blood.bloodGroup}
-            onChange={handleChange}
-            id='bloodGroup'
-            name='blood.bloodGroup'
-            className='form-select'>
-            <option value="">Select bloodGroup</option>
-            <option value="A+">A+</option>
-            <option value="A-">A-</option>
-            <option value="AB+">AB+</option>
-            <option value="AB-">AB-</option>
-            <option value="O+">O+</option>
-            <option value="O-">O-</option>
-            </select>      
-                </div>
-            </Col>
+                    <Col md={6}>
+                        <div className='form-group'>
+                            <label className='form-label' htmlFor='bloodGroup'>Blood Group</label>
+                            <select value={form.blood&&form.blood.bloodGroup} 
+    onChange={handleChange} 
+    id='bloodGroup' 
+    name='blood.bloodGroup' 
+    className='form-select'
+>
+    <option value=" ">Select Blood Group</option>
+    <option value="A+">A+</option>
+    <option value="A-">A-</option>
+    <option value="AB+">AB+</option>
+    <option value="AB-">AB-</option>
+    <option value="O+">O+</option>
+    <option value="O-">O-</option>
+</select>
+
+                        </div>
+                    </Col>
 
 {/* date */}
 
@@ -323,9 +359,9 @@ export default function BloodRequestForm() {
             </form>
         </>
     );
-<<<<<<< HEAD
+
 }
 
-=======
-}
->>>>>>> 0c0108e00081d257199244c0c7f41c2cae8ea7e3
+
+
+

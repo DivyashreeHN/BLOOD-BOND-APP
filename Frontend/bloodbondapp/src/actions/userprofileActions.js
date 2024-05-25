@@ -132,10 +132,11 @@ const displayUserProfile=(data)=>
 
 // DELETING USER PROFILE
 
-const deleteUserProfile=()=>
+const deleteUserProfile=(data)=>
     {
         return{
-            type:'DELETE_USER_PROFILE'
+            type:'DELETE_USER_PROFILE',
+            payload:data
             
         }
     }

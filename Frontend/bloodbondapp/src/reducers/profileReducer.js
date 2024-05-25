@@ -8,48 +8,51 @@ const initialState = {
   const profileReducer = (state = initialState, action) => {
     switch (action.type) {
       case 'ADD_PROFILE':{
-        return { ...state, profileData: action.payload }
+        return { ...state, profileData: action.payload } //profiles
       }
       case 'DISPLAY_PROFILE':{
-        return {...state,profileDisplayData:action.payload}
+        return {...state,profileDisplayData:action.payload} //admin
       }
       
-<<<<<<< HEAD
+
       case 'DISPLAY_USER_PROFILE':{
-        return {...state,singleProfile:action.payload}
+        return {...state,singleProfile:action.payload} //user
       }
 
-      case 'DELETE_USER_PROFILE':{
-        return {...state,singleProfile:[]}
+      case 'DELETE_USER_PROFILE': {
+        const updatedProfileDisplayData = state.profileDisplayData.filter((profile) => profile._id !== action.payload._id);
+        return {
+          ...state,
+          profileDisplayData: updatedProfileDisplayData,
+          singleProfile: state.singleProfile && state.singleProfile._id === action.payload._id ? null : state.singleProfile
+        }//to delete his profile
       }
+      
 
       case 'EDIT_USER_PROFILE': {
-        const updatedProfiles = state.profileData.map(profile => 
-            profile._id === action.payload._id ? action.payload : profile
-        );
         return {
             ...state,
-            profileData: updatedProfiles,
+            profileData: state.profileData.map(profile =>
+                profile._id === action.payload._id ? action.payload : profile
+            ),
             singleProfile: state.singleProfile._id === action.payload._id ? action.payload : state.singleProfile
-        };
+        }
     }
-=======
+    
+
       case 'DISPLAY_USER_PROFILE':{ 
         return {...state,singleProfile:action.payload}
       }
->>>>>>> 0c0108e00081d257199244c0c7f41c2cae8ea7e3
+
         case 'SET_SERVER_ERRORS':{
           return {...state,serverErrors:action.payload}
         }
       default:{
-          return {...state}
+          return state
       }
   }
 }
   
-<<<<<<< HEAD
   export default profileReducer
   
-=======
-  export default profileReducer
->>>>>>> 0c0108e00081d257199244c0c7f41c2cae8ea7e3
+

@@ -15,8 +15,8 @@ export default function AdminDashboard()
             {showProfile && <ShowProfiles />} 
         </div>
     )
-<<<<<<< HEAD
+
 }
-=======
-}
->>>>>>> 0c0108e00081d257199244c0c7f41c2cae8ea7e3
+
+
+

@@ -1,6 +1,7 @@
 const {validationResult}=require('express-validator')
 const BloodRequest=require('../models/bloodRequest-model')
 const Profile = require('../models/userProfile-model')
+const BloodBank=require('../models/bloodBankModel')
 const _=require('lodash')
 const axios=require('axios')
 const bloodRequestCltr={}
@@ -98,6 +99,25 @@ bloodRequestCltr.display = async (req, res) => {
     }
 };
 
+
+//user can see his request
+bloodRequestCltr.listHisRequest=async(req,res)=>
+    {
+        try{
+            const bloodRequest=await BloodRequest.find({user:req.user.id})
+            if(!bloodRequest)
+                {
+                    return res.status(404).json({error:'he did not request for blood'})
+                }
+                res.json(bloodRequest)
+        }
+        catch(err)
+        {
+            res.status(500).json({error:'internal server error'})
+        }
+    }
+
+    
 //the user can see all the requests comes to user only, not bloodbank irrespective of his bloodgroup and address he can get all the requests
 bloodRequestCltr.list=async(req,res)=>
 {
@@ -134,26 +154,39 @@ catch(err)
 }
 }
 
-//it display the if requestType is bloodbank it will diplayed to bloodbank
-// bloodRequestCltr.list=async(req,res)=>
-// {
-//     console.log(req.user.role)
-//     try{
-//     const bloodRequestType=await BloodRequest.find({
-//       requestType:req.user.role     
-//     })
-//     // console.log(bloodRequestType)
-//     if (bloodRequestType.length===0) 
-//     {
-//         return res.status(404).json({error:'No blood requests found'});
-//     }
-//     res.json(bloodRequestType) 
-// }
-// catch(err)
-// {
-//     res.status(500).json({error:'internal server error'})
-// }
-// }
+//it display the if requestType is bloodbank it will diplayed to bloodbank edition
+
+bloodRequestCltr.listToBloodBank=async(req,res)=>
+{
+    try{
+        const bloodbank=await BloodBank.findOne({user:req.user.id})
+       
+        if(!bloodbank)
+        {
+            return res.status(404).json({error:'bloodbank not found'})
+        }
+       
+        const bloodRequestType=await BloodRequest.find({
+            $and: [
+                { 'donationAddress.city': bloodbank.address.city },
+                {'requestType':{$in : [req.user.role, 'both']}  } 
+            ]
+        })
+        // console.log('bloodrequest',bloodRequestType)
+    
+        
+        if (bloodRequestType.length===0) 
+        {
+            return res.status(404).json({error:'No blood requests found222'});
+        }
+        res.json(bloodRequestType) 
+    }
+        
+    catch(err)
+    {
+        res.status(500).json({error:'internal server error'})
+    }
+    }
 
 //user can update his requests 
 bloodRequestCltr.update=async(req,res)=>

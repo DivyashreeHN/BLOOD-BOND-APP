@@ -1,7 +1,7 @@
 const Profile=require('../models/userProfile-model')
 //const User=require('../models/user-model')
 
-const userProfileValidationSchema={
+const basicProfileValidationSchema={
     firstName:{
         notEmpty:{
             errorMessage:'firstname cannot be empty '
@@ -57,31 +57,7 @@ const userProfileValidationSchema={
         }
 
     },
-    phNo:{
-        notEmpty:{
-            errorMessage:'phNo cannot be empty'
-        },
-        custom:{
-            options:async function(value)
-            { 
-                const phoneNumber=await Profile.findOne({phNo:value})
-                if(phoneNumber)
-                {
-                    throw new Error('this phno is already is in use')
-                }
-                if(value.length !==10 || isNaN(Number(value)))
-                {
-                    throw new Error('phNo is not valid')
-                }
-                else{
-                    return true
-                }
-            }
-
-        },
-        trim:true,
-       
-    },
+    
     blood:{
         notEmpty:{
             errorMessage:'blood is required'
@@ -149,4 +125,60 @@ const userProfileValidationSchema={
         }
 }
 }
-module.exports=userProfileValidationSchema
+
+//create 
+const updateProfileValidationSchema={
+    ...basicProfileValidationSchema,
+    phNo:{
+        notEmpty:{
+            errorMessage:'phNo cannot be empty'
+        },
+        custom:{
+            options:async function(value)
+            { 
+                if(value.length !==10 || isNaN(Number(value)))
+                {
+                    throw new Error('phNo is not valid')
+                }
+                else{
+                    return true
+                }
+            }
+
+        },
+        trim:true,
+       
+    },        
+}
+
+const userProfileValidationSchema={
+    ...basicProfileValidationSchema,
+    phNo:{
+        notEmpty:{
+            errorMessage:'phNo cannot be empty'
+        },
+        custom:{
+            options:async function(value)
+            { 
+                const phoneNumber=await Profile.findOne({phNo:value})
+                if(phoneNumber)
+                {
+                    throw new Error('this phno is already is in use')
+                }
+                if(value.length !==10 || isNaN(Number(value)))
+                {
+                    throw new Error('phNo is not valid')
+                }
+                else{
+                    return true
+                }
+            }
+
+        },
+        trim:true,    
+    },
+}
+module.exports={
+    updateProfileValidationSchema,
+    userProfileValidationSchema
+}
