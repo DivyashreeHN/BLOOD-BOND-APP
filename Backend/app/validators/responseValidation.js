@@ -11,8 +11,9 @@ const responseValidationSchema={
     // },
     status:{
        
-        notEmpty:{
-            errorMessage:'status cannot be empty'
+        optional: true,
+        notEmpty: {
+            errorMessage: 'status cannot be empty',
         },
         isIn:{
             options:[['accepted','rejected']]

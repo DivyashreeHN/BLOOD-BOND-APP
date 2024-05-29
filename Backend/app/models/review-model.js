@@ -1,15 +1,15 @@
 const mongoose=require('mongoose')
-const User=require('./user-model')
+//const User=require('./user-model')
 const {Schema,model}=mongoose
 
 const reviewSchema=new Schema({
     user:{
         type:Schema.Types.ObjectId,
-        ref:User
+        ref:'User' //by using this approach is efficient and it avoid circular dependency
     },
     bloodBank:{
         type:Schema.Types.ObjectId,
-        ref:BloodBank
+        ref:'BloodBank'
     },
     name:String,
     ratings:Number,

@@ -15,7 +15,10 @@ import bloodRequestReducer from './reducers/bloodRequestReducer';
 import BloodRequestContext from './contexts/bloodRequestContext';
 
 import './App.css';
-
+//
+import bloodResponseReducer from './reducers/responseReducer';
+import BloodResponseContext from './contexts/bloodResponseContext';
+//
 import userReducer from './reducers/userReducer';
 import bloodInventoryReducer from './reducers/bloodInventoryReducer';
 
@@ -37,15 +40,28 @@ function App() {
 
   //
   const bloodRequestInitialState={
-    bloodRequests:[],
-    userBloodRequests:[],
+    bloodRequests:[],//all bloodRequest
+    userBloodRequests:[], //his request
+    bloodRequestToAdmin:[], 
+    requestToUser:[], //request to user
+    otherRequestToUser:[],
+    serverErrors:[]
+  }
+
+  //
+  const bloodResponseInitialState={
+    responseByAdmin:[],
+    responseByUser:[],
     serverErrors:[]
   }
   const [users, userDispatch] = useReducer(userReducer, userInitialState);
+  //
   const [bloodInventory, bloodInventoryDispatch] = useReducer(bloodInventoryReducer, bloodInventoryInitialState);
   //
   const[bloodRequests,bloodRequestDispatch]=useReducer(bloodRequestReducer,bloodRequestInitialState)
-
+  //
+  const[bloodResponses,bloodResponseDispatch]=useReducer(bloodResponseReducer,bloodResponseInitialState)
+  //
   const [showRegistrationForm, setShowRegistrationForm] = useState(false);
 
   const handleShowRegistration = () => {
@@ -56,6 +72,7 @@ function App() {
     <UserContext.Provider value={{ users, userDispatch }}>
       <BloodInventoryContext.Provider value={{ bloodInventory, bloodInventoryDispatch }}>
         <BloodRequestContext.Provider value={{bloodRequests,bloodRequestDispatch}}>
+          <BloodResponseContext.Provider value={{bloodResponses,bloodResponseDispatch}}>
         <div className="App">
           <h1>BloodBond App</h1>
           {showRegistrationForm ? (
@@ -74,8 +91,10 @@ function App() {
             <Link to='/register' onClick={handleShowRegistration}>Register Now</Link>
           )}
         </div>
+        </BloodResponseContext.Provider>
         </BloodRequestContext.Provider>
       </BloodInventoryContext.Provider>
+   
     </UserContext.Provider>
   );
 }

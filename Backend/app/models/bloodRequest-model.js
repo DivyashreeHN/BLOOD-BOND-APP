@@ -1,11 +1,11 @@
 const mongoose=require('mongoose')
-const User=require('./user-model')
+//const User=require('./user-model')
 const {Schema,model}=mongoose
 
 const bloodRequestSchema=new Schema({
     user:{
         type:Schema.Types.ObjectId,
-        ref:User
+        ref:'User'
     },
     patientName:String,
     blood:{

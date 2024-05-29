@@ -24,7 +24,7 @@ export default function ShowProfiles() {
             <div>
               {profileDisplayData.map((profile, index) => (
                 <div key={index}>
-                  <h1>User Profile {index + 1}</h1>
+                  <h4>User Profile {index + 1}</h4>
                   <p>FirstName: {profile.firstName}</p>
                   <p>LastName: {profile.lastName}</p>
                   <p>DateOfBirth: {profile.dob}</p>

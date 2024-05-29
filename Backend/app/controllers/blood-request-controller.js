@@ -70,19 +70,19 @@ bloodRequestCltr.display = async (req, res) => {
             $and: [
                 { 'donationAddress.pincode': personDetails.address.pincode },
                 { 'blood.bloodGroup': personDetails.blood.bloodGroup },
-                { 'requestType': req.user.role },
+                { 'requestType':{$in:[req.user.role,'both']} },
                 { user: { $ne: req.user.id } }
             ]
         });
-
+console.log('bloodrequest matching his profile',bloodRequestDetails)
         const pendingResponses = [];
 
         if (bloodRequestDetails) {
             for (const ele of bloodRequestDetails) {
-                const response = await Response.findOne({ bloodRequestId: ele._id, responderId: req.user.id });
+                const response = await Response.findOne({ bloodRequestId: ele._id });
 
                 // Check if the response exists and if it's pending or not responded
-                if (!response || response.status === "pending") {
+                if (response && response.status && response.status === "pending") {  //this part is doubt check git
                     pendingResponses.push(ele);
                 }
             }
@@ -107,7 +107,7 @@ bloodRequestCltr.listHisRequest=async(req,res)=>
             const bloodRequest=await BloodRequest.find({user:req.user.id})
             if(!bloodRequest)
                 {
-                    return res.status(404).json({error:'he did not request for blood'})
+                    return res.status(404).json({error:'he did not request for Any blood'})
                 }
                 res.json(bloodRequest)
         }
@@ -122,37 +122,47 @@ bloodRequestCltr.listHisRequest=async(req,res)=>
 bloodRequestCltr.list=async(req,res)=>
 {
     
-    try{
-    const profile=await Profile.findOne({user:req.user.id})
-    // console.log('profile',profile.address.country)
-    // console.log('user',req.user.role)
-
-    if(!profile)
-    {
-        return res.status(404).json({error:'profile not found'})
-    }
-   
-    const bloodRequestType=await BloodRequest.find({
-        $and: [
+    try {
+        const profile = await Profile.findOne({ user: req.user.id });
+  
+        if (!profile) {
+          return res.status(404).json({ error: 'Profile not found' });
+        }
+  
+        const bloodRequests = await BloodRequest.find({
+          $and: [
             { 'donationAddress.country': profile.address.country },
-            {'requestType':{$in : req.user.role}  } 
-        ]
-    })
-    // console.log('bloodrequest',bloodRequestType)
-
-    
-    if (bloodRequestType.length===0) 
-    {
-        return res.status(404).json({error:'No blood requests found222'});
+            { 'requestType': { $in: req.user.role } },
+            { user: { $ne: req.user.id } },
+            { 'donationAddress.pincode': { $ne: profile.address.pincode } },
+            { 'blood.bloodGroup': { $ne: profile.blood.bloodGroup } }
+          ]
+        });
+  
+        if (!bloodRequests.length) {
+          return res.status(404).json({ error: 'No blood requests found' });
+        }
+  
+        const otherPendingResponses = [];
+  
+        for (const request of bloodRequests) {
+          const response = await Response.findOne({ bloodRequestId: request._id, status: 'pending' });
+  
+          if (response) {
+            otherPendingResponses.push(request);
+          }
+        }
+  
+        if (!otherPendingResponses.length) {
+          return res.status(404).json({ error: 'No pending blood requests found' });
+        }
+  
+        res.json(otherPendingResponses);
+      } catch (err) {
+        res.status(500).json({ error: 'Internal server error' });
+      }
     }
-    res.json(bloodRequestType) 
-}
-    
-catch(err)
-{
-    res.status(500).json({error:'internal server error'})
-}
-}
+  
 
 //it display the if requestType is bloodbank it will diplayed to bloodbank edition
 

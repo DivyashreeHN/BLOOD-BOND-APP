@@ -34,6 +34,48 @@
             }
         }
     } 
+
+    export const startFetchingPendingBloodBank=()=>
+        {
+            return async(dispatch)=>{
+                try{
+                    const response=await axios.get(`http://localhost:3080/api/bloodbanks/pending`,{
+                    headers:{
+                        Authorization:localStorage.getItem('token')
+                    }
+                })
+                dispatch(displayPendingBloodBank(response.data))
+
+                }
+                catch(err)
+                    {
+                        console.log(err)
+                        dispatch(setServerError(err.response.data.errors))
+                    }
+
+            }
+        }
+
+        export const startFetchingUpdatedBloodBank=(bloodbankId,value)=>
+            {
+                return async(dispatch)=>{
+                    try{
+                        const response=await axios.put(`http://localhost:3080/api/bloodbanks/pending/${bloodbankId}`,{isApproved:value},{
+                        headers:{
+                            Authorization:localStorage.getItem('token')
+                        }
+                    })
+                    dispatch(displayUpdtedBloodBank(response.data))
+                    console.log('updated bloodbank by admin',response.data)
+                    }
+                    catch(err)
+                        {
+                            console.log(err)
+                            dispatch(setServerError(err.response.data.errors))
+                        }
+    
+                }
+            }
     const addBloodBank=(data)=>{
         return {
             type:'ADD_BLOODBANK',
@@ -46,6 +88,20 @@
             payload:data
         }
     }
+    const displayPendingBloodBank=(data)=>{
+        return{
+            type:'DISPLAY_PENDING_BLOODBANK',
+            payload:data
+        }
+    }
+
+    const displayUpdtedBloodBank=(data)=>
+        {
+            return{
+                type:'DISPLAY_UPDATED_RESPONSE_BY_ADMIN',
+                payload:data
+            }
+        }
     const setServerError=(errors)=>{
         return {
             type:'SET_SERVER_ERRORS',

@@ -1,6 +1,6 @@
 const mongoose=require('mongoose')
 
-const BloodRequest = require('./bloodRequest-model')
+//const BloodRequest = require('./bloodRequest-model')
 const {Schema,model}=mongoose
 
 const responseSchema=new Schema({
@@ -11,7 +11,7 @@ const responseSchema=new Schema({
     status:String,
     bloodRequestId:{
         type:Schema.Types.ObjectId,
-        ref:BloodRequest
+        ref:'BloodRequest'
     }
 },{timestamps:true})
 

@@ -9,44 +9,40 @@ const Profile=require('../models/userProfile-model')
 
 //RESPONSE BY ADMIN
 
-responseCtrl.createByAdmin = async (req, res) => { 
-    try
-     {
-        const errors = await validationResult(req)
-        if (!errors.isEmpty()) 
-        {
-            return res.status(400).json({errors:errors.array()})
+responseCtrl.createByAdmin = async (req, res) => {
+    try {
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return res.status(400).json({ errors: errors.array() });
         }
-        const bloodrequests = await BloodRequest.find()
-        for (const ele of bloodrequests) 
-        {
-            const existingResponse = await Response.findOne({ bloodRequestId: ele._id })
+
+        const bloodRequests = await BloodRequest.find();
+        const updatedResponses = [];
+
+        for (const request of bloodRequests) {
+            const existingResponse = await Response.findOne({ bloodRequestId: request._id });
 
             // If no existing response, create a new one
-            if (!existingResponse) 
-            {
+            if (!existingResponse) {
                 const newResponse = new Response({
                     status: "pending",
-                    bloodRequestId: ele._id,
-                })
+                    bloodRequestId: request._id,
+                });
                 await newResponse.save();
-                // Send the response immediately after creation
-                return res.json(newResponse)
-            } 
-            // else 
-            // {
-            //    throw new Error(`Response already exists for blood request ID ${ele._id}`)
-            // }
+                updatedResponses.push(newResponse);
+            }
         }
-        res.json({ message: "All blood requests already have responses." })
-    } 
-    catch (err) 
-    {
-        console.log(err)
-       res.status(500).json({ error: 'Internal server error' })
-    }
-}
 
+        if (updatedResponses.length === 0) {
+            return res.json({ message: "All blood requests already have responses." });
+        }
+
+        res.json(updatedResponses);
+    } catch (err) {
+        console.log(err);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+};
 
 //USER CAN ACCEPT THE REQUEST OR REJECT THE REQUEST
 
@@ -60,10 +56,10 @@ responseCtrl.userResponse = async (req, res) => {
             return res.status(400).json({errors:errors.array()})
         }
         const response=await Response.findOne({bloodRequestId:id})
-        if(response.responderId==req.user.id)
-        {
-           res.status(400).json({error:'you already responded'})
-        }
+        // if(response.responderId==req.user.id)
+        // {
+        //    res.status(400).json({error:'you already responded'})
+        // }
         response.status=req.body.status;
         response.responderId=req.user.id;
         response.responderType=req.user.role;

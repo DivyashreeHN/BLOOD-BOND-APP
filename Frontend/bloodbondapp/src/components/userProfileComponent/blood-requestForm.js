@@ -53,12 +53,9 @@ export default function BloodRequestForm({ formTitle, bloodRequestData }) {
 
     const handleRadioChange = (e) => {
         const { name, value } = e.target;
-        setForm((prevForm) => ({
+        setForm(prevForm => ({
             ...prevForm,
-            blood: {
-                ...prevForm.blood,
-                [name]: value
-            }
+            [name]: value
         }));
     };
 
@@ -230,24 +227,24 @@ export default function BloodRequestForm({ formTitle, bloodRequestData }) {
 {/* critical */}
 
 <Col md={6}>
-    <div className="form-group">
-        <label style={{ textAlign: "left" }}>critical</label><br />
-        <input type="radio" 
-        value="yes" 
-        checked={form.critical === "yes"} 
-        onChange={handleRadioChange} 
-        id="yes" 
-        name="critical" />
-        <label htmlFor="yes">yes</label>{" "}
+                        <div className="form-group">
+                            <label style={{ textAlign: "left" }}>critical</label><br />
+                            <input type="radio"
+                                value="yes"
+                                checked={form.critical === "yes"}
+                                onChange={handleRadioChange}
+                                id="yes"
+                                name="critical" />
+                            <label htmlFor="yes">Yes</label>{" "}
 
-        <input type="radio" 
-        value="no" 
-        checked={form.critical === "no"} 
-        onChange={handleRadioChange} 
-        id="no" name="critical" />
-        <label htmlFor="no">no</label>
-    </div>
-</Col>
+                            <input type="radio"
+                                value="no"
+                                checked={form.critical === "no"}
+                                onChange={handleRadioChange}
+                                id="no" name="critical" />
+                            <label htmlFor="no">No</label>
+                        </div>
+                    </Col>
 
 {/* requestType */}
 
