@@ -173,9 +173,9 @@
                 ) : (
                     <>
                     <div style={{ display: 'flex', justifyContent: 'center', gap: '10px', marginBottom: '20px' }}>
-                        <button className='btn btn-primary' onClick={handleUserBloodRequests}>User Requests</button>
-                        <button className='btn btn-primary' onClick={handleRequestToUser}>Request To User</button>
-                        <button className='btn btn-primary' onClick={handleOtherRequest}>Other Requests</button>
+                        <button className='btn btn-primary' onClick={handleUserBloodRequests}>His Requests</button>
+                        <button className='btn btn-primary' onClick={handleRequestToUser}>View Requests</button>
+                        <button className='btn btn-primary' onClick={handleOtherRequest}>View Other Requests</button>
                         </div>
                         {!showBloodRequestForm && !editProfileData && !showBloodRequests && !showOtherRequests && !showRequestToUser && singlePro?.map((ele, index) => (
                             <div key={index}>
