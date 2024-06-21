@@ -3,9 +3,12 @@ import { Row, Col } from "reactstrap";
 import axios from "axios";
 import BloodRequestContext from "../../contexts/bloodRequestContext";
 import { useDispatch } from "react-redux";
+import { useLocation } from "react-router-dom";
 
-export default function BloodRequestForm({ formTitle, bloodRequestData }) {
+export default function BloodRequestForm() {
     const dispatch = useDispatch();
+    const location=useLocation()
+    const { bloodRequestData } = location.state || {};
     const { bloodRequests, bloodRequestDispatch } = useContext(BloodRequestContext);
 
     const initialFormState = {
@@ -95,29 +98,29 @@ export default function BloodRequestForm({ formTitle, bloodRequestData }) {
                 date: new Date(form.date).toISOString().split('T')[0],
             };
             if (bloodRequestData && bloodRequestData._id) {
-                const response = await axios.put(`http://localhost:3080/api/blood/request/${bloodRequestData._id}`, form, {
+                const response = await axios.put(`http://localhost:3080/api/blood/request/${bloodRequestData._id}`, formattedForm, {
                     headers: {
                         'Content-Type': 'application/json',
                         Authorization: localStorage.getItem('token')
                     }
                 });
-    
+
                 const data = response.data;
                 console.log('blood request edited data', data); // Log the response data if needed
-    
+
                 bloodRequestDispatch({ type: "EDIT_USER_BLOOD_REQUEST", payload: data });
                 clearForm();
             } else {
-                const response = await axios.post('http://localhost:3080/api/blood/request', form, {
+                const response = await axios.post('http://localhost:3080/api/blood/request', formattedForm, {
                     headers: {
                         'Content-Type': 'application/json',
                         Authorization: localStorage.getItem('token')
                     }
                 });
-    
+
                 const data = response.data;
                 console.log('blood request data', data); // Log the response data if needed
-    
+
                 bloodRequestDispatch({ type: "ADD_BLOOD_REQUEST", payload: data });
                 clearForm();
             }

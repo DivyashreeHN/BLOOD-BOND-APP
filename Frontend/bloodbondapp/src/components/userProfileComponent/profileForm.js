@@ -2,6 +2,8 @@ import { useDispatch } from 'react-redux';
 import { useState, useEffect } from "react";
 import { Row, Col } from "reactstrap";
 import { startAddProfile, startEditingUserProfile } from '../../actions/userprofileActions';
+import { useLocation } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 // // Utility function to format date to 'yyyy-MM-dd'
 // const formatDate = (dateString) => {
@@ -19,8 +21,11 @@ import { startAddProfile, startEditingUserProfile } from '../../actions/userprof
 //     return new Date(dateString).toISOString();
 // };
 
-export default function ProfileForm({ formTitle, profileData }) {
+export default function ProfileForm() {
+    const location=useLocation()
+    const { profileData } = location.state || {};
     const dispatch = useDispatch();
+    const navigate =useNavigate()
     const [form, setForm] = useState({
         firstName: '',
         lastName: '',
@@ -144,7 +149,10 @@ export default function ProfileForm({ formTitle, profileData }) {
             } else {
                 dispatch(startAddProfile(formattedForm, clearForm));
             }
-        } catch (err) {
+        
+        navigate('/user/dashboard') 
+        }
+        catch (err) {
             console.log(err, 'error in submitting form');
         }
     };

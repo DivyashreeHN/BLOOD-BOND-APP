@@ -8,7 +8,10 @@ import ProfileDashboard from './components/userProfileComponent/profileDashboard
 import AdminDashboard from './components/adminComponent/adminDashboard';
 import BloodInventoryForm from './components/bloodInventoryComponent/bloodInventoryForm';
 import BloodInventoryTable from './components/bloodInventoryComponent/bloodInventoryTable';
-
+import ProfileForm from './components/userProfileComponent/profileForm';
+///
+import ViewProfile from './components/userProfileComponent/viewProfile'
+import ViewHisRequest from './components/userProfileComponent/viewHisBloodRequest';
 //
 import BloodRequestForm from './components/userProfileComponent/blood-requestForm';
 import bloodRequestReducer from './reducers/bloodRequestReducer';
@@ -41,7 +44,7 @@ function App() {
   //
   const bloodRequestInitialState={
     bloodRequests:[],//all bloodRequest
-    userBloodRequests:[], //his request
+    userBloodRequests:[], //his(MY) request
     bloodRequestToAdmin:[], 
     requestToUser:[], //request to user
     otherRequestToUser:[],
@@ -81,7 +84,11 @@ function App() {
               <Route path='/login' element={<UserLoginForm />} />
               <Route path='/bloodbank/dashboard' element={<BloodBankDashboard />} />
               <Route path="/bloodbank/:id/blood-inventory-form" element={<BloodInventoryForm />} />
-              //
+              ///
+              <Route path="/profile/:id/profileForm" element={<ProfileForm/>}/>
+              <Route path="/profile/:id" element={<ViewProfile />} />
+              <Route path="/user/requests" element={<ViewHisRequest/>}/>
+              <Route path="/edit-request/:id" element={<BloodRequestForm/>}/>
               {/* <Route path="/user/:id/blood-request-form" element={<BloodRequestForm/>}/> */}
               <Route path="/bloodbank/:id/show-inventory" element={<BloodInventoryTable />} />
               <Route path='/user/dashboard' element={<ProfileDashboard />} />
