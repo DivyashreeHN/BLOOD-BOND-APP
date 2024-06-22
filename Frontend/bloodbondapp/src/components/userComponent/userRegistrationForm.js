@@ -2,6 +2,7 @@ import {useState,useContext} from 'react'
 import axios from 'axios'
 import {Link} from 'react-router-dom'
 import {PersonCircle,Envelope,Lock,People} from 'react-bootstrap-icons'
+import {Container,Card,Row,Col} from 'react-bootstrap'
 import UserContext from '../../contexts/userContext'
 import * as yup from 'yup'
 const userValidationSchema=yup.object().shape({
@@ -45,11 +46,17 @@ export default function UserRegistrationForm(){
             <h3>Registration Successful</h3>
             <Link to='/login'>Login</Link>
             </div>):(<div>
-            <h2>User Registration Form</h2>
-        <form onSubmit={handleSubmit}>
+            <Container>
+                <Row className='justify-content-center'>
+                    <Col md={6}>
+                        <Card className='bg-danger text-black'>
+                            <Card.Body>
+                            <Card.Title>User Registration Form</Card.Title>
+                            <form onSubmit={handleSubmit}>
             <div className="form-group">
                 <label className="form-label" htmlFor="name"><PersonCircle/> User Name</label>
                 <input type="text"
+                placeholder='Enter UserName'
                 value={form.username}
                 onChange={handleChange}
                 id='name'
@@ -61,6 +68,7 @@ export default function UserRegistrationForm(){
             <div className="form-group">
                 <label className="form-label" htmlFor="email"><Envelope/>Email</label>
                 <input type="text"
+                placeholder='Enter Email'
                 value={form.email}
                 onChange={handleChange}
                 id='email'
@@ -72,6 +80,7 @@ export default function UserRegistrationForm(){
             <div className="form-group">
                 <label className="form-label" htmlFor="password"><Lock/>Password</label>
                 <input type="text"
+                placeholder='Enter Password'
                 value={form.password}
                 onChange={handleChange}
                 id='password'
@@ -83,6 +92,7 @@ export default function UserRegistrationForm(){
             <div className="form-group">
                 <label className="form-label" htmlFor="role"><People/>Role</label>
                 <select value={form.role}
+                placeholder='Select Role'
                  onChange={handleChange}
                  id='role'
                  name='role'
@@ -94,9 +104,15 @@ export default function UserRegistrationForm(){
                 </select>
             </div>
             {formErrors&&formErrors.role&&<div className='errorMessage'>{formErrors.role}</div>}
-            <input type='submit' className='btn btn-primary'/>
+            <input type='submit' className='btn btn-dark'/>
             
         </form>
+                            </Card.Body>
+                        </Card>
+                    </Col>
+                </Row>
+            </Container>
+        
         <h3>Already have an account ?</h3><Link to='/login'>Login</Link>
         {users.serverErrors&&users.serverErrors.length>0?(<div>
                 <h4>you are prohibited from registering due to these errors</h4>

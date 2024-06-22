@@ -1,3 +1,4 @@
+import {Container,Row,Col,Card} from 'react-bootstrap'
 import { useState, useContext } from 'react';
 import { Envelope, Lock } from 'react-bootstrap-icons';
 import axios from 'axios';
@@ -60,45 +61,56 @@ export default function UserLoginForm() {
     } else {
       // Handle other types of errors
     }
+
+}
+    return(
+        <div>
+            <Container>
+                <Row className='justify-content-center'>
+                    <Col md={6}>
+                        <Card className='bg-danger text-black'>
+                            <Card.Body>
+                                <Card.Title>User Login Form</Card.Title>
+                                <form onSubmit={handleSubmit}>
+                <div className='form-group'>
+                <label className='form-label' htmlFor='email'><Envelope/> Email</label>
+                <input type="text"
+                placeholder='Enter Email'
+                value={form.email}
+                onChange={handleChange}
+                id='email'
+                name='email'
+                className='form-control'/>
+                </div>
+                <div className='form-group'>
+                <label className='form-label' htmlFor='password'><Lock/> Password</label>
+                <input type="text"
+                placeholder='Enter Password'
+                value={form.password}
+                onChange={handleChange}
+                id='password'
+                name='password'
+                className='form-control'/>
+                </div>
+                <input type='submit' className='btn btn-dark'/>
+                </form>
+                            </Card.Body>
+                        </Card>
+                    </Col>
+                </Row>
+            </Container>
+            
+            
+            {users.serverErrors&&users.serverErrors.length>0?(<div>
+                <h4>you are prohibited from logging in due to these errors</h4>
+                <ul>
+                {users.serverErrors.map((err,i)=>{
+                   return <li key={i}>{err.msg}</li>
+                })}
+                </ul>
+            </div>):(" ")}
+            </div>
+)
   };
 
-  return (
-    <div>
-      <h2>User Login Form</h2>
-      <form onSubmit={handleSubmit}>
-        <div className="form-group">
-          <label className="form-label" htmlFor="email"><Envelope /> Email</label>
-          <input
-            type="text"
-            value={form.email}
-            onChange={handleChange}
-            id="email"
-            name="email"
-            className="form-control"
-          />
-        </div>
-        <div className="form-group">
-          <label className="form-label" htmlFor="password"><Lock /> Password</label>
-          <input
-            type="password"
-            value={form.password}
-            onChange={handleChange}
-            id="password"
-            name="password"
-            className="form-control"
-          />
-        </div>
-        <input type="submit" className="btn btn-primary" />
-      </form>
-
-      {users.serverErrors && users.serverErrors.length > 0 ? (
-        <div>
-          <h4>You are prohibited from logging in due to these errors:</h4>
-          <ul>
-            {users.serverErrors.map((err, i) => <li key={i}>{err.msg}</li>)}
-          </ul>
-        </div>
-      ) : null}
-    </div>
-  );
-}
+  

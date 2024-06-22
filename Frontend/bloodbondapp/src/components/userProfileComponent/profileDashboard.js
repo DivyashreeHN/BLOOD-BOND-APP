@@ -6,7 +6,7 @@
     import { useDispatch, useSelector } from 'react-redux'
     import { startFetchingUserProfile, startDeletingUserProfile, startEditingUserProfile } from '../../actions/userprofileActions'
     import BloodRequestContext from "../../contexts/bloodRequestContext"
-    import BloodResponseContext from '../../contexts/bloodResponseContext'
+    import ResponseContext from '../../contexts/responseContext'
 
     export default function ProfileDashboard() {
         const [showProfileForm, setShowProfileForm] = useState(false)
@@ -20,7 +20,7 @@
         const [showProfileData,setShowProfileData]=useState(false)
 
         const { bloodRequests, bloodRequestDispatch } = useContext(BloodRequestContext)
-        const {bloodResponses,bloodResponseDispatch}=useContext(BloodResponseContext)
+        const {responses,responseDispatch}=useContext(ResponseContext)
 
         const dispatch = useDispatch()
         const navigate=useNavigate()
@@ -31,12 +31,14 @@
         }, [dispatch]);
 
         const handleAddProfile = () => {
+            console.log("Add profile")
             setShowProfileForm(true)
             setShowBloodRequestForm(false)
             setShowBloodRequests(false)
             setShowRequestToUser(false)
             setFormTitle('Add Profile')
             setEditProfileData(null)
+            navigate("/add/profile")
         }
 
         const handleViewProfile=(profile)=>
@@ -52,6 +54,7 @@
             setShowOtherRequests(false)
             setFormTitle('Add Request')
            setEditUserBloodRequest(null)
+           navigate("/add/request")
         }
 
         const handleUserBloodRequests = async () => {
@@ -113,7 +116,7 @@
 
         const handleOtherRequest = async () => {
             try {
-                const response = await axios.get('http://localhost:3080/api/blood/request/list', {
+                const response = await axios.get('http://localhost:3080/api/blood/request/listall', {
                     headers: {
                         'Content-Type': 'application/json',
                         Authorization: localStorage.getItem('token')
@@ -139,10 +142,10 @@
                         Authorization: localStorage.getItem('tokeen')
                     }
                 });
-                bloodResponseDispatch({ type: 'RESPONSE_ADDED_BY_USER', payload: response.data });
+                responseDispatch({ type: 'RESPONSE_ADDED_BY_USER', payload: response.data });
                 console.log('response by user', response.data)
             } catch (error) {
-                bloodResponseDispatch({ type: 'SET_SERVER_ERRORS', payload: [error.message] });
+                responseDispatch({ type: 'SET_SERVER_ERRORS', payload: [error.message] });
             }
         }
 

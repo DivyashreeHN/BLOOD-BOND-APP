@@ -7,7 +7,7 @@ import { useDispatch } from 'react-redux';
 export default function BloodRequest() {
     const dispatch = useDispatch();
     const { bloodRequests, bloodRequestDispatch } = useContext(BloodRequestContext);
-    const {bloodResponses,bloodResponseDispatch}=useContext(BloodResponseContext)
+    const {responses,responseDispatch}=useContext(BloodResponseContext)
 
     useEffect(() => {
         (async () => {
@@ -32,10 +32,10 @@ export default function BloodRequest() {
                         Authorization: localStorage.getItem('token')
                     }
                 });
-                bloodResponseDispatch({ type: 'ADD_RESPONSE_BY_ADMIN', payload: response.data });
+                responseDispatch({ type: 'ADD_RESPONSE_BY_ADMIN', payload: response.data });
                 console.log('response by admin',response.data)
             } catch (error) {
-                bloodResponseDispatch({ type: 'SET_SERVER_ERRORS', payload: [error.message] });
+                responseDispatch({ type: 'SET_SERVER_ERRORS', payload: [error.message] });
             }
         }
     

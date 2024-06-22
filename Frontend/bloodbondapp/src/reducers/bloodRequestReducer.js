@@ -1,5 +1,8 @@
 const bloodRequestReducer = (state, action) => {
     switch (action.type) {
+        case 'REQUESTS_BLOODBANK':{
+            return {...state,bloodbankBloodRequests:action.payload}
+        }
         case 'ADD_BLOOD_REQUEST':
             return { ...state, bloodRequests: [...state.bloodRequests, action.payload] }
 
