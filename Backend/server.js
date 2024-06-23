@@ -78,8 +78,8 @@ app.put('/api/user/profile/:id',authenticateUser,authorizeUser(['user']),checkSc
 //ROUTE FOR BLOOD-REQUEST(CRUD)
 app.post('/api/blood/request',authenticateUser,authorizeUser(['user']),checkSchema(bloodRequestValidationSchema),bloodRequestCltr.create)
 app.get('/api/blood/request',authenticateUser,authorizeUser(['user']),bloodRequestCltr.display) //this is for particular user who loges in[address]
-app.get('/api/blood/request/listall',authenticateUser,authorizeUser(['user']),bloodRequestCltr.list) //this is for the request type is user
-// app.get('/api/blood/request',authenticateUser,authorizeUser(['bloodbank']),bloodRequestCltr.listToBloodBank) // this is for bloodrequest for particular bloodbank who loges in[address]
+app.get('/api/blood/request/list',authenticateUser,authorizeUser(['user']),bloodRequestCltr.list) //this is for the request type is user
+app.get('/api/blood/request',authenticateUser,authorizeUser(['bloodbank']),bloodRequestCltr.listToBloodBank) // this is for bloodrequest for particular bloodbank who loges in[address]
 app.get('/api/blood/request/list',authenticateUser,authorizeUser(['bloodbank']),bloodRequestCltr.listToBloodBank) //this is for request type is bloodbank[doubt]
 app.put('/api/blood/request/:id',authenticateUser,authorizeUser(['user']),checkSchema(bloodRequestValidationSchema),bloodRequestCltr.update)
 app.delete('/api/blood/request/:id',authenticateUser,authorizeUser(['user']),bloodRequestCltr.delete)
@@ -110,7 +110,7 @@ app.post('/api/bloodinventries/:id',authenticateUser,authorizeUser(['bloodbank']
 app.post('/api/response/:requestId',authenticateUser,authorizeUser(['bloodbank','user']),checkSchema(responseValidationSchema),responseCtrl.create)
 //RESPONSE EDITTED BY USER 
 
-app.put('/api/response/:id',authenticateUser,authorizeUser(['user']),checkSchema(responseValidationSchema),responseCtrl.userResponse)
+//app.put('/api/response/:id',authenticateUser,authorizeUser(['user']),checkSchema(responseValidationSchema),responseCtrl.userResponse)
 
 
 app.get('/api/bloodinventries/:id',authenticateUser,authorizeUser(['bloodbank']),bloodInventoryCtrlr.list)

@@ -1,13 +1,13 @@
 import { useEffect, useContext } from "react";
 import BloodRequestContext from "../../contexts/bloodRequestContext";
-import BloodResponseContext from "../../contexts/bloodResponseContext";
+import ResponseContext from "../../contexts/responseContext";
 import axios from "axios";
 import Swal from 'sweetalert2';
 import { Container, Row, Col, Card, Button } from 'react-bootstrap';
 
 export default function ViewRequests() {
     const { bloodRequests, bloodRequestDispatch } = useContext(BloodRequestContext);
-    const { bloodResponses, bloodResponseDispatch } = useContext(BloodResponseContext);
+    const { responses, responseDispatch } = useContext(ResponseContext);
 
     useEffect(() => {
         const fetchRequests = async () => {
@@ -30,12 +30,12 @@ export default function ViewRequests() {
 
     const handleResponseByUser = async (id, value) => {
         try {
-            const response = await axios.put(`http://localhost:3080/api/response/${id}`, { status: value }, {
+            const response = await axios.post(`http://localhost:3080/api/response/${id}`, { status: value }, {
                 headers: {
                     Authorization: localStorage.getItem('token')
                 }
             });
-            bloodResponseDispatch({ type: 'RESPONSE_ADDED_BY_USER', payload: response.data });
+            responseDispatch({ type: 'RESPONSE_ADDED_BY_USER', payload: response.data });
             console.log('response by user', response.data);
 
             // Show SweetAlert2 based on the response
@@ -53,7 +53,7 @@ export default function ViewRequests() {
                 });
             }
         } catch (error) {
-            bloodResponseDispatch({ type: 'SET_SERVER_ERRORS', payload: [error.message] });
+            responseDispatch({ type: 'SET_SERVER_ERRORS', payload: [error.message] });
         }
     }
 
@@ -81,7 +81,7 @@ export default function ViewRequests() {
                                             <p>Critical: {request.critical}</p>
                                             <p>Donation Address: {request.donationAddress.building}, {request.donationAddress.locality}, {request.donationAddress.city}, {request.donationAddress.pincode}, {request.donationAddress.state}, {request.donationAddress.country}</p>
                                             <Button className='btn btn-light me-2' onClick={() => handleResponseByUser(request._id, 'accepted')}>Accept</Button>
-                                            <Button className='btn btn-light' onClick={() => handleResponseByUser(request._id, 'rejected')}>Reject</Button>
+                                            <Button className='btn btn-light m2-2' onClick={() => handleResponseByUser(request._id, 'rejected')}>Reject</Button>
                                         </div>
                                     ))
                                 ) : (

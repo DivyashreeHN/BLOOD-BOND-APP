@@ -28,17 +28,17 @@ import './App.css';
 import userReducer from './reducers/userReducer';
 import UserContext from './contexts/userContext';
 
-import ResponseContext from './contexts/responseContext';
+import ResponseContext from "./contexts/responseContext"
 import responseReducer from './reducers/responseReducer';
 import bloodRequestReducer from './reducers/bloodRequestReducer';
 import BloodRequestContext from './contexts/bloodRequestContext';
 import InvoiceContext from './contexts/invoiceContext';
 import InvoiceReducer from './reducers/invoiceReducer';
 import backgroundImage from './images/backgroundImage.jpeg'
-import './App.css';
+// import './App.css';
 
-import ViewProfile from './components/userProfileComponent/viewProfile'
-import ViewHisRequest from './components/userProfileComponent/viewHisBloodRequest'
+
+
 
 import bloodInventoryReducer from './reducers/bloodInventoryReducer';
 import BloodInventoryContext from './contexts/bloodInventoryContext';
@@ -76,6 +76,7 @@ function App() {
   }
   const [users, userDispatch] = useReducer(userReducer, userInitialState);
   const [bloodInventory, bloodInventoryDispatch] = useReducer(bloodInventoryReducer, bloodInventoryInitialState);
+
   const[bloodRequests,bloodRequestDispatch]=useReducer(bloodRequestReducer,bloodRequestInitialState)
   const [responses,responseDispatch]=useReducer(responseReducer,responseInitialState)
   const [invoices,invoiceDispatch]=useReducer(InvoiceReducer,invoiceInitialState)

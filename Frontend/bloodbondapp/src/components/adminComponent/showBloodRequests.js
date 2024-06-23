@@ -1,12 +1,12 @@
 import { useEffect, useContext } from 'react';
 import axios from 'axios';
 import BloodRequestContext from '../../contexts/bloodRequestContext';
-import BloodResponseContext from '../../contexts/bloodResponseContext';
+import ResponseContext from '../../contexts/responseContext';
 import { Card, Button, Container, Row, Col } from 'react-bootstrap';
 
 export default function BloodRequest() {
     const { bloodRequests, bloodRequestDispatch } = useContext(BloodRequestContext);
-    const { bloodResponses, bloodResponseDispatch } = useContext(BloodResponseContext);
+    const { responses, responseDispatch } = useContext(ResponseContext);
 
     useEffect(() => {
         (async () => {
@@ -23,19 +23,7 @@ export default function BloodRequest() {
         })();
     }, [bloodRequestDispatch]);
 
-    const handleUpdateStatus = async () => {
-        try {
-            const response = await axios.post('http://localhost:3080/api/response', {}, {
-                headers: {
-                    Authorization: localStorage.getItem('token')
-                }
-            });
-            bloodResponseDispatch({ type: 'ADD_RESPONSE_BY_ADMIN', payload: response.data });
-            console.log('response by admin', response.data);
-        } catch (error) {
-            bloodResponseDispatch({ type: 'SET_SERVER_ERRORS', payload: [error.message] });
-        }
-    };
+    
 
     return (
         <Container>
@@ -66,9 +54,7 @@ export default function BloodRequest() {
                                                     </Card.Body>
                                                 </Card>
                                             ))}
-                                            <div className="text-center">
-                                                <Button className="btn btn-light" onClick={handleUpdateStatus}>Update Status</Button>
-                                            </div>
+                                            
                                         </div>
                                     ) : (
                                         <p>No blood requests found.</p>

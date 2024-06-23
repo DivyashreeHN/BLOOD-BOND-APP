@@ -4,7 +4,7 @@ import BloodRequestContext from "../../contexts/bloodRequestContext";
 import { useNavigate } from 'react-router-dom';
 import { Container, Row, Col, Card, Button } from 'react-bootstrap';
 
-export default function ViewHisRequest() {
+export default function ViewMyRequests() {
     const { bloodRequests, bloodRequestDispatch } = useContext(BloodRequestContext);
     const navigate = useNavigate();
 
