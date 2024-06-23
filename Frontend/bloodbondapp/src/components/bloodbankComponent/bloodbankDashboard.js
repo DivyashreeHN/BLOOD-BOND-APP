@@ -1,10 +1,13 @@
 
 import BloodBankForm from "./bloodbankForm"
+import axios from 'axios'
 import BloodInventoryForm from "../bloodInventoryComponent/bloodInventoryForm"
 import BloodInventoryTable from "../bloodInventoryComponent/bloodInventoryTable"
 import { useState, useEffect } from 'react'
 import { useDispatch, useSelector } from "react-redux"
 import { startFetchingBloodBank } from "../../actions/bloodbankActions"
+import BloodRequestContext from "../../contexts/bloodRequestContext"
+import { useContext } from "react"
 import { Card, Button,Container,Row,Col } from 'react-bootstrap'
 import {Link} from 'react-router-dom'
 
@@ -12,6 +15,7 @@ export default function BloodBankDashboard() {
     const [inventory, setInventory] = useState(false)
     const [showForm, setShowForm] = useState(false)
     const [showInventoryTable, setShowInventoryTable] = useState(false)
+    const {bloodRequests,bloodRequestDispatch}=useContext(BloodRequestContext)
     const dispatch = useDispatch()
     const bloodBank = useSelector((state) => {
         return state.bloodbanks.bloodbank
@@ -32,7 +36,7 @@ export default function BloodBankDashboard() {
         return `http://localhost:3080/${formattedPath}`
     }
 
-
+    
     // const handleInventory = () => {
     //     console.log('creating inventory ....')
     //     console.log('id', id)
@@ -62,7 +66,7 @@ export default function BloodBankDashboard() {
                 <Container>
                 <Row className="justify-content-center">
                 <Col md={6}>
-                <Card className="bg-danger text-white">
+                <Card className="bg-danger text-black">
                 <Card.Body>
                 <Card.Title>{ele.name}</Card.Title>
                 <Card.Text>
@@ -88,14 +92,17 @@ export default function BloodBankDashboard() {
                     })}
                 </Card.Text>
                 <div className="d-flex justify-content-between">
-                                    <Button className="btn btn-light" style={{ marginRight: '10px' }} as={Link} to={`/bloodbank/${ele._id}/blood-inventory-form`} variant="primary">Create Inventory</Button>
-                                    <Button className="btn btn-light" style={{ marginLeft: '10px' }} as={Link} to={`/bloodbank/${ele._id}/show-inventory`} variant="primary">Show Inventory</Button>
+                                    <Button className="btn btn-dark" style={{ marginRight: '10px' }} as={Link} to={`/bloodbank/${ele._id}/blood-inventory-form`} variant="primary">Create Inventory</Button>
+                                    <Button className="btn btn-dark" style={{ marginLeft: '10px' }} as={Link} to={`/bloodbank/${ele._id}/show-inventory`} variant="primary">Show Inventory</Button>
                 </div>
                 </Card.Body>
                 </Card>
                 </Col>
                 </Row>
                 </Container>
+                <div>
+                    <Button className="btn btn-dark"  as={Link} to={`/requests`} >Blood Requests</Button>
+                </div>
             </div>
         }))}
                 </>)

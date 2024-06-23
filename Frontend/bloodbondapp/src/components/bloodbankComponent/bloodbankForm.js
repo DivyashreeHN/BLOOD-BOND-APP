@@ -168,7 +168,7 @@ export default function BloodBankForm() {
         <Container>
             <Row className="justify-content-center">
                 <Col md={8}>
-                    <Card className="bg-danger text-white">
+                    <Card className="bg-danger text-black">
                         <Card.Body>
                             <Card.Title>Blood Bank Form</Card.Title>
                             <form onSubmit={handleSubmit}>
@@ -380,7 +380,7 @@ export default function BloodBankForm() {
                         </div>
                     </Col>
                         <Col md={12}>
-                            <input type="submit"/>
+                            <input type="submit" className="btn btn-dark"/>
                         </Col>
                     </div>
                 </Col>

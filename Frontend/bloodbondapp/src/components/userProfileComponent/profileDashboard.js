@@ -37,7 +37,7 @@ export default function ProfileDashboard() {
 
     const handleViewProfile=(profile)=>
     {
-        navigate(`/profile/${profile._id}`, { state: { profile } });
+        navigate(/profile/${profile._id}, { state: { profile } });
     }
 
     const handleBloodRequestClick = () => {
@@ -82,6 +82,6 @@ navigate("/view/other/requests")
                 </>
             )}           
           
-        </div>
-    )
+        </div>
+    )
 }

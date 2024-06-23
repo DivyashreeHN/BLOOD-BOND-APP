@@ -5,8 +5,8 @@ const cors=require('cors')
 const {checkSchema}=require('express-validator')
 const app=express()
 const path = require('path')
-const axios=require('axios')
 const port=3080
+const axios=require('axios')
 app.use(express.json())
 app.use(cors())
 //i merged changes
@@ -28,7 +28,8 @@ const bloodRequestCltr=require('./app/controllers/blood-request-controller')
 const userProfilecltr=require('./app/controllers/users-profile-controller')
 const bloodBankCtrlr=require('./app/controllers/bloodBankController')
 const bloodInventoryCtrlr=require('./app/controllers/bloodInventoryController')
-
+const invoiceCtrlr=require('./app/controllers/invoiceController')
+const paymentsCltr=require('./app/controllers/paymentController')
 //2)***(VALIDATORS)***//
 
 //IMPORTING BLOOD-REQUEST-VALIDATION-SCHEMA
@@ -42,7 +43,8 @@ const reviewValidationSchema=require('./app/validators/review-validation-schema'
 const {bloodBankValidationSchema,approvalStatusValidationSchema}=require('./app/validators/bloodBankValidations')
 const bloodInventoryValidationSchema=require('./app/validators/bloodInventoryValidations')
 
-
+const invoiceValidationSchema=require('./app/validators/invoiceValidations')
+const paymentsValidationSchema=require('./app/validators/paymentValidation')
 //IMPORTING RESPONSE VALIDATION-SCHEMA
 
 const responseValidationSchema=require('./app/validators/responseValidation')
@@ -76,13 +78,14 @@ app.put('/api/user/profile/:id',authenticateUser,authorizeUser(['user']),checkSc
 //ROUTE FOR BLOOD-REQUEST(CRUD)
 app.post('/api/blood/request',authenticateUser,authorizeUser(['user']),checkSchema(bloodRequestValidationSchema),bloodRequestCltr.create)
 app.get('/api/blood/request',authenticateUser,authorizeUser(['user']),bloodRequestCltr.display) //this is for particular user who loges in[address]
-app.get('/api/blood/request/list',authenticateUser,authorizeUser(['user']),bloodRequestCltr.list) //this is for the request type is user
-app.get('/api/blood/request',authenticateUser,authorizeUser(['bloodbank'])) // this is for bloodrequest for particular bloodbank who loges in[address]
-app.get('/api/blood/request/list'),authenticateUser,authorizeUser(['bloodbank']) //this is for request type is bloodbank[doubt]
+app.get('/api/blood/request/listall',authenticateUser,authorizeUser(['user']),bloodRequestCltr.list) //this is for the request type is user
+// app.get('/api/blood/request',authenticateUser,authorizeUser(['bloodbank']),bloodRequestCltr.listToBloodBank) // this is for bloodrequest for particular bloodbank who loges in[address]
+app.get('/api/blood/request/list',authenticateUser,authorizeUser(['bloodbank']),bloodRequestCltr.listToBloodBank) //this is for request type is bloodbank[doubt]
 app.put('/api/blood/request/:id',authenticateUser,authorizeUser(['user']),checkSchema(bloodRequestValidationSchema),bloodRequestCltr.update)
 app.delete('/api/blood/request/:id',authenticateUser,authorizeUser(['user']),bloodRequestCltr.delete)
 
 app.get('/api/blood/request/user',authenticateUser,authorizeUser(['user']),bloodRequestCltr.listMyRequest) //to see request made by him(his request)
+// app.get('/api/blood/request/user',authenticateUser,authorizeUser(['user']),bloodRequestCltr.listHisRequest) //to see request made by him(his request)
 
 //For Admin
 app.get('/api/blood/requests',authenticateUser,authorizeUser(['admin']),bloodRequestCltr.admin)
@@ -104,8 +107,7 @@ app.post('/api/bloodinventries/:id',authenticateUser,authorizeUser(['bloodbank']
 //i merged local and remote changes
 //RESPONSE added by admin
 
-app.post('/api/response',authenticateUser,authorizeUser(['admin']),checkSchema(responseValidationSchema),responseCtrl.createByAdmin)
-
+app.post('/api/response/:requestId',authenticateUser,authorizeUser(['bloodbank','user']),checkSchema(responseValidationSchema),responseCtrl.create)
 //RESPONSE EDITTED BY USER 
 
 app.put('/api/response/:id',authenticateUser,authorizeUser(['user']),checkSchema(responseValidationSchema),responseCtrl.userResponse)
@@ -115,6 +117,13 @@ app.get('/api/bloodinventries/:id',authenticateUser,authorizeUser(['bloodbank'])
 app.delete('/api/bloodinventries/:id',authenticateUser,authorizeUser(['bloodbank']),bloodInventoryCtrlr.delete)
 app.put('/api/bloodinventries/:id',authenticateUser,authorizeUser(['bloodbank']),checkSchema(bloodInventoryValidationSchema),bloodInventoryCtrlr.update)
 
+//ROUTES FOR INVOICE
+app.post('/api/invoices/:requestId',authenticateUser,authorizeUser(['bloodbank']),checkSchema(invoiceValidationSchema),invoiceCtrlr.create)
+
+//ROUTES FOR PAYMENT
+app.post('/api/create-checkout-session',checkSchema(paymentsValidationSchema),paymentsCltr.pay)
+app.put('/api/payments/:id/success',paymentsCltr.successUpdate)
+app.put('/api/payments/:id/failed',paymentsCltr.failedUpdate)
 app.listen(port,()=>
 {
     console.log('Blood-Bond-App is successfully running on the port',port)
