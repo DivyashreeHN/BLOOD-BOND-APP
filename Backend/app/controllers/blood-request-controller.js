@@ -101,7 +101,7 @@ console.log('bloodrequest matching his profile',bloodRequestDetails)
 
 
 //user can see his request
-bloodRequestCltr.listHisRequest=async(req,res)=>
+bloodRequestCltr.listMyRequest=async(req,res)=>
     {
         try{
             const bloodRequest=await BloodRequest.find({user:req.user.id})

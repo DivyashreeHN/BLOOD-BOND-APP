@@ -14,7 +14,7 @@ const ViewProfile = () => {
   const navigate = useNavigate()
 
   const handleProfileDelete = (id) => {
-    dispatch(startDeletingUserProfile(id));
+    dispatch(startDeletingUserProfile(id))
   };
 
   const handleProfileEdit = (profile) => {
@@ -55,7 +55,6 @@ const ViewProfile = () => {
         </Col>
       </Row>
     </Container>
-  );
-};
-
+  )
+}
 export default ViewProfile

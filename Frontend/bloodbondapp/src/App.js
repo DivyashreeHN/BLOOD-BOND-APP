@@ -9,10 +9,18 @@ import AdminDashboard from './components/adminComponent/adminDashboard';
 import BloodInventoryForm from './components/bloodInventoryComponent/bloodInventoryForm';
 import BloodInventoryTable from './components/bloodInventoryComponent/bloodInventoryTable';
 import ProfileForm from './components/userProfileComponent/profileForm';
-///
+///user dashboard
 import ViewProfile from './components/userProfileComponent/viewProfile'
-import ViewHisRequest from './components/userProfileComponent/viewHisBloodRequest';
-//
+import ViewMyRequests from './components/userProfileComponent/viewMyBloodRequest';
+import ViewOtherRequests from './components/userProfileComponent/viewOtherRequests';
+import ViewRequests from './components/userProfileComponent/viewRequests';
+///admin dashboard
+import ShowProfiles from './components/adminComponent/showProfile';
+import ShowBloodRequests from './components/adminComponent/showBloodRequests'
+import ShowBloodBankRequests from './components/adminComponent/showBloodBanksRequest'
+
+
+
 import BloodRequestForm from './components/userProfileComponent/blood-requestForm';
 import bloodRequestReducer from './reducers/bloodRequestReducer';
 import BloodRequestContext from './contexts/bloodRequestContext';
@@ -84,11 +92,20 @@ function App() {
               <Route path='/login' element={<UserLoginForm />} />
               <Route path='/bloodbank/dashboard' element={<BloodBankDashboard />} />
               <Route path="/bloodbank/:id/blood-inventory-form" element={<BloodInventoryForm />} />
-              ///
+              {/* user dashboard */}
               <Route path="/profile/:id/profileForm" element={<ProfileForm/>}/>
               <Route path="/profile/:id" element={<ViewProfile />} />
-              <Route path="/user/requests" element={<ViewHisRequest/>}/>
+              <Route path="/my/requests" element={<ViewMyRequests/>}/>
               <Route path="/edit-request/:id" element={<BloodRequestForm/>}/>
+              <Route path="/add/profile" element={<ProfileForm/>}/>
+              <Route path="/add/request" element={<BloodRequestForm/>}/>
+              <Route path="/view/other/requests" element={<ViewOtherRequests/>}/>
+              <Route path="/view/requests" element={<ViewRequests/>}/>
+              {/* admin dashboard */}
+              <Route path="/view/profiles/admin" element={<ShowProfiles/>}/>
+              <Route path="/view/requests/admin" element={<ShowBloodRequests/>}/>
+              <Route path="/view/bloodbank-requests/admin" element={<ShowBloodBankRequests/>}/>
+
               {/* <Route path="/user/:id/blood-request-form" element={<BloodRequestForm/>}/> */}
               <Route path="/bloodbank/:id/show-inventory" element={<BloodInventoryTable />} />
               <Route path='/user/dashboard' element={<ProfileDashboard />} />
