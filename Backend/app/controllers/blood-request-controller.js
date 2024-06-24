@@ -5,6 +5,7 @@ const BloodBank=require('../models/bloodBankModel')
 const _=require('lodash')
 const axios=require('axios')
 const bloodRequestCltr={}
+const Response=require('../models/responseModel')
 
 //who has profile he can request for blood for multiple blood request
 bloodRequestCltr.create=async(req,res)=>
@@ -14,35 +15,39 @@ bloodRequestCltr.create=async(req,res)=>
     {
         return res.status(400).json({errors:errors.array()})
     }
-    
-    try{
-        const profile=await Profile.findOne({user:req.user.id})
+    const profile=await Profile.findOne({user:req.user.id})
     if(!profile)
     {
         res.status(400).json({error:'create profile for requesting blood'})
     }
+    try{
     const body=req.body
-    const address=_.pick(req.body.address,['building','locality','city','state','pincode','country'])
-        const searchString=`${address.building}%2C%20${address.locality}%2C%20${address.city}%2C%20$${address.state}%2C%20$${address.pincode}%2C%20${address.country}`
-        const mapResponse=await axios.get(`https://api.geoapify.com/v1/geocode/search?text=${searchString}&apiKey=${process.env.GEOAPIFYKEY}`) 
-        if(mapResponse.data.features.length==0)
-        {
+    const address=_.pick(req.body.donationAddress,['building','locality','city','state','pincode','country'])
+        const searchString=`${address.building}%2C%20${address.locality}%2C%20${address.city}%2C%20${address.state}%2C%20${address.pincode}%2C%20${address.country}`
+        const mapResponse=await axios.get(`https://api.geoapify.com/v1/geocode/search?text=${searchString}&apiKey=${process.env.GEOAPIFYKEY}`)
+        
+        if(mapResponse.data.features.length==0){
             return res.status(400).json({errors:[{msg:"Invalid address",path:"Invalid address"}]})
         }
         const {features}=mapResponse.data
-        console.log(features[0])
+        // console.log(features[0])
         const {lon,lat}=features[0].properties
-    const bloodRequest= new BloodRequest(body)
-    if(body.requestType=="both")
-    {
-        bloodRequest.requestType=['user','bloodbank']
-    }
+
+        let requestType = body.requestType;
+         if (requestType === "both") {
+         requestType = ['user', 'bloodbank'];
+          }
+     const bloodRequest= new BloodRequest({
+        ...body,
+        requestType:requestType,
+        address:address,
+            geoLocation:{
+                type:'Point',
+                coordinates:[lon,lat]
+            }
+        })
     
     bloodRequest.user=req.user.id
-    bloodRequest.geoLocation={
-        type:'Point',
-        coordinates:[lon,lat]
-    }
     await bloodRequest.save()
     res.json(bloodRequest)
     }
@@ -53,104 +58,171 @@ bloodRequestCltr.create=async(req,res)=>
     }
 }
 
-//displaying blood request according to user address and bloodgroup so user can see request for matching his address and bloodgroup
-bloodRequestCltr.display=async(req,res)=>
-{
-    try{
-    const personDetails=await Profile.findOne({user:req.user.id})
-    console.log(personDetails)
-   
-    if(!personDetails)
+//displaying blood request according to user pincode,bloodgroup,requesttype,avoiding his request so user can see request for these matches
+
+
+
+
+bloodRequestCltr.display = async (req, res) => {
+    try {
+        
+ const personDetails = await Profile.findOne({ user: req.user.id });
+        if (!personDetails) {
+            return res.status(404).json({ error: 'Profile not found' });
+        }
+
+
+ const bloodRequestDetails = await BloodRequest.find({
+            $and: [
+                { 'donationAddress.pincode': personDetails.address.pincode },
+                { 'blood.bloodGroup': personDetails.blood.bloodGroup },
+                { 'requestType': { $in: [req.user.role, 'both'] } },
+                { user: { $ne: req.user.id } }
+            ]
+        });
+
+        console.log('Blood requests matching user profile:', bloodRequestDetails);
+
+        const matchingRequests = [];
+
+        for (const request of bloodRequestDetails) {
+            
+            const existingResponse = await Response.findOne({ bloodRequestId: request._id, responderId: personDetails._id });
+
+            if (existingResponse) 
+                {
+                if (req.body.status === 'rejected') {
+                    await Response.deleteOne({ _id: existingResponse._id });
+                }
+            }
+
+        
+    const responses = await Response.find({ bloodRequestId: request._id });
+
+            const hasAcceptedResponse = responses.some(response => response.status === 'accepted');
+            const isRejectedByUser = existingResponse && existingResponse.status === 'rejected';
+
+            if (!hasAcceptedResponse && !isRejectedByUser)
+                 {
+                matchingRequests.push(request);
+            }
+        }
+
+        if (matchingRequests.length === 0) {
+            return res.json({ error: 'No matching requests found' });
+        }
+
+        res.json(matchingRequests);
+    } catch (err) {
+        console.log('error', err);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+};
+
+
+
+
+
+//user can see his request
+bloodRequestCltr.listMyRequest=async(req,res)=>
     {
-        return res.status(404).json({error:'Profile not found' }); 
+        try{
+            const bloodRequest=await BloodRequest.find({user:req.user.id})
+            if(!bloodRequest)
+                {
+                    return res.status(404).json({error:'he did not request for Any blood'})
+                }
+                res.json(bloodRequest)
+        }
+        catch(err)
+        {
+            res.status(500).json({error:'internal server error'})
+        }
     }
 
-    const bloodRequestDetails=await BloodRequest.find({
-        $and:[
-            {donationAddress:personDetails.address},
-            {bloodGroup:personDetails.bloodGroup},
-            {user:{$ne:req.user.id}}
-        ]
-    })
-    res.json(bloodRequestDetails)
-}
-    catch(err)
-    {
-        console.log('error',err)
-        res.status(500).json({error:'internal server error'})
-    }
-}
-
-//the user can see all the requests comes to user only not bloodbank irrespective of his bloodgroup and address he can get all the requests
+    
+//the user can see all the requests comes to user only, not bloodbank irrespective of his bloodgroup and address he can get all the requests
 bloodRequestCltr.list=async(req,res)=>
 {
     
-    try{
-    const profile=await Profile.findOne({user:req.user.id})
-    // console.log('profile',profile.address.country)
-    // console.log('user',req.user.role)
-
-    if(!profile)
-    {
-        return res.status(404).json({error:'profile not found'})
-    }
-   
-    const bloodRequestType=await BloodRequest.find({
-        $and: [
+    try {
+        const profile = await Profile.findOne({ user: req.user.id });
+  
+        if (!profile) {
+          return res.status(404).json({ error: 'Profile not found' });
+        }
+  
+        const bloodRequests = await BloodRequest.find({
+          $and: [
             { 'donationAddress.country': profile.address.country },
-            {'requestType':{$in : req.user.role}  } 
-        ]
-    })
-    console.log(bloodRequestType)
-    if (bloodRequestType.length===0) 
-    {
-        return res.status(404).json({error:'No blood requests found222'});
+            { 'requestType': { $in: [req.user.role] } },
+            { user: { $ne: req.user.id } },
+            { 'donationAddress.pincode': { $ne: profile.address.pincode } },
+            { 'blood.bloodGroup': { $ne: profile.blood.bloodGroup } }
+          ]
+        });
+  
+        if (!bloodRequests.length) {
+          return res.status(404).json({ error: 'No blood requests found' });
+        }
+  
+        const otherResponses = [];
+  
+        for (const request of bloodRequests) {
+          const response = await Response.findOne({ bloodRequestId: request._id });
+  
+          if (!response) {
+            otherResponses.push(request);
+          }
+        }
+  
+        if (otherResponses.length==0) {
+          return res.status(404).json({ error: 'No other blood requests found' });
+        }
+  
+        res.json(otherResponses);
+      } catch (err) {
+        res.status(500).json({ error: 'Internal server error' });
+      }
     }
-    res.json(bloodRequestType) 
-}
-    
-catch(err)
-{
-    res.status(500).json({error:'internal server error'})
-}
-}
+  
 
 //it display the if requestType is bloodbank it will diplayed to bloodbank edition
 
-bloodRequestCltr.listToBloodBank=async(req,res)=>
-{
-    try{
-        const bloodbank=await BloodBank.findOne({user:req.user.id})
-       
-        if(!bloodbank)
+    bloodRequestCltr.listToBloodBank=async(req,res)=>
         {
-            return res.status(404).json({error:'bloodbank not found'})
-        }
-        console.log('User role:', req.user.role);
-        console.log('Blood bank city:', bloodbank.address.city);
-        const bloodRequestType=await BloodRequest.find({
-            $and: [
-                { 'donationAddress.city': bloodbank.address.city },
-                {'requestType':{$in : [req.user.role, 'both']}  } 
-            ]
-        })
-        // console.log('bloodrequest',bloodRequestType)
-    
+            try{
+                const bloodbank=await BloodBank.findOne({user:req.user.id})
+               
+                if(!bloodbank)
+                {
+                    return res.status(404).json({error:'bloodbank not found'})
+                }
+                console.log('User role:', req.user.role);
+                console.log('Blood bank city:', bloodbank.address.city);
+                const bloodRequestType=await BloodRequest.find({
+                    $and: [
+                        { 'donationAddress.city': bloodbank.address.city },
+                        {'requestType':{$in : [req.user.role, 'both']}  } 
+                    ]
+                })
+                // console.log('bloodrequest',bloodRequestType)
+            
+                
+                if (bloodRequestType.length===0) 
+                {
+                    return res.status(404).json({errors:[{msg:'No blood requests found222'}]});
+                }
+                res.json(bloodRequestType) 
+            }
+                
+            catch(err)
+            {
+                console.log(err)
+                res.status(500).json({error:'internal server error'})
+            }
+            }
         
-        if (bloodRequestType.length===0) 
-        {
-            return res.status(404).json({errors:[{msg:'No blood requests found222'}]});
-        }
-        res.json(bloodRequestType) 
-    }
-        
-    catch(err)
-    {
-        console.log(err)
-        res.status(500).json({error:'internal server error'})
-    }
-    }
-
 //user can update his requests 
 bloodRequestCltr.update=async(req,res)=>
 {

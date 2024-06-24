@@ -1,3 +1,5 @@
+
+import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import ShowProfiles from "./showProfile";
 import ShowBloodRequests from "./showBloodRequests";
@@ -5,24 +7,23 @@ import ShowBloodBankRequest from "./showBloodBanksRequest";
 import { useContext } from "react";
 
 export default function AdminDashboard() {
-  const [showProfile, setShowProfile] = useState(false);
-  const [showBloodRequest, setShowBloodRequest] = useState(false);
-  const [showBloodbanks, setShowBloodbanks] = useState(false);
+  
+
+  const navigate=useNavigate()
 
   const handleProfileClick = () => {
-    setShowProfile(true);
-    setShowBloodRequest(false);
+    
+    navigate("/view/profiles/admin")
+
   };
 
   const handleRequestClick = () => {
-    setShowBloodRequest(true);
-    setShowProfile(false);
+    navigate("/view/requests/admin")
   };
 
   const handleBloodbankClick = () => {
-    setShowBloodRequest(false);
-    setShowProfile(false);
-    setShowBloodbanks(true);
+    
+    navigate("/view/bloodbank-requests/admin")
   };
 
   return (
@@ -33,9 +34,7 @@ export default function AdminDashboard() {
         <button className="btn btn-primary" onClick={handleRequestClick}>View Requests</button>
         <button className="btn btn-primary" onClick={handleBloodbankClick}>View BloodBanksToApprove</button>
       </div>
-      {showProfile && <ShowProfiles />}
-      {showBloodRequest && <ShowBloodRequests />}
-      {showBloodbanks && <ShowBloodBankRequest />}
+      
     </div>
   )
 }
