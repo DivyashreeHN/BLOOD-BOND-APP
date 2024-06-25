@@ -81,7 +81,7 @@ export default function ViewRequests() {
                                             <p>Critical: {request.critical}</p>
                                             <p>Donation Address: {request.donationAddress.building}, {request.donationAddress.locality}, {request.donationAddress.city}, {request.donationAddress.pincode}, {request.donationAddress.state}, {request.donationAddress.country}</p>
                                             <Button className='btn btn-light me-2' onClick={() => handleResponseByUser(request._id, 'accepted')}>Accept</Button>
-                                            <Button className='btn btn-light m2-2' onClick={() => handleResponseByUser(request._id, 'rejected')}>Reject</Button>
+                                            <Button className='btn btn-light me-2' onClick={() => handleResponseByUser(request._id, 'rejected')}>Reject</Button>
                                         </div>
                                     ))
                                 ) : (

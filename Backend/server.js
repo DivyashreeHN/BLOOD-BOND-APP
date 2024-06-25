@@ -85,7 +85,7 @@ app.put('/api/blood/request/:id',authenticateUser,authorizeUser(['user']),checkS
 app.delete('/api/blood/request/:id',authenticateUser,authorizeUser(['user']),bloodRequestCltr.delete)
 
 app.get('/api/blood/request/user',authenticateUser,authorizeUser(['user']),bloodRequestCltr.listMyRequest) //to see request made by him(his request)
-// app.get('/api/blood/request/user',authenticateUser,authorizeUser(['user']),bloodRequestCltr.listHisRequest) //to see request made by him(his request)
+
 
 //For Admin
 app.get('/api/blood/requests',authenticateUser,authorizeUser(['admin']),bloodRequestCltr.admin)

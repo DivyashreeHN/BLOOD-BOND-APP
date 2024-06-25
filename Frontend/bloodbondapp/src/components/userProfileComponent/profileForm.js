@@ -16,7 +16,7 @@ export default function ProfileForm() {
         gender: '',
         phNo: '',
         blood: {
-            bloodType: '',
+            
             bloodGroup: ''
         },
         lastBloodDonationDate: '',
@@ -45,7 +45,7 @@ export default function ProfileForm() {
                 lastBloodDonationDate: new Date(profileData.lastBloodDonationDate).toISOString().split('T')[0],
                 blood: {
                     bloodGroup: profileData.blood.bloodGroup,
-                    bloodType: profileData.blood.bloodType
+                    
                 },
                 address: {
                     building: profileData.address?.building || '',
@@ -95,7 +95,7 @@ export default function ProfileForm() {
             gender: '',
             phNo: '',
             blood: {
-                bloodType: '',
+               
                 bloodGroup: ''
             },
             lastBloodDonationDate: '',
@@ -301,21 +301,7 @@ export default function ProfileForm() {
                                     
                                     {/* 13) blood */}
                                     <label style={{ textAlign: 'left' }}>Blood</label>
-                                    <Col md={6}>
-                                        <div className="form-group">
-                                            <label className='form-label' htmlFor='bloodType'>Blood Type</label>
-                                            <select value={form.blood?.bloodType}
-                                                onChange={handleChange}
-                                                id='bloodType'
-                                                name='blood.bloodType'
-                                                className='form-select'>
-                                                <option value="">Select Blood Type</option>
-                                                <option value="plasma">Plasma</option>
-                                                <option value="platelet">Platelet</option>
-                                                <option value="rbc">RBC</option>
-                                            </select>
-                                        </div>
-                                    </Col>
+                                    
 
                                     <Col md={6}>
                                         <div className='form-group'>

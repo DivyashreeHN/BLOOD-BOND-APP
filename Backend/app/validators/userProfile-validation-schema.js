@@ -67,8 +67,8 @@ const basicProfileValidationSchema={
         },
         custom: {
             options: function(value) {
-                if (!value || !value.bloodType || !value.bloodGroup) {
-                    throw new Error('bloodType and bloodGroup fields are required');
+                if (!value  || !value.bloodGroup) {
+                    throw new Error(' and bloodGroup fields are required');
                 }
                 else{
                     return true

@@ -65,14 +65,14 @@ bloodRequestCltr.create=async(req,res)=>
 
 bloodRequestCltr.display = async (req, res) => {
     try {
-        
- const personDetails = await Profile.findOne({ user: req.user.id });
+        // Fetch the user's profile details
+        const personDetails = await Profile.findOne({ user: req.user.id });
         if (!personDetails) {
             return res.status(404).json({ error: 'Profile not found' });
         }
 
-
- const bloodRequestDetails = await BloodRequest.find({
+        // Find blood requests that match the user's profile
+        const bloodRequestDetails = await BloodRequest.find({
             $and: [
                 { 'donationAddress.pincode': personDetails.address.pincode },
                 { 'blood.bloodGroup': personDetails.blood.bloodGroup },
@@ -85,41 +85,47 @@ bloodRequestCltr.display = async (req, res) => {
 
         const matchingRequests = [];
 
+        // Loop through each matching blood request
         for (const request of bloodRequestDetails) {
-            
+            // Check for existing responses for this request by the current user
             const existingResponse = await Response.findOne({ bloodRequestId: request._id, responderId: personDetails._id });
 
-            if (existingResponse) 
-                {
-                if (req.body.status === 'rejected') {
+            if (existingResponse) {
+                // If the user responded as 'rejected', delete the response
+                if (existingResponse.status === 'rejected') {
                     await Response.deleteOne({ _id: existingResponse._id });
+                } else if (existingResponse.status === 'accepted') {
+                    // If the user responded as 'accepted', add the request to matching requests and skip further checks
+                    matchingRequests.push(request);
+                    continue;
                 }
             }
 
-        
-    const responses = await Response.find({ bloodRequestId: request._id });
+            // Get all responses for the current request
+            const responses = await Response.find({ bloodRequestId: request._id });
 
-            const hasAcceptedResponse = responses.some(response => response.status === 'accepted');
-            const isRejectedByUser = existingResponse && existingResponse.status === 'rejected';
+            // Check if there are any accepted responses by other users
+            const hasAcceptedResponse = responses.some(response => response.status === 'accepted' && response.responderId.toString() !== personDetails._id.toString());
 
-            if (!hasAcceptedResponse && !isRejectedByUser)
-                 {
+            // If no other user has accepted the request, add to matching requests
+            if (!hasAcceptedResponse) {
                 matchingRequests.push(request);
             }
         }
 
+        // If no matching requests are found, send a message
         if (matchingRequests.length === 0) {
             return res.json({ error: 'No matching requests found' });
         }
 
+        // Send the matching requests to the user
         res.json(matchingRequests);
     } catch (err) {
+        
         console.log('error', err);
         res.status(500).json({ error: 'Internal server error' });
     }
 };
-
-
 
 
 
