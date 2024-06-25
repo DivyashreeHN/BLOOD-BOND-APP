@@ -2,8 +2,10 @@ import {Container,Row,Col,Card} from 'react-bootstrap'
 import { useState, useContext } from 'react';
 import { Envelope, Lock } from 'react-bootstrap-icons';
 import axios from 'axios';
+import Swal from 'sweetalert2'
 import { useNavigate } from 'react-router-dom';
 import UserContext from '../../contexts/userContext';
+import backgroundImage from '../../images/backgroundImage1.jpg' 
 
 export default function UserLoginForm() {
   const navigate = useNavigate();
@@ -33,6 +35,8 @@ export default function UserLoginForm() {
       });
 
       const { role } = userDetails.data;
+      const {username}=userDetails.data
+      const userName=username
       switch (role) {
         case 'admin':
           navigate('/admin/dashboard');
@@ -50,6 +54,12 @@ export default function UserLoginForm() {
 
       userDispatch({ type: 'SET_USER', payload: userDetails.data });
       userDispatch({ type: 'SET_SERVER_ERRORS', payload: [] });
+      Swal.fire({
+        title: 'Success!',
+        text: `Welcome ${userName}`,
+        icon: 'success',
+        confirmButtonText: 'OK'
+    })
     } catch (err) {
       handleErrors(err);
     }
@@ -64,13 +74,24 @@ export default function UserLoginForm() {
 
 }
     return(
-        <div>
-            <Container>
+      <div
+      style={{
+        backgroundImage: `url(${backgroundImage})`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        height: '100vh',
+        display: 'flex',
+        justifyContent: 'flex-end', // Move to the right
+        alignItems: 'center',
+        paddingRight: '50px', // Add some padding to the right
+      }}
+    >
+      <Container style={{ maxWidth: '500px',maxHeight:'500px', backgroundColor: 'rgba(255, 255, 255, 0.9)', padding: '20px', borderRadius: '10px' }}>
                 <Row className='justify-content-center'>
-                    <Col md={6}>
-                        <Card className='bg-danger text-black'>
+                    <Col md={12}>
+                        <Card>
                             <Card.Body>
-                                <Card.Title>User Login Form</Card.Title>
+                                <Card.Title className="text-center">User Login Form</Card.Title>
                                 <form onSubmit={handleSubmit}>
                 <div className='form-group'>
                 <label className='form-label' htmlFor='email'><Envelope/> Email</label>
@@ -92,16 +113,13 @@ export default function UserLoginForm() {
                 name='password'
                 className='form-control'/>
                 </div>
-                <input type='submit' className='btn btn-dark'/>
+                <input variant="dark" type="submit" className="w-100" />
                 </form>
                             </Card.Body>
                         </Card>
                     </Col>
                 </Row>
-            </Container>
-            
-            
-            {users.serverErrors&&users.serverErrors.length>0?(<div>
+                {users.serverErrors&&users.serverErrors.length>0?(<div>
                 <h4>you are prohibited from logging in due to these errors</h4>
                 <ul>
                 {users.serverErrors.map((err,i)=>{
@@ -109,6 +127,7 @@ export default function UserLoginForm() {
                 })}
                 </ul>
             </div>):(" ")}
+            </Container>
             </div>
 )
   };
