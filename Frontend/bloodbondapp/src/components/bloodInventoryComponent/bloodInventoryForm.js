@@ -91,13 +91,13 @@ export default function BloodInventoryForm({editBlood,toggle}){
         }
     }
     return (
-        <div>
-            <Container>
+        <div >
+            <Container >
             <Row className="justify-content-center">
                 <Col md={6}>
                 <Card className="bg-danger text-white">
                 <Card.Body>
-                    <Card.Title>BloodInventory Form</Card.Title>
+                    <Card.Title className='text-center'>BloodInventory Form</Card.Title>
                     <form onSubmit={handleSubmit}>
                     <div className='form-group'>
                             <label className='form-label' htmlFor='type'>Blood Type</label>
@@ -177,14 +177,11 @@ export default function BloodInventoryForm({editBlood,toggle}){
                             name="status"/>
                             <label htmlFor="expired">expired</label>
                             </div>
-                        <input type='submit' className='btn btn-light'/>
+                            <div className="d-flex justify-content-center">
+                                        <input type='submit' className='btn btn-light' />
+                            </div>
                     </form>
-                </Card.Body>
-            </Card>
-            </Col>
-            </Row>
-            
-            {bloodInventory.serverErrors&& bloodInventory.serverErrors.length>0?(
+                    {bloodInventory.serverErrors&& bloodInventory.serverErrors.length>0?(
                  <Row className="justify-content-center">
                  <Col md={6}>
             <div>
@@ -197,6 +194,12 @@ export default function BloodInventoryForm({editBlood,toggle}){
             </Row>)
             
             :(" ")}
+                </Card.Body>
+            </Card>
+            </Col>
+            </Row>
+            
+            
             </Container>
         </div>
     )

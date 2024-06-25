@@ -23,7 +23,7 @@ const bloodRequestReducer = (state, action) => {
                     ),
                     userBloodRequest: state.userBloodRequest && state.userBloodRequest._id === action.payload._id ? action.payload : state.userBloodRequest
                 }
-            
+              
                 //ADMIN
                 case 'LIST_BLOODREQUEST_TO_ADMIN':
                     return{

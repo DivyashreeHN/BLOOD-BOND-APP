@@ -1,4 +1,4 @@
-export default function InvoiceReducer (state,action){
+export default function InvoiceReducer(state,action){
     switch(action.type){
         case 'ADD_INVOICES':{
             return {...state,invoices:action.payload}

@@ -10,23 +10,24 @@ export default function BloodRequestsTable() {
     const { responses, responseDispatch } = useContext(ResponseContext);
     const [errors,setErrors]=useState([])
     const navigate=useNavigate()
+    console.log('requests',bloodRequests.bloodbankBloodRequests)
     useEffect(() => {
         (async () => {
             try {
-                const response = await axios.get(`http://localhost:3080/api/blood/request/list`, {
+                const response = await axios.get(`http://localhost:3080/api/blood/request/listall`, {
                     headers: {
                         Authorization: localStorage.getItem('token')
                     }
                 });
-                console.log(response.data);
+                console.log('response',response.data);
                 bloodRequestDispatch({ type: 'REQUESTS_BLOODBANK', payload: response.data });
                 bloodRequestDispatch({ type: 'SET_SERVER_ERRORS', payload: [] });
             } catch (err) {
-                bloodRequestDispatch({ type: 'SET_SERVER_ERRORS', payload: err.response.data.errors });
+                bloodRequestDispatch({ type: 'SET_SERVER_ERRORS', payload: err.response?.data?.errors });
                 console.log(err.message);
             }
         })();
-    }, []);
+    }, [bloodRequestDispatch]);
 
    const handleResponse=async(id)=>{
     console.log('Accept request')

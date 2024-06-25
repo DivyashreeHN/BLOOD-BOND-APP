@@ -41,8 +41,8 @@ bloodInventoryDispatch({type:'SET_SERVER_ERRORS',payload:err.response.data.error
     return(
         <div>
             <Container>
-            <h4 className="my-6">Blood Inventory</h4>
-            <Row>
+            <h4 className="text-center" >Blood Inventory</h4>
+            <Row className="justify-content-center">
                 {bloodInventory.bloodInventoryDetails.length>0?(bloodInventory.bloodInventoryDetails.map((Blood)=>{
                     return <Col md={6} className="mb-4" key={Blood._id}>
                     <Card className="bg-danger text-white">
