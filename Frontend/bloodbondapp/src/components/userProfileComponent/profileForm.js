@@ -1,14 +1,14 @@
-import { useDispatch } from 'react-redux';
-import { useState, useEffect } from "react";
-import { Row, Col, Container, Card, CardBody, CardTitle } from "reactstrap";
-import { startAddProfile, startEditingUserProfile } from '../../actions/userprofileActions';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useDispatch } from 'react-redux'
+import { useState, useEffect } from "react"
+import { Row, Col, Container, Card, CardBody, CardTitle } from "reactstrap"
+import { startAddProfile, startEditingUserProfile } from '../../actions/userprofileActions'
+import { useLocation, useNavigate } from 'react-router-dom'
 
 export default function ProfileForm() {
-    const location = useLocation();
-    const { profileData } = location.state || {};
-    const dispatch = useDispatch();
-    const navigate = useNavigate();
+    const location = useLocation()
+    const { profileData } = location.state || {}
+    const dispatch = useDispatch()
+    const navigate = useNavigate()
     const [form, setForm] = useState({
         firstName: '',
         lastName: '',
@@ -55,13 +55,13 @@ export default function ProfileForm() {
                     pincode: profileData.address?.pincode || '',
                     country: profileData.address?.country || ''
                 }
-            });
+            })
         }
-    }, [profileData]);
+    }, [profileData])
 
     const handleChange = (e) => {
-        const { name, value } = e.target;
-        const keys = name.split('.');
+        const { name, value } = e.target
+        const keys = name.split('.')
 
         if (keys.length === 2) {
             setForm((prevForm) => ({
@@ -80,7 +80,7 @@ export default function ProfileForm() {
     };
 
     const handleRadioChange = (e) => {
-        const { name, value } = e.target;
+        const { name, value } = e.target
         setForm(prevForm => ({
             ...prevForm,
             [name]: value
@@ -118,7 +118,7 @@ export default function ProfileForm() {
     };
 
     const handleSubmit = async (e) => {
-        e.preventDefault();
+        e.preventDefault()
 
         try {
             const formattedForm = {
@@ -128,14 +128,14 @@ export default function ProfileForm() {
             };
 
             if (profileData) {
-                dispatch(startEditingUserProfile(profileData._id, formattedForm, clearForm));
+                dispatch(startEditingUserProfile(profileData._id, formattedForm, clearForm))
             } else {
-                dispatch(startAddProfile(formattedForm, clearForm));
+                dispatch(startAddProfile(formattedForm, clearForm))
             }
 
-            navigate('/user/dashboard');
+            navigate('/user/dashboard')
         } catch (err) {
-            console.log(err, 'error in submitting form');
+            console.log(err, 'error in submitting form')
         }
     };
 
@@ -300,7 +300,7 @@ export default function ProfileForm() {
 
                                     
                                     {/* 13) blood */}
-                                    <label style={{ textAlign: 'left' }}>Blood</label>
+                                    {/* <label style={{ textAlign: 'left' }}>Blood</label> */}
                                     
 
                                     <Col md={6}>

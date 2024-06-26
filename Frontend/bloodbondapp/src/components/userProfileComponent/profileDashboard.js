@@ -1,27 +1,10 @@
 import React, { useState, useEffect, useContext } from 'react'
-// import axios from 'axios'
 import {Link,useNavigate} from 'react-router-dom'
-// import ProfileForm from './profileForm'
-// import BloodRequestForm from './blood-requestForm'
 import { useDispatch, useSelector } from 'react-redux'
-import { startFetchingUserProfile, startDeletingUserProfile, startEditingUserProfile } from '../../actions/userprofileActions'
-// import BloodRequestContext from "../../contexts/bloodRequestContext"
-// import BloodResponseContext from '../../contexts/bloodResponseContext'
+import { startFetchingUserProfile } from '../../actions/userprofileActions'
+
 
 export default function ProfileDashboard() {
-    // const [showProfileForm, setShowProfileForm] = useState(false)
-    // const [showBloodRequestForm, setShowBloodRequestForm] = useState(false)
-    // const [showBloodRequests, setShowBloodRequests] = useState(false)
-    // const [formTitle, setFormTitle] = useState('')
-    // const [editProfileData, setEditProfileData] = useState(null)
-    // const [editUserBloodRequest, setEditUserBloodRequest] = useState(null)
-    // const [showRequestToUser, setShowRequestToUser] = useState(false)
-    // const [showOtherRequests, setShowOtherRequests] = useState(false)
-    // const [showProfileData,setShowProfileData]=useState(false)
-
-    // const { bloodRequests, bloodRequestDispatch } = useContext(BloodRequestContext)
-    // const {bloodResponses,bloodResponseDispatch}=useContext(BloodResponseContext)
-
     const dispatch = useDispatch()
     const navigate=useNavigate()
     const singlePro = useSelector((state) => state.profiles.singleProfile)
@@ -59,6 +42,10 @@ export default function ProfileDashboard() {
 
 navigate("/view/other/requests")
     }
+    const handleMyResponseHistory=async()=>
+        {
+            navigate("/user/response/history")
+        }
 
     
 
@@ -77,6 +64,7 @@ navigate("/view/other/requests")
                     <button className='btn btn-primary' onClick={handleRequestToUser}>View Requests</button>
                     <button className='btn btn-primary' onClick={handleOtherRequest}>View Other Requests</button>
                     <button className='btn btn-primary' onClick={handleBloodRequestClick}>Add Request</button> 
+                    <button className='btn btn-primary' onClick={handleMyResponseHistory}>View MyResponse History</button>
                 </div>
                     
                 </>

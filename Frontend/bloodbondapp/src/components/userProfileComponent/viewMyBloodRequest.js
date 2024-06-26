@@ -1,12 +1,12 @@
-import React, { useEffect, useContext } from 'react';
-import axios from 'axios';
-import BloodRequestContext from "../../contexts/bloodRequestContext";
-import { useNavigate } from 'react-router-dom';
-import { Container, Row, Col, Card, Button } from 'react-bootstrap';
+import React, { useEffect, useContext } from 'react'
+import axios from 'axios'
+import BloodRequestContext from "../../contexts/bloodRequestContext"
+import { useNavigate } from 'react-router-dom'
+import { Container, Row, Col, Card, Button } from 'react-bootstrap'
 
 export default function ViewMyRequests() {
-    const { bloodRequests, bloodRequestDispatch } = useContext(BloodRequestContext);
-    const navigate = useNavigate();
+    const { bloodRequests, bloodRequestDispatch } = useContext(BloodRequestContext)
+    const navigate = useNavigate()
 
     useEffect(() => {
         const fetchMyBloodRequests = async () => {
@@ -17,22 +17,22 @@ export default function ViewMyRequests() {
                         Authorization: localStorage.getItem('token')
                     }
                 });
-                bloodRequestDispatch({ type: "DISPLAY_USER_BLOOD_REQUEST", payload: response.data });
+                bloodRequestDispatch({ type: "DISPLAY_USER_BLOOD_REQUEST", payload: response.data })
             } catch (err) {
-                console.error('Error in fetching user blood requests', err);
+                console.error('Error in fetching user blood requests', err)
             }
         };
-        fetchMyBloodRequests();
-    }, [bloodRequestDispatch]);
+        fetchMyBloodRequests()
+    }, [bloodRequestDispatch])
 
     const handleEditRequest = (id) => {
-        const bloodRequestToEdit = bloodRequests.userBloodRequests.find((request) => request._id === id);
+        const bloodRequestToEdit = bloodRequests.userBloodRequests.find((request) => request._id === id)
         if (bloodRequestToEdit) {
-            navigate(`/edit-request/${id}`, { state: { bloodRequestData: bloodRequestToEdit } });
+            navigate(`/edit-request/${id}`, { state: { bloodRequestData: bloodRequestToEdit } })
         } else {
-            console.error(`Request with id ${id} not found.`);
+            console.error(`Request with id ${id} not found.`)
         }
-    };
+    }
 
     const handleDeleteRequest = async (id) => {
         try {
@@ -41,49 +41,45 @@ export default function ViewMyRequests() {
                     'Content-Type': 'application/json',
                     Authorization: localStorage.getItem('token')
                 }
-            });
-            bloodRequestDispatch({ type: 'DELETE_USER_BLOOD_REQUEST', payload: id });
+            })
+            bloodRequestDispatch({ type: 'DELETE_USER_BLOOD_REQUEST', payload: id })
         } catch (err) {
-            console.error('Error in deleting user blood request', err);
+            console.error('Error in deleting user blood request', err)
         }
-    };
+    }
 
     return (
         <Container>
             <h2 className="text-center my-4">My Blood Requests</h2>
             <Row className="justify-content-center">
                 <Col md={8}>
-                    <Card className="bg-danger text-white mb-3">
-                        <Card.Body>
-                            <div>
-                                {bloodRequests.userBloodRequests.length > 0 ? (
-                                    bloodRequests.userBloodRequests.map((request, index) => (
-                                        <div key={index} className="mb-3">
-                                            <Card className="bg-light text-dark">
-                                                <Card.Body>
-                                                    <h4>Blood Request: {index + 1}</h4>
-                                                    <p>BloodRequest ID: {request._id}</p>
-                                                    <p>User ID: {request.user}</p>
-                                                    <p>Patient Name: {request.patientName}</p>
-                                                    <p>Attendee Phone Number: {request.atendeePhNumber}</p>
-                                                    <p>Blood Type: {request.blood.bloodType}</p>
-                                                    <p>Blood Group: {request.blood.bloodGroup}</p>
-                                                    <p>Units: {request.units}</p>
-                                                    <p>Date: {request.date}</p>
-                                                    <p>Critical: {request.critical}</p>
-                                                    <p>Donation Address: {request.donationAddress.building}, {request.donationAddress.locality}, {request.donationAddress.city}, {request.donationAddress.pincode}, {request.donationAddress.state}, {request.donationAddress.country}</p>
-                                                    <Button className="btn btn-primary mr-2" onClick={() => handleEditRequest(request._id)}>Edit Request</Button>
-                                                    <Button className="btn btn-danger" onClick={() => handleDeleteRequest(request._id)}>Delete Request</Button>
-                                                </Card.Body>
-                                            </Card>
-                                        </div>
-                                    ))
-                                ) : (
-                                    <p>No blood requests found.</p>
-                                )}
-                            </div>
-                        </Card.Body>
-                    </Card>
+                    {bloodRequests.userBloodRequests.length > 0 ? (
+                        bloodRequests.userBloodRequests.map((request, index) => (
+                            <Card className="mb-4 bg-danger text-white" key={index}>
+                                <Card.Body>
+                                    <Card.Title>Blood Request {index + 1}</Card.Title>
+                                    <Card.Text>
+                                        <p>BloodRequest ID: {request._id}</p>
+                                        <p>User ID: {request.user}</p>
+                                        <p>Patient Name: {request.patientName}</p>
+                                        <p>Attendee Phone Number: {request.atendeePhNumber}</p>
+                                        <p>Blood Type: {request.blood.bloodType}</p>
+                                        <p>Blood Group: {request.blood.bloodGroup}</p>
+                                        <p>Units: {request.units}</p>
+                                        <p>Date: {request.date}</p>
+                                        <p>Critical: {request.critical}</p>
+                                        <p>Donation Address: {request.donationAddress.building}, {request.donationAddress.locality}, {request.donationAddress.city}, {request.donationAddress.pincode}, {request.donationAddress.state}, {request.donationAddress.country}</p>
+                                    </Card.Text>
+                                    <div className="d-flex justify-content-between">
+                                        <Button className="btn btn-light" onClick={() => handleEditRequest(request._id)} style={{ marginRight: '10px' }} variant="primary">Edit Request</Button>
+                                        <Button className="btn btn-light" onClick={() => handleDeleteRequest(request._id)} style={{ marginLeft: '10px' }} variant="primary">Delete Request</Button>
+                                    </div>
+                                </Card.Body>
+                            </Card>
+                        ))
+                    ) : (
+                        <p>No blood requests found.</p>
+                    )}
                 </Col>
             </Row>
         </Container>

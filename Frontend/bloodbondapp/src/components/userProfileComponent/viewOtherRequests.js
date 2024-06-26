@@ -1,10 +1,10 @@
-import { useEffect, useContext } from "react";
-import axios from "axios";
-import BloodRequestContext from "../../contexts/bloodRequestContext";
-import { Container, Row, Col, Card, Button } from 'react-bootstrap';
+import { useEffect, useContext } from "react"
+import axios from "axios"
+import BloodRequestContext from "../../contexts/bloodRequestContext"
+import { Container, Row, Col, Card, Button } from 'react-bootstrap'
 
 export default function ViewOtherRequests() {
-    const { bloodRequests, bloodRequestDispatch } = useContext(BloodRequestContext);
+    const { bloodRequests, bloodRequestDispatch } = useContext(BloodRequestContext)
 
     useEffect(() => {
         const fetchOtherBloodRequests = async () => {
@@ -15,15 +15,15 @@ export default function ViewOtherRequests() {
                         Authorization: localStorage.getItem('token')
                     }
                 });
-                console.log('other blood request for user type', response.data);
-                const data = response.data;
-                bloodRequestDispatch({ type: "DISPLAY_OTHER_BLOODREQUEST_TO_USER", payload: data });
+                console.log('other blood request for user type', response.data)
+                const data = response.data
+                bloodRequestDispatch({ type: "DISPLAY_OTHER_BLOODREQUEST_TO_USER", payload: data })
             } catch (err) {
-                console.error(err, 'error in fetching request to user');
+                console.error(err, 'error in fetching request to user')
             }
         };
-        fetchOtherBloodRequests();
-    }, [bloodRequestDispatch]);
+        fetchOtherBloodRequests()
+    }, [bloodRequestDispatch])
 
     return (
         <Container>

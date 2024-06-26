@@ -43,8 +43,8 @@ const ViewProfile = () => {
                 <p>Last Blood Donation Date: {profile.lastBloodDonationDate}</p>
                 <p>Address: {profile.address.building}, {profile.address.locality}, {profile.address.city}, {profile.address.pincode}, {profile.address.state}, {profile.address.country}</p>
                 <p>Weight: {profile.weight}</p>
-                <p>Tested +ve For HIV: {profile.testedPositiveForHiv ? "yes" : "no"}</p>
-                <p>Tattoo and Body Piercing: {profile.tattooBodyPiercing ? "yes" : "no"}</p>
+                <p>Tested +ve For HIV: {profile.testedPositiveForHiv }</p>
+                <p>Tattoo and Body Piercing: {profile.tattoBodyPiercing}</p>
               </Card.Text>
               <div className="d-flex justify-content-between">
                 <Button className="btn btn-light" onClick={() => handleProfileEdit(profile)} style={{ marginRight: '10px' }} variant="primary">Edit Profile</Button>

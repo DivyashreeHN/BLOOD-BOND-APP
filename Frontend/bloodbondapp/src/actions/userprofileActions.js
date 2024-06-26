@@ -32,7 +32,7 @@ export const startFetchingProfile=()=>{
                 }
             })
             dispatch(displayProfile(response.data))
-            console.log("profiles",response.data)
+            console.log("profilesss",response.data)
         }catch(err){
             console.log(err)
             dispatch(setServerError(err.response.data.errors))
