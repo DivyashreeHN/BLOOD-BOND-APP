@@ -1,4 +1,5 @@
-import React, { useEffect,useState } from 'react'
+
+import { useEffect,useState } from 'react'
 import { useNavigate,Link } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
 import { startFetchingUserProfile } from '../../actions/userprofileActions'
@@ -6,6 +7,7 @@ import { startFetchingBloodBanksForUsers } from '../../actions/bloodbankActions'
 import { Card, Col, Row, Carousel,Modal,Button } from 'react-bootstrap'
 import { FaEye } from 'react-icons/fa'
 import { BiMap } from 'react-icons/bi'
+
 
 export default function ProfileDashboard() {
     const dispatch = useDispatch()
@@ -68,6 +70,10 @@ export default function ProfileDashboard() {
         alignItems: 'center',
         cursor: 'pointer',
     }
+    const handleMyResponseHistory=async()=>
+        {
+            navigate("/user/response/history")
+        }
 
     return (
         <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', flexDirection: 'column' }}>
@@ -138,6 +144,10 @@ export default function ProfileDashboard() {
                             ))}
                         </Row>
                     )}
+                <div style={{ display: 'flex', justifyContent: 'center', gap: '10px', marginBottom: '20px' }}>
+                    <button className='btn btn-primary' onClick={()=>handleViewProfile(singlePro[0])} >View Profile</button> 
+                    <button className='btn btn-primary' onClick={handleMyResponseHistory}>View MyResponse History</button>
+                </div>
                 </>
             )}
             <Modal show={showLicense} onHide={handleCloseLicense}>

@@ -1,14 +1,14 @@
-import { useEffect, useContext } from "react";
-import BloodRequestContext from "../../contexts/bloodRequestContext";
-import ResponseContext from "../../contexts/responseContext";
-import axios from "axios";
-import Swal from 'sweetalert2';
-import { Container, Row, Col, Card, Button } from 'react-bootstrap';
+import { useEffect, useContext, useState } from "react"
+import BloodRequestContext from "../../contexts/bloodRequestContext"
+import ResponseContext from "../../contexts/responseContext"
+import axios from "axios"
+import { Button,Alert } from 'react-bootstrap'
+import Swal from 'sweetalert2'
 
 export default function ViewRequests() {
-    const { bloodRequests, bloodRequestDispatch } = useContext(BloodRequestContext);
-    const { responses, responseDispatch } = useContext(ResponseContext);
-
+    const { bloodRequests, bloodRequestDispatch } = useContext(BloodRequestContext)
+    const { responseDispatch } = useContext(ResponseContext)
+    const [errors,setErrors]=useState([])
     useEffect(() => {
         const fetchRequests = async () => {
             try {
@@ -18,15 +18,17 @@ export default function ViewRequests() {
                         Authorization: localStorage.getItem('token')
                     }
                 });
-                console.log('bloodRequest which match profile', response.data);
+                console.log('bloodRequest which match profile', response.data)
                 const data = response.data;
-                bloodRequestDispatch({ type: "DISPLAY_BLOODREQUEST_TO_USER", payload: data });
+                bloodRequestDispatch({ type: "DISPLAY_BLOODREQUEST_TO_USER", payload: data })
+                bloodRequestDispatch({ type: 'SET_SERVER_ERRORS', payload: [] })
             } catch (err) {
-                console.error(err, 'error in fetching request to user');
+                bloodRequestDispatch({ type: 'SET_SERVER_ERRORS', payload: err.response?.data?.errors })
+                console.error(err, 'error in fetching request to user')
             }
         }
-        fetchRequests();
-    }, [bloodRequestDispatch]);
+        fetchRequests()
+    }, [bloodRequestDispatch])
 
     const handleResponseByUser = async (id, value) => {
         try {
@@ -35,8 +37,10 @@ export default function ViewRequests() {
                     Authorization: localStorage.getItem('token')
                 }
             });
-            responseDispatch({ type: 'RESPONSE_ADDED_BY_USER', payload: response.data });
-            console.log('response by user', response.data);
+            responseDispatch({ type: 'RESPONSE_ADDED_BY_USER', payload: response.data })
+            responseDispatch({type:'SET_SERVER_ERRORS',payload:[]})
+            console.log('response by user', response.data)
+            setErrors([])
 
             // Show SweetAlert2 based on the response
             if (value === 'accepted') {
@@ -52,46 +56,55 @@ export default function ViewRequests() {
                     text: 'Request has been rejected. Thank you for your response.',
                 });
             }
-        } catch (error) {
-            responseDispatch({ type: 'SET_SERVER_ERRORS', payload: [error.message] });
+        } catch (err) {
+            responseDispatch({type:'SET_SERVER_ERRORS',payload:err.response.data.errors})
+        setErrors([err.response.data.errors])
         }
     }
 
     return (
-        <Container>
-            <h2 className="text-center my-4">Blood Requests</h2>
-            <Row className="justify-content-center">
-                <Col md={8}>
-                    <Card className="bg-danger text-white mb-3">
-                        <Card.Body>
-                            <div>
-                                <h4>Request to User</h4>
-                                {bloodRequests.requestToUser.length > 0 ? (
-                                    bloodRequests.requestToUser.map((request, index) => (
-                                        <div key={index}>
-                                            <h4>BloodRequest: {index + 1}</h4>
-                                            <p>BloodRequest ID: {request._id}</p>
-                                            <p>BloodRequest UserID: {request.user}</p>
-                                            <p>Patient Name: {request.patientName}</p>
-                                            <p>Attendee Phone Number: {request.atendeePhNumber}</p>
-                                            <p>Blood Type: {request.blood.bloodType}</p>
-                                            <p>Blood Group: {request.blood.bloodGroup}</p>
-                                            <p>Units: {request.units}</p>
-                                            <p>Date: {request.date}</p>
-                                            <p>Critical: {request.critical}</p>
-                                            <p>Donation Address: {request.donationAddress.building}, {request.donationAddress.locality}, {request.donationAddress.city}, {request.donationAddress.pincode}, {request.donationAddress.state}, {request.donationAddress.country}</p>
-                                            <Button className='btn btn-light me-2' onClick={() => handleResponseByUser(request._id, 'accepted')}>Accept</Button>
-                                            <Button className='btn btn-light m2-2' onClick={() => handleResponseByUser(request._id, 'rejected')}>Reject</Button>
-                                        </div>
-                                    ))
-                                ) : (
-                                    <p>No blood requests to user found.</p>
-                                )}
-                            </div>
-                        </Card.Body>
-                    </Card>
-                </Col>
-            </Row>
-        </Container>
+        <div className="container">
+            <h1 className="my-4">All Blood Requests</h1>
+            {bloodRequests.requestToUser && bloodRequests.requestToUser.length > 0 ? (
+                <table className="table table-striped table-bordered">
+                    <thead className="table-dark">
+                        <tr>
+                            
+                            <th>Patient Name</th>
+                            <th>Attendee Phone Number</th>
+                            <th>Blood Type</th>
+                            <th>Blood Group</th>
+                            <th>Units</th>
+                            <th>Date</th>
+                            <th>Critical</th>
+                            <th>Donation Address</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody className="table-info">
+                        {bloodRequests.requestToUser.map((request) => (
+                            <tr key={request._id} className={request.critical === 'yes' ? 'table-danger' : ''}>
+                               
+                                <td>{request.patientName}</td>
+                                <td>{request.atendeePhNumber}</td>
+                                <td>{request.blood.bloodType}</td>
+                                <td>{request.blood.bloodGroup}</td>
+                                <td>{request.units}</td>
+                                <td>{request.date}</td>
+                                <td>{request.critical}</td>
+                                <td>{`${request.donationAddress.building}, ${request.donationAddress.locality}, ${request.donationAddress.city}, ${request.donationAddress.pincode}, ${request.donationAddress.state}, ${request.donationAddress.country}`}</td>
+                                <td>
+                                    <Button onClick={() => handleResponseByUser(request._id, 'accepted')}>Accept</Button>
+                                    
+                                </td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
+            ) : (
+                <p>No blood requests to user found.</p>
+            )}
+            {errors?.length>0 && <Alert variant="danger">{errors}</Alert>}
+        </div>
     );
 }

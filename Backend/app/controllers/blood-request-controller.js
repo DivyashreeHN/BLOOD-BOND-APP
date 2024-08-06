@@ -60,19 +60,16 @@ bloodRequestCltr.create=async(req,res)=>
 
 //displaying blood request according to user pincode,bloodgroup,requesttype,avoiding his request so user can see request for these matches
 
-
-
-
 bloodRequestCltr.display = async (req, res) => {
     try {
+        const personDetails = await Profile.findOne({ user: req.user.id });
         
- const personDetails = await Profile.findOne({ user: req.user.id });
         if (!personDetails) {
-            return res.status(404).json({ error: 'Profile not found' });
+            return res.status(404).json({ error: 'profile not found' });
         }
-
-
- const bloodRequestDetails = await BloodRequest.find({
+        
+        
+        const bloodRequestType = await BloodRequest.find({
             $and: [
                 { 'donationAddress.pincode': personDetails.address.pincode },
                 { 'blood.bloodGroup': personDetails.blood.bloodGroup },
@@ -80,50 +77,49 @@ bloodRequestCltr.display = async (req, res) => {
                 { user: { $ne: req.user.id } }
             ]
         });
-
-        console.log('Blood requests matching user profile:', bloodRequestDetails);
-
-        const matchingRequests = [];
-
-        for (const request of bloodRequestDetails) {
-            
-            const existingResponse = await Response.findOne({ bloodRequestId: request._id, responderId: personDetails._id });
-
-            if (existingResponse) 
-                {
-                if (req.body.status === 'rejected') {
-                    await Response.deleteOne({ _id: existingResponse._id });
-                }
-            }
-
-        
-    const responses = await Response.find({ bloodRequestId: request._id });
-
-            const hasAcceptedResponse = responses.some(response => response.status === 'accepted');
-            const isRejectedByUser = existingResponse && existingResponse.status === 'rejected';
-
-            if (!hasAcceptedResponse && !isRejectedByUser)
-                 {
-                matchingRequests.push(request);
-            }
+        console.log('requests matching user profile', bloodRequestType)
+       
+        if (bloodRequestType.length === 0) {
+            return res.status(404).json({ errors: [{ msg: 'No blood requests found' }] })
         }
 
-        if (matchingRequests.length === 0) {
-            return res.json({ error: 'No matching requests found' });
+        // Filter blood requests based on whether there are responses from the user
+        const bloodRequestsWithoutResponses = await Promise.all(
+    bloodRequestType.map(async (request) => {
+        // Check if there's a response for this request from the user
+        const existingResponse = await Response.findOne({
+            bloodRequestId: request._id,
+            responderId: personDetails._id
+        });
+        console.log('response',existingResponse)
+
+        // Include request only if no response exists from the user
+        if (!existingResponse) {
+            return request; // Include the request in the filtered array
+        } 
+    })
+);
+console.log('filtered',bloodRequestsWithoutResponses)
+
+// Remove undefined elements from the array (requests with responses)
+const filteredBloodRequests = bloodRequestsWithoutResponses.filter(Boolean);
+
+        // If no requests remain after filtering, return a 404 error
+        if (filteredBloodRequests.length === 0) {
+            return res.json([])
         }
 
-        res.json(matchingRequests);
+        // Return the filtered blood requests
+        res.json(filteredBloodRequests);
     } catch (err) {
-        console.log('error', err);
+        console.error(err);
         res.status(500).json({ error: 'Internal server error' });
     }
 };
 
 
-
-
-
 //user can see his request
+
 bloodRequestCltr.listMyRequest=async(req,res)=>
     {
         try{

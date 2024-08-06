@@ -53,7 +53,9 @@ const responseValidationSchema=require('./app/validators/responseValidation')
 
 const responseCtrl=require('./app/controllers/response-controller')
 
+//  IMPORTING USER RESPONSE HISTORY
 
+const userResponseHistory=require('./app/controllers/user-history-controller')
 //3)***(AUTHENTICATION && AUTHORIZATION)***//
 
 //IMPORTING AUTHENTICATION AND AUTHORIZATION
@@ -82,9 +84,8 @@ app.get('/api/blood/request/list',authenticateUser,authorizeUser(['user']),blood
 app.get('/api/blood/request/listall',authenticateUser,authorizeUser(['bloodbank']),bloodRequestCltr.listToBloodBank) //this is for request type is bloodbank[doubt]
 app.put('/api/blood/request/:id',authenticateUser,authorizeUser(['user']),checkSchema(bloodRequestValidationSchema),bloodRequestCltr.update)
 app.delete('/api/blood/request/:id',authenticateUser,authorizeUser(['user']),bloodRequestCltr.delete)
-
 app.get('/api/blood/request/user',authenticateUser,authorizeUser(['user']),bloodRequestCltr.listMyRequest) //to see request made by him(his request)
-// app.get('/api/blood/request/user',authenticateUser,authorizeUser(['user']),bloodRequestCltr.listHisRequest) //to see request made by him(his request)
+
 
 //For Admin
 app.get('/api/blood/requests',authenticateUser,authorizeUser(['admin']),bloodRequestCltr.admin)
@@ -124,6 +125,13 @@ app.get('/api/invoice/:requestId/:responderId',authenticateUser,authorizeUser(['
 app.post('/api/create-checkout-session',authenticateUser,authorizeUser(['user']),checkSchema(paymentsValidationSchema),paymentsCltr.pay)
 app.put('/api/payments/:id/success',paymentsCltr.successUpdate)
 app.put('/api/payments/:id/failed',paymentsCltr.failedUpdate)
+
+
+//ROUTES FOR USER HISTORY
+
+app.get('/api/user/histories/:id',authenticateUser,authorizeUser(['user']),userResponseHistory.historyOfUser)
+app.delete('/api/user/history/delete/:responderId/:bloodRequestId',authenticateUser,authorizeUser(['user']),userResponseHistory.deleteAndUpdatedResponse)
+
 app.listen(port,()=>
 {
     console.log('Blood-Bond-App is successfully running on the port',port)

@@ -36,6 +36,10 @@ import ViewInvoice from './components/userProfileComponent/viewInvoice';
 import Success from './components/userProfileComponent/paymentSuccess';
 import Cancel from './components/userProfileComponent/paymentCancel';
 import MapView from './components/userProfileComponent/mapView';
+import userHistoryReducer from './reducers/userHistoryReducer';
+import UserHistoryContext from './contexts/userHistoryContext';
+import UserResponseHistory from './components/userProfileComponent/viewMyResponseHistory';
+
 function App() {
   const userInitialState = {
     userDetails: [],
@@ -69,11 +73,18 @@ function App() {
     serverErrors: []
   };
 
+  const userHistoryInitialState={
+    userResponsesHistory:[],
+    serverErrors:[]
+  }
+
   const [users, userDispatch] = useReducer(userReducer, userInitialState);
   const [bloodInventory, bloodInventoryDispatch] = useReducer(bloodInventoryReducer, bloodInventoryInitialState);
   const [bloodRequests, bloodRequestDispatch] = useReducer(bloodRequestReducer, bloodRequestInitialState);
   const [responses, responseDispatch] = useReducer(responseReducer, responseInitialState);
   const [invoices, invoiceDispatch] = useReducer(InvoiceReducer, invoiceInitialState);
+
+  const[userHistories,userHistoryDispatch]=useReducer(userHistoryReducer,userHistoryInitialState)
   const [showRegistrationForm, setShowRegistrationForm] = useState(false);
 
   const handleShowRegistration = () => {
@@ -96,6 +107,7 @@ function App() {
         <BloodRequestContext.Provider value={{ bloodRequests, bloodRequestDispatch }}>
           <ResponseContext.Provider value={{ responses, responseDispatch }}>
             <InvoiceContext.Provider value={{ invoices, invoiceDispatch }}>
+              <UserHistoryContext.Provider value={{userHistories,userHistoryDispatch}}>
               <div>
              <Header
                   handleShowRegistration={handleShowRegistration}
@@ -133,9 +145,10 @@ function App() {
                   <Route path="/success" element={<Success />} />
                   <Route path="/cancel" element={<Cancel />} />
                   <Route path="/map/:lat/:lng/:address" element={<MapView />} />
+                  <Route path='/user/response/history' element={<UserResponseHistory/>}/>
                 </Routes>
                 </div>
-            
+                </UserHistoryContext.Provider>
             </InvoiceContext.Provider>
           </ResponseContext.Provider>
         </BloodRequestContext.Provider>

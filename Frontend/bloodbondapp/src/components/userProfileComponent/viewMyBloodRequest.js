@@ -1,12 +1,12 @@
-import React, { useEffect, useContext } from 'react';
-import axios from 'axios';
-import BloodRequestContext from "../../contexts/bloodRequestContext";
-import { useNavigate } from 'react-router-dom';
-import { Container, Row, Col, Card, Button } from 'react-bootstrap';
+import React, { useEffect, useContext } from 'react'
+import axios from 'axios'
+import BloodRequestContext from "../../contexts/bloodRequestContext"
+import { useNavigate } from 'react-router-dom'
+import { Container, Row, Col, Card, Button } from 'react-bootstrap'
 
 export default function ViewMyRequests() {
-    const { bloodRequests, bloodRequestDispatch } = useContext(BloodRequestContext);
-    const navigate = useNavigate();
+    const { bloodRequests, bloodRequestDispatch } = useContext(BloodRequestContext)
+    const navigate = useNavigate()
 
     useEffect(() => {
         const fetchMyBloodRequests = async () => {
@@ -17,22 +17,22 @@ export default function ViewMyRequests() {
                         Authorization: localStorage.getItem('token')
                     }
                 });
-                bloodRequestDispatch({ type: "DISPLAY_USER_BLOOD_REQUEST", payload: response.data });
+                bloodRequestDispatch({ type: "DISPLAY_USER_BLOOD_REQUEST", payload: response.data })
             } catch (err) {
-                console.error('Error in fetching user blood requests', err);
+                console.error('Error in fetching user blood requests', err)
             }
         };
-        fetchMyBloodRequests();
-    }, [bloodRequestDispatch]);
+        fetchMyBloodRequests()
+    }, [bloodRequestDispatch])
 
     const handleEditRequest = (id) => {
-        const bloodRequestToEdit = bloodRequests.userBloodRequests.find((request) => request._id === id);
+        const bloodRequestToEdit = bloodRequests.userBloodRequests.find((request) => request._id === id)
         if (bloodRequestToEdit) {
-            navigate(`/edit-request/${id}`, { state: { bloodRequestData: bloodRequestToEdit } });
+            navigate(`/edit-request/${id}`, { state: { bloodRequestData: bloodRequestToEdit } })
         } else {
-            console.error(`Request with id ${id} not found.`);
+            console.error(`Request with id ${id} not found.`)
         }
-    };
+    }
 
     const handleDeleteRequest = async (id) => {
         try {
@@ -41,10 +41,10 @@ export default function ViewMyRequests() {
                     'Content-Type': 'application/json',
                     Authorization: localStorage.getItem('token')
                 }
-            });
-            bloodRequestDispatch({ type: 'DELETE_USER_BLOOD_REQUEST', payload: id });
+            })
+            bloodRequestDispatch({ type: 'DELETE_USER_BLOOD_REQUEST', payload: id })
         } catch (err) {
-            console.error('Error in deleting user blood request', err);
+            console.error('Error in deleting user blood request', err)
         }
     };
     const handleUserResponses=async(id)=>{
@@ -96,6 +96,7 @@ export default function ViewMyRequests() {
                             </div>
                         </Card.Body>
                     </Card>
+                    
                 </Col>
             </Row>
         </Container>

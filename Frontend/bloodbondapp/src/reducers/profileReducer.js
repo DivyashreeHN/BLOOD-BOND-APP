@@ -16,7 +16,11 @@ const initialState = {
       
 
       case 'DISPLAY_USER_PROFILE':{
-        return {...state,singleProfile:action.payload} //user
+        return{
+          ...state,
+          singleProfile: action.payload // Update singleProfile with action payload
+         //user
+        }
       }
 
       case 'DELETE_USER_PROFILE': {
