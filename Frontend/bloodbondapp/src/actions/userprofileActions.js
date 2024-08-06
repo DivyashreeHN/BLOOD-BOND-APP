@@ -98,7 +98,7 @@ export const startEditingUserProfile = (id, form, clearForm) => {
             console.log('edited user profile', form);
         } catch (err) {
             console.log(err);
-            dispatch(setServerError(err.response.data.errors));
+            dispatch(setServerError(err.response?.data?.errors));
         }
     };
 };

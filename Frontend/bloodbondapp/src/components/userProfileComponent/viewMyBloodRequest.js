@@ -47,6 +47,12 @@ export default function ViewMyRequests() {
             console.error('Error in deleting user blood request', err);
         }
     };
+    const handleUserResponses=async(id)=>{
+        navigate(`/responses/${id}/user`)
+    }
+    const handleBloodBankResponses=async(id)=>{
+        navigate(`/responses/${id}/bloodbank`)
+    }
 
     return (
         <Container>
@@ -74,6 +80,12 @@ export default function ViewMyRequests() {
                                                     <p>Donation Address: {request.donationAddress.building}, {request.donationAddress.locality}, {request.donationAddress.city}, {request.donationAddress.pincode}, {request.donationAddress.state}, {request.donationAddress.country}</p>
                                                     <Button className="btn btn-primary mr-2" onClick={() => handleEditRequest(request._id)}>Edit Request</Button>
                                                     <Button className="btn btn-danger" onClick={() => handleDeleteRequest(request._id)}>Delete Request</Button>
+                                                    <Button className='btn btn-primary' onClick={()=>{
+                                                        handleUserResponses(request._id)
+                                                    }}>User Responses</Button>
+                                                    <Button className='btn btn-danger' onClick={()=>{
+                                                        handleBloodBankResponses(request._id)
+                                                    }}>BloodBank Responses</Button>
                                                 </Card.Body>
                                             </Card>
                                         </div>

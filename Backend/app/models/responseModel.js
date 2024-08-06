@@ -6,8 +6,11 @@ const {Schema,model}=mongoose
 const responseSchema=new Schema({
     responderType:String,
     responderId:{
-        type:Schema.Types.ObjectId
+        type:Schema.Types.ObjectId,
+         required: true, 
+        //  refPath: 'responderType'
     },
+    email:String,
     status:String,
     bloodRequestId:{
         type:Schema.Types.ObjectId,

@@ -30,7 +30,12 @@ import InvoiceContext from './contexts/invoiceContext';
 import InvoiceReducer from './reducers/invoiceReducer';
 import bloodInventoryReducer from './reducers/bloodInventoryReducer';
 import BloodInventoryContext from './contexts/bloodInventoryContext';
-
+import UserResponses from './components/userProfileComponent/userResponses';
+import BloodbankResponses from './components/userProfileComponent/bloodbankResponses';
+import ViewInvoice from './components/userProfileComponent/viewInvoice';
+import Success from './components/userProfileComponent/paymentSuccess';
+import Cancel from './components/userProfileComponent/paymentCancel';
+import MapView from './components/userProfileComponent/mapView';
 function App() {
   const userInitialState = {
     userDetails: [],
@@ -55,12 +60,12 @@ function App() {
   };
 
   const responseInitialState = {
-    responses: [],
+    responsesData: [],
     serverErrors: []
   };
 
   const invoiceInitialState = {
-    invoices: [],
+    invoiceData: [],
     serverErrors: []
   };
 
@@ -120,8 +125,14 @@ function App() {
                   <Route path="/view/requests/admin" element={<ShowBloodRequests />} />
                   <Route path="/view/bloodbank-requests/admin" element={<ShowBloodBankRequests />} />
                   <Route path="/bloodbank/:id/show-inventory" element={<BloodInventoryTable />} />
+                  <Route path='/responses/:requestId/user' element={<UserResponses/>}/>
+                  <Route path='/responses/:requestId/bloodbank' element={<BloodbankResponses/>}/>
+                  <Route path='/view/invoice/:requestId/:responderId' element={<ViewInvoice/>}/>
                   <Route path='/user/dashboard' element={<ProfileDashboard />} />
                   <Route path='/admin/dashboard' element={<AdminDashboard />} />
+                  <Route path="/success" element={<Success />} />
+                  <Route path="/cancel" element={<Cancel />} />
+                  <Route path="/map/:lat/:lng/:address" element={<MapView />} />
                 </Routes>
                 </div>
             

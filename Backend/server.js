@@ -94,7 +94,7 @@ app.post('/api/bloodbanks',authenticateUser,authorizeUser(['bloodbank']),upload.
 app.get('/api/bloodbanks/pending',authenticateUser,authorizeUser(['admin']),bloodBankCtrlr.listForApproval)
 app.put('/api/bloodbanks/pending/:id',authenticateUser,authorizeUser(['admin']),checkSchema(approvalStatusValidationSchema),bloodBankCtrlr.toApprove)
 app.get('/api/bloodbanks/show/:id',authenticateUser,authorizeUser(['admin','user','bloodbank']),bloodBankCtrlr.show)
-app.get('/api/bloodbanks/list',authenticateUser,authorizeUser(['admin','user']),bloodBankCtrlr.listAll)
+app.get('/api/bloodbanks/list',authenticateUser,authorizeUser(['user']),bloodBankCtrlr.listAll)
 app.get('/api/bloodbanks/display',authenticateUser,authorizeUser(['bloodbank']),bloodBankCtrlr.display)
 app.delete('/api/bloodbanks/remove/:id',authenticateUser,authorizeUser(['admin','bloodBank']),bloodBankCtrlr.delete)
 
@@ -104,9 +104,10 @@ app.get('/api/bloodbanks/request',authenticateUser,authorizeUser(['bloodbank']),
 //ROUTES FOR BLOOD INVENTORY MODEL
 app.post('/api/bloodinventries/:id',authenticateUser,authorizeUser(['bloodbank']),checkSchema(bloodInventoryValidationSchema),bloodInventoryCtrlr.create)
 //i merged local and remote changes
-//RESPONSE added by admin
-
+//ROUTES FOR RESPONSE MODEL
 app.post('/api/response/:requestId',authenticateUser,authorizeUser(['bloodbank','user']),checkSchema(responseValidationSchema),responseCtrl.create)
+app.get('/api/response/user/:requestId',authenticateUser,authorizeUser(['user']),responseCtrl.listOfUser)
+app.get('/api/response/bloodbank/:requestId',authenticateUser,authorizeUser(['user']),responseCtrl.listOfBloodbank)
 //RESPONSE EDITTED BY USER 
 
 //app.put('/api/response/:id',authenticateUser,authorizeUser(['user']),checkSchema(responseValidationSchema),responseCtrl.userResponse)
@@ -118,9 +119,9 @@ app.put('/api/bloodinventries/:id',authenticateUser,authorizeUser(['bloodbank'])
 
 //ROUTES FOR INVOICE
 app.post('/api/invoices/:requestId',authenticateUser,authorizeUser(['bloodbank']),checkSchema(invoiceValidationSchema),invoiceCtrlr.create)
-
+app.get('/api/invoice/:requestId/:responderId',authenticateUser,authorizeUser(['user']),invoiceCtrlr.list)
 //ROUTES FOR PAYMENT
-app.post('/api/create-checkout-session',checkSchema(paymentsValidationSchema),paymentsCltr.pay)
+app.post('/api/create-checkout-session',authenticateUser,authorizeUser(['user']),checkSchema(paymentsValidationSchema),paymentsCltr.pay)
 app.put('/api/payments/:id/success',paymentsCltr.successUpdate)
 app.put('/api/payments/:id/failed',paymentsCltr.failedUpdate)
 app.listen(port,()=>

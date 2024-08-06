@@ -35,7 +35,7 @@ const ViewProfile = () => {
                 <p>User Id: {profile.user}</p>
                 <p>FirstName: {profile.firstName}</p>
                 <p>LastName: {profile.lastName}</p>
-                <p>DOB: {profile.dob}</p>
+                <p>DOB: (new Date{profile.dob}.toLocaleDateString)</p>
                 <p>Gender: {profile.gender}</p>
                 <p>Phone Number: {profile.phNo}</p>
                 <p>Blood Type: {profile.blood.bloodType}</p>

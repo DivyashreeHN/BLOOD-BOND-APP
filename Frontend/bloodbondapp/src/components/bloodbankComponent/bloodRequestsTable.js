@@ -5,6 +5,7 @@ import ResponseContext from '../../contexts/responseContext';
 import { Button,Alert} from 'react-bootstrap';
 import {Link} from 'react-router-dom'
 import {useNavigate} from 'react-router-dom'
+import { BiMap } from 'react-icons/bi';
 export default function BloodRequestsTable() {
     const { bloodRequests, bloodRequestDispatch } = useContext(BloodRequestContext);
     const { responses, responseDispatch } = useContext(ResponseContext);
@@ -68,6 +69,7 @@ export default function BloodRequestsTable() {
                             <th>Phone Number</th>
                             <th>Critical</th>
                             <th>Address</th>
+                            <th>Location</th>
                             <th>Actions</th>
                         </tr>
                     </thead>
@@ -83,6 +85,11 @@ export default function BloodRequestsTable() {
                                 <td>{request.critical}</td>
                                 <td>
                                     {`${request.donationAddress.building}, ${request.donationAddress.locality}, ${request.donationAddress.city}, ${request.donationAddress.state}, ${request.donationAddress.pincode}, ${request.donationAddress.country}`}
+                                </td>
+                                <td>
+                                <Link to={`/map/${request.geoLocation.coordinates[1]}/${request.geoLocation.coordinates[0]}/${encodeURIComponent(`${request.donationAddress.building}, ${request.donationAddress.locality}, ${request.donationAddress.city}, ${request.donationAddress.state}, ${request.donationAddress.pincode}, ${request.donationAddress.country}`)}`}>
+                                        <BiMap size={24} />
+                                    </Link>
                                 </td>
                                 <td><Button className='' onClick={()=>{
                                     handleResponse(request._id)

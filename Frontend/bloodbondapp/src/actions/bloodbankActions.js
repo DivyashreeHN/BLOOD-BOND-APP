@@ -76,6 +76,22 @@
     
                 }
             }
+            export const startFetchingBloodBanksForUsers=()=>{
+                return async(dispatch)=>{
+                    try{
+                        const response=await axios.get('http://localhost:3080/api/bloodbanks/list',{
+                            headers:{
+                                Authorization:localStorage.getItem('token')
+                            }
+                        })
+                        dispatch(displayBloodBankForUsers(response.data))
+                        console.log('bloodbanks',response.data)
+                    }catch(err){
+                        console.log(err)
+                            dispatch(setServerError(err.response.data.errors))
+                    }
+                }
+            }
     const addBloodBank=(data)=>{
         return {
             type:'ADD_BLOODBANK',
@@ -102,6 +118,12 @@
                 payload:data
             }
         }
+    const displayBloodBankForUsers=(data)=>{
+        return{
+            type:'DISPLAY_BLOODBANK_FOR_USERS',
+            payload:data
+        }
+    }
     const setServerError=(errors)=>{
         return {
             type:'SET_SERVER_ERRORS',
