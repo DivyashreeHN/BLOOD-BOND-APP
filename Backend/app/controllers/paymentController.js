@@ -2,6 +2,7 @@ const { validationResult } = require('express-validator');
 const { pick } = require('lodash');
 const Payment = require('../models/paymentModel');
 const Invoice = require('../models/invoiceModel');
+const nodemailer=require('nodemailer')
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 
 const paymentsCltr = {};
@@ -73,6 +74,20 @@ paymentsCltr.successUpdate=async(req,res)=>{
         const body = pick(req.body,['paymentStatus'])
         const updatedPayment = await Payment.findOneAndUpdate({transactionId:id}, body) 
         res.json(updatedPayment)
+        const transporter = nodemailer.createTransport({
+            service: 'gmail', 
+            auth: {
+                user: process.env.EMAIL, 
+                pass: process.env.PASSWORD   
+            }
+        });
+        const mailOptions = {
+            from: process.env.EMAIL,
+            to: 'amkruthika@gmail.com', // The recipient email address
+            subject: 'Payment Confirmation',
+            text: `Payment with transaction ID ${id} was successful.`
+        };
+        await transporter.sendMail(mailOptions)
     }catch(err){
         console.log(err)
         res.status(500).json({error:'Internal Server Error'})

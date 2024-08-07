@@ -45,4 +45,21 @@ invoiceCtrlr.create=async(req,res)=>{
         res.status(500).json({error:'Internal Server Error'})
     }
 }
+invoiceCtrlr.list=async(req,res)=>{
+    try{
+        console.log('req',req.params)
+        const requestId=req.params.requestId
+        const responderId=req.params.responderId
+        console.log(requestId)
+        console.log(responderId)
+        const invoice=await Invoice.find({request:requestId,bloodBank:responderId}).populate('bloodBank').populate('request')
+        if(!invoice){
+            return res.status(400).json({error:'No invoice found for this response'})
+        }
+        res.status(201).json(invoice)
+    }catch(err){
+        console.log(err)
+        res.status(500).json({error:'Internal Server Error'})
+    }
+}
 module.exports=invoiceCtrlr

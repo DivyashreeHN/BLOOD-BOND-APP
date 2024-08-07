@@ -205,6 +205,8 @@ export const startEditingUserProfile = (id, form, clearForm) => {
                     confirmButtonText: 'OK'
                 });
             }
+            console.log(err);
+            dispatch(setServerError(err.response?.data?.errors));
         }
     };
 }

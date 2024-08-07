@@ -3,6 +3,7 @@
 const initialState={
     bloodbankData:[],
     bloodbank:[],
+    usersBloodbanks:[],
     pendingBloodbanks:[],
     bloodbankRequestUpdatedByAdmin:[],
     serverErrors:[],
@@ -34,7 +35,9 @@ const bloodbankReducer=(state=initialState,action)=>{
               );
               return{...state,bloodbankRequestUpdatedByAdmin:updatedResponse}
         }
-
+        case 'DISPLAY_BLOODBANK_FOR_USERS':{
+            return {...state,usersBloodbank:action.payload}
+        }
         default:{
             return {...state}
         }

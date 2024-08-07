@@ -46,6 +46,12 @@ export default function ViewMyRequests() {
         } catch (err) {
             console.error('Error in deleting user blood request', err)
         }
+    };
+    const handleUserResponses=async(id)=>{
+        navigate(`/responses/${id}/user`)
+    }
+    const handleBloodBankResponses=async(id)=>{
+        navigate(`/responses/${id}/bloodbank`)
     }
 
     return (
@@ -53,33 +59,44 @@ export default function ViewMyRequests() {
             <h2 className="text-center my-4">My Blood Requests</h2>
             <Row className="justify-content-center">
                 <Col md={8}>
-                    {bloodRequests.userBloodRequests.length > 0 ? (
-                        bloodRequests.userBloodRequests.map((request, index) => (
-                            <Card className="mb-4 bg-danger text-white" key={index}>
-                                <Card.Body>
-                                    <Card.Title>Blood Request {index + 1}</Card.Title>
-                                    <Card.Text>
-                                        <p>BloodRequest ID: {request._id}</p>
-                                        <p>User ID: {request.user}</p>
-                                        <p>Patient Name: {request.patientName}</p>
-                                        <p>Attendee Phone Number: {request.atendeePhNumber}</p>
-                                        <p>Blood Type: {request.blood.bloodType}</p>
-                                        <p>Blood Group: {request.blood.bloodGroup}</p>
-                                        <p>Units: {request.units}</p>
-                                        <p>Date: {request.date}</p>
-                                        <p>Critical: {request.critical}</p>
-                                        <p>Donation Address: {request.donationAddress.building}, {request.donationAddress.locality}, {request.donationAddress.city}, {request.donationAddress.pincode}, {request.donationAddress.state}, {request.donationAddress.country}</p>
-                                    </Card.Text>
-                                    <div className="d-flex justify-content-between">
-                                        <Button className="btn btn-light" onClick={() => handleEditRequest(request._id)} style={{ marginRight: '10px' }} variant="primary">Edit Request</Button>
-                                        <Button className="btn btn-light" onClick={() => handleDeleteRequest(request._id)} style={{ marginLeft: '10px' }} variant="primary">Delete Request</Button>
-                                    </div>
-                                </Card.Body>
-                            </Card>
-                        ))
-                    ) : (
-                        <p>No blood requests found.</p>
-                    )}
+                    <Card className="bg-danger text-white mb-3">
+                        <Card.Body>
+                            <div>
+                                {bloodRequests.userBloodRequests.length > 0 ? (
+                                    bloodRequests.userBloodRequests.map((request, index) => (
+                                        <div key={index} className="mb-3">
+                                            <Card className="bg-light text-dark">
+                                                <Card.Body>
+                                                    <h4>Blood Request: {index + 1}</h4>
+                                                    <p>BloodRequest ID: {request._id}</p>
+                                                    <p>User ID: {request.user}</p>
+                                                    <p>Patient Name: {request.patientName}</p>
+                                                    <p>Attendee Phone Number: {request.atendeePhNumber}</p>
+                                                    <p>Blood Type: {request.blood.bloodType}</p>
+                                                    <p>Blood Group: {request.blood.bloodGroup}</p>
+                                                    <p>Units: {request.units}</p>
+                                                    <p>Date: {request.date}</p>
+                                                    <p>Critical: {request.critical}</p>
+                                                    <p>Donation Address: {request.donationAddress.building}, {request.donationAddress.locality}, {request.donationAddress.city}, {request.donationAddress.pincode}, {request.donationAddress.state}, {request.donationAddress.country}</p>
+                                                    <Button className="btn btn-primary mr-2" onClick={() => handleEditRequest(request._id)}>Edit Request</Button>
+                                                    <Button className="btn btn-danger" onClick={() => handleDeleteRequest(request._id)}>Delete Request</Button>
+                                                    <Button className='btn btn-primary' onClick={()=>{
+                                                        handleUserResponses(request._id)
+                                                    }}>User Responses</Button>
+                                                    <Button className='btn btn-danger' onClick={()=>{
+                                                        handleBloodBankResponses(request._id)
+                                                    }}>BloodBank Responses</Button>
+                                                </Card.Body>
+                                            </Card>
+                                        </div>
+                                    ))
+                                ) : (
+                                    <p>No blood requests found.</p>
+                                )}
+                            </div>
+                        </Card.Body>
+                    </Card>
+                    
                 </Col>
             </Row>
         </Container>
