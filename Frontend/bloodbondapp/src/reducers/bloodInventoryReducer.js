@@ -1,10 +1,14 @@
 export default function bloodInventoryReducer(state,action){
-    switch(action.type){
+    switch(action.type)
+    {
         case 'ADD_BLOODINVENTORY':{
             return {...state,bloodInventoryDetails:[...state.bloodInventoryDetails,action.payload]}
         }
         case 'SET_SERVER_ERRORS':{
             return {...state,serverErrors:action.payload}
+        }
+        case 'SET_FORM_ERRORS' :{
+            return {...state,formErrors:action.payload}
         }
         case 'LIST_BLOODINVENTORY':{
 

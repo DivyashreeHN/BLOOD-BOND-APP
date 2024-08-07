@@ -2,7 +2,8 @@ const initialState = {
     profileData: [],
     profileDisplayData:[],
     singleProfile:[],
-    serverErrors: []
+    serverErrors: [],
+    formErrors:{}
   };
   
   const profileReducer = (state = initialState, action) => {
@@ -50,6 +51,9 @@ const initialState = {
 
         case 'SET_SERVER_ERRORS':{
           return {...state,serverErrors:action.payload}
+        }
+        case 'SET_FORM_ERRORS':{
+          return {...state,formErrors:action.payload}
         }
       default:{
           return state

@@ -6,6 +6,14 @@ import Swal from 'sweetalert2'
 import { useNavigate } from 'react-router-dom';
 import UserContext from '../../contexts/userContext';
 import backgroundImage from '../../images/backgroundImage1.jpg' 
+import * as yup from 'yup';
+
+const userLoginValidationSchema = yup.object().shape({
+  
+  email: yup.string().email('Invalid email format').required('Email is required'),
+  password: yup.string().required('Password is required').min(6, 'Password must be at least 6 characters'),
+ 
+});
 
 export default function UserLoginForm() {
   const navigate = useNavigate();
@@ -13,6 +21,7 @@ export default function UserLoginForm() {
     email: '',
     password: ''
   });
+  const [formErrors, setFormErrors] = useState({});
   const { users, userDispatch } = useContext(UserContext);
 
   const handleChange = (e) => {
@@ -23,9 +32,11 @@ export default function UserLoginForm() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
+      await userLoginValidationSchema.validate(form, { abortEarly: false });
       const response = await axios.post('http://localhost:3080/api/user/login', form);
       const token = response.data.token;
       userDispatch({ type: 'LOGIN_USER', payload: token });
+      userDispatch({ type: 'SET_SERVER_ERRORS', payload: [] });
       localStorage.setItem('token', token);
       
       alert('Logged in successfully');
@@ -61,18 +72,26 @@ export default function UserLoginForm() {
         confirmButtonText: 'OK'
     })
     } catch (err) {
-      handleErrors(err);
+      if (err.name === 'ValidationError') {
+        const errors = {};
+        err.inner.forEach((e) => {
+          errors[e.path] = e.message;
+        });
+        setFormErrors(errors);
+      } else {
+        console.error(err);
+        userDispatch({ type: 'SET_SERVER_ERRORS', payload: err.response.data.errors });;
     }
-  };
+  };}
 
-  const handleErrors = (err) => {
-    if (err.response && err.response.data && err.response.data.errors) {
-      userDispatch({ type: 'SET_SERVER_ERRORS', payload: err.response.data.errors });
-    } else {
-      // Handle other types of errors
-    }
+//   const handleErrors = (err) => {
+//     if (err.response && err.response.data && err.response.data.errors) {
+//       userDispatch({ type: 'SET_SERVER_ERRORS', payload: err.response.data.errors });
+//     } else {
+//       // Handle other types of errors
+//     }
 
-}
+// }
     return(
       <div
       style={{
@@ -102,6 +121,7 @@ export default function UserLoginForm() {
                 id='email'
                 name='email'
                 className='form-control'/>
+                 {formErrors.email && <div className="text-danger">{formErrors.email}</div>}
                 </div>
                 <div className='form-group'>
                 <label className='form-label' htmlFor='password'><Lock/> Password</label>
@@ -112,6 +132,7 @@ export default function UserLoginForm() {
                 id='password'
                 name='password'
                 className='form-control'/>
+                {formErrors.password && <div className="text-danger">{formErrors.password}</div>}
                 </div>
                 <input variant="dark" type="submit" className="w-100" />
                 </form>

@@ -35,8 +35,11 @@ case 'DISPLAY_BLOODREQUEST_TO_USER':
     return{
         ...state,requestToUser:action.payload
     }
-        case 'SET_SERVER_ERRORS':
+case 'SET_SERVER_ERRORS':
             return { ...state, serverErrors: action.payload };
+
+case 'SET_FORM_ERRORS':
+    return{...state,formErrors:action.payload}
 //
 case 'DISPLAY_OTHER_BLOODREQUEST_TO_USER':
     return{

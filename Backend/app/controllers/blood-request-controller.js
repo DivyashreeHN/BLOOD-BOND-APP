@@ -122,6 +122,8 @@ const filteredBloodRequests = bloodRequestsWithoutResponses.filter(Boolean);
 
 bloodRequestCltr.listMyRequest=async(req,res)=>
     {
+        // const requestType=req.body.requestType
+        // console.log('request type',requestType)
         try{
             const bloodRequest=await BloodRequest.find({user:req.user.id})
             if(!bloodRequest)
@@ -246,6 +248,8 @@ const filteredBloodRequests = bloodRequestsWithoutResponses.filter(Boolean);
 //user can update his requests 
 bloodRequestCltr.update=async(req,res)=>
 {
+    const requestType=req.body.requestType
+        console.log('request type edit',requestType)
     const errors=validationResult(req)
     if(!errors.isEmpty())
     {

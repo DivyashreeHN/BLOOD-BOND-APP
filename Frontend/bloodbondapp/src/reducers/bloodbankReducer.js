@@ -1,9 +1,12 @@
+
+
 const initialState={
     bloodbankData:[],
     bloodbank:[],
     pendingBloodbanks:[],
     bloodbankRequestUpdatedByAdmin:[],
-    serverErrors:[]
+    serverErrors:[],
+    formErrors:{}
 }
 const bloodbankReducer=(state=initialState,action)=>{
     switch(action.type){
@@ -20,6 +23,10 @@ const bloodbankReducer=(state=initialState,action)=>{
         case 'SET_SERVER_ERRORS':{
             return {...state,serverErrors:action.payload}
         }
+        case 'SET_FORM_ERRORS':{
+            return {...state,formErrors:action.payload}
+        }
+
 
         case 'DISPLAY_UPDATED_RESPONSE_BY_ADMIN':{
             const updatedResponse = state.bloodbankRequestUpdatedByAdmin.map(response => 

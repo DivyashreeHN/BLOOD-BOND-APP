@@ -1,70 +1,77 @@
-import React, { useState, useEffect, useContext } from "react"
-import { Container, Row, Col, Card, CardBody, CardTitle, Button } from "reactstrap"
-import axios from "axios"
-import BloodRequestContext from "../../contexts/bloodRequestContext"
-import { useDispatch } from "react-redux"
-import { useLocation } from "react-router-dom"
+import React, { useState, useEffect, useContext } from "react";
+import { Container, Row, Col, Card, CardBody, CardTitle, Button } from "reactstrap";
+import axios from "axios";
+import BloodRequestContext from "../../contexts/bloodRequestContext";
+import { useDispatch } from "react-redux";
+import { useLocation } from "react-router-dom";
+import * as yup from 'yup';
+import Swal from 'sweetalert2';
 
-export default function BloodRequestForm() {
-    const dispatch = useDispatch()
-    const location = useLocation()
-    const { bloodRequestData } = location.state || {}
-    const { bloodRequests, bloodRequestDispatch } = useContext(BloodRequestContext)
+const userAddRequestValidationSchema = yup.object().shape({
+    patientName: yup.string().required('Patient Name is required'),
+    // units: yup.number()
+    //     .transform((value, originalValue) => {
+    //         if (originalValue && typeof originalValue === 'string') {
+    //             return originalValue.trim() === "" ? null : value;
+    //         }
+    //         return value;
+    //     })
+    //     .required('Units is required')
+    //     .positive('Units must be a positive number'),
+    units: yup.number()
+        .transform((value, originalValue) => {
+            // Handle null, undefined, or non-string originalValue
+            if (typeof originalValue !== 'string') return value;
+            return originalValue.trim() === "" ? null : value;
+        })
+        .required('units is required')
+        .positive('units must be a positive number'),
+    blood: yup.object().shape({
+        bloodType: yup.string().required('Blood Type is required'),
+        bloodGroup: yup.string().required('Blood Group is required'),
+    }),
+    date: yup.date().required('Donation Date is required'),
+    atendeePhNumber: yup.string().required('Attendee Phone Number is required'),
+    critical: yup.string().required('Critical status is required'),
+    requestType: yup.string().required('Request Type is required'),
+    donationAddress: yup.object().shape({
+        building: yup.string().required('Building number is required'),
+        locality: yup.string().required('Locality is required'),
+        city: yup.string().required('City is required'),
+        state: yup.string().required('State is required'),
+        pincode: yup.string().required('Pincode is required'),
+        country: yup.string().required('Country is required'),
+    })
+});
 
-    const initialFormState = {
-        patientName: "",
-        blood: {
-            bloodType: "",
-            bloodGroup: ""
-        },
-        units: "",
-        date: "",
-        atendeePhNumber: "",
-        critical: "",
-        donationAddress: {
-            building: "",
-            locality: "",
-            city: "",
-            state: "",
-            pincode: "",
-            country: ""
-        },
-        requestType: ""
-    };
+const initialFormState = {
+    patientName: "",
+    blood: { 
+        bloodType: "",
+        bloodGroup: ""
+    },
+    units: "",
+    date: "",
+    atendeePhNumber: "",
+    critical: "",
+    donationAddress: {
+        building: "",
+        locality: "",
+        city: "",
+        state: "",
+        pincode: "",
+        country: ""
+    },
+    requestType: ""
+};
 
+const BloodRequestForm = () => {
+    const dispatch = useDispatch();
+    const location = useLocation();
+    const { bloodRequestData } = location.state || {};
+    const { bloodRequests, bloodRequestDispatch } = useContext(BloodRequestContext);
     const [form, setForm] = useState(initialFormState);
-
-    const handleChange = (e) => {
-        const { name, value } = e.target
-        const keys = name.split('.')
-
-        if (keys.length === 2) {
-            setForm((prevForm) => ({
-                ...prevForm,
-                [keys[0]]: {
-                    ...prevForm[keys[0]],
-                    [keys[1]]: value,
-                },
-            }));
-        } else {
-            setForm((prevForm) => ({
-                ...prevForm,
-                [name]: value,
-            }));
-        }
-    };
-
-    const handleRadioChange = (e) => {
-        const { name, value } = e.target
-        setForm(prevForm => ({
-            ...prevForm,
-            [name]: value
-        }));
-    };
-
-    const clearForm = () => {
-        setForm(initialFormState)
-    };
+    const [clearServerErrorsTimeout, setClearServerErrorsTimeout] = useState(null);
 
     useEffect(() => {
         if (bloodRequestData) {
@@ -75,6 +82,7 @@ export default function BloodRequestForm() {
                     bloodGroup: bloodRequestData.blood?.bloodGroup || "",
                     bloodType: bloodRequestData.blood?.bloodType || ""
                 },
+                requestType: bloodRequestData.requestType,
                 donationAddress: {
                     building: bloodRequestData.donationAddress?.building || "",
                     locality: bloodRequestData.donationAddress?.locality || "",
@@ -85,47 +93,111 @@ export default function BloodRequestForm() {
                 }
             });
         } else {
-            clearForm()
+            setForm(initialFormState);
         }
-    }, [bloodRequestData])
+    }, [bloodRequestData]);
+
+    const handleChange = (e) => {
+        const { name, value } = e.target;
+        const nameParts = name.split('.');
+
+        if (nameParts.length === 2) {
+            setForm((prevForm) => ({
+                ...prevForm,
+                [nameParts[0]]: {
+                    ...prevForm[nameParts[0]],
+                    [nameParts[1]]: value
+                }
+            }));
+        } else {
+            setForm((prevForm) => ({
+                ...prevForm,
+                [name]: value
+            }));
+        }
+    };
+
+    const clearForm = () => {
+        setForm(initialFormState);
+        bloodRequestDispatch({ type: "SET_FORM_ERRORS", payload: {} });
+         // Clear form errors
+    };
+
+    const clearServerErrors = () => {
+        bloodRequestDispatch({ type: "SET_SERVER_ERRORS", payload: [] });
+    };
+    
+    useEffect(() => {
+        if (bloodRequests.serverErrors && bloodRequests.serverErrors.length > 0) {
+            if (clearServerErrorsTimeout) {
+                clearTimeout(clearServerErrorsTimeout);
+            }
+            const timeout = setTimeout(() => {
+                clearServerErrors();
+            }, 5000); // Adjust the timeout duration as needed
+            setClearServerErrorsTimeout(timeout);
+        }
+    }, [bloodRequests.serverErrors]);
 
     const handleSubmit = async (e) => {
-        e.preventDefault()
-        console.log('form', form)
+        e.preventDefault();
+
         try {
             const formattedForm = {
                 ...form,
-                date: new Date(form.date).toISOString().split('T')[0],
+                date: form.date && !isNaN(new Date(form.date)) ? new Date(form.date).toISOString().split('T')[0] : null,
+                requestType: String(form.requestType)
             };
+
+            console.log("Form before validation:", formattedForm);
+
+            await userAddRequestValidationSchema.validate(formattedForm, { abortEarly: false });
+
+            let response;
             if (bloodRequestData && bloodRequestData._id) {
-                const response = await axios.put(`http://localhost:3080/api/blood/request/${bloodRequestData._id}`, formattedForm, {
+                response = await axios.put(`http://localhost:3080/api/blood/request/${bloodRequestData._id}`, formattedForm, {
                     headers: {
                         'Content-Type': 'application/json',
                         Authorization: localStorage.getItem('token')
                     }
                 });
-
-                const data = response.data;
-                console.log('blood request edited data', data); // Log the response data if needed
-
-                bloodRequestDispatch({ type: "EDIT_USER_BLOOD_REQUEST", payload: data });
-                clearForm();
             } else {
-                const response = await axios.post('http://localhost:3080/api/blood/request', formattedForm, {
+                response = await axios.post('http://localhost:3080/api/blood/request', formattedForm, {
                     headers: {
                         'Content-Type': 'application/json',
                         Authorization: localStorage.getItem('token')
                     }
                 });
-
-                const data = response.data;
-                console.log('blood request data', data) // Log the response data if needed
-
-                bloodRequestDispatch({ type: "ADD_BLOOD_REQUEST", payload: data })
-                clearForm();
             }
-        } catch (error) {
-            console.error('Error in submitting form:', error)
+
+            const data = response.data;
+            bloodRequestDispatch({ type: bloodRequestData && bloodRequestData._id ? "EDIT_USER_BLOOD_REQUEST" : "ADD_BLOOD_REQUEST", payload: data });
+            clearForm();
+            bloodRequestDispatch({type: "SET_SERVER_ERRORS",payload:[]})
+
+        } catch (err) {
+            console.error("Error during form submission:", err);
+            if (err.name === 'ValidationError') {
+                const errors = {};
+                err.inner.forEach((e) => {
+                    const keys = e.path.split('.');
+                    if (keys.length === 2) {
+                        if (!errors[keys[0]]) {
+                            errors[keys[0]] = {};
+                        }
+                        errors[keys[0]][keys[1]] = e.message;
+                    } else {
+                        errors[e.path] = e.message;
+                    }
+                });
+                console.log("Validation errors:", errors);
+                bloodRequestDispatch({ type: "SET_FORM_ERRORS", payload: errors });
+            } else {
+                const errorMessage = err.response?.data?.message || 'An unexpected error occurred';
+                console.error("Server Error:", errorMessage);
+                bloodRequestDispatch({ type: 'SET_SERVER_ERRORS', payload: err.response.data.errors  });
+                Swal.fire({ title: 'Error!', text: errorMessage, icon: 'error', confirmButtonText: 'OK' });
+            }
         }
     };
 
@@ -138,23 +210,20 @@ export default function BloodRequestForm() {
                             <CardTitle>Blood Request Form</CardTitle>
                             <form onSubmit={handleSubmit}>
                                 <Row>
-                                    {/* Patient Name */}
                                     <Col md={6}>
                                         <div className="form-group">
                                             <label className="form-label" htmlFor="patientName">Patient Name</label>
                                             <input type="text" value={form.patientName} onChange={handleChange} id="patientName" name="patientName" className="form-control" />
+                                            {bloodRequests.formErrors.patientName && <div style={{color:'black'}}>{bloodRequests.formErrors.patientName}</div>}
                                         </div>
                                     </Col>
-
-                                    {/* Units */}
                                     <Col md={6}>
                                         <div className="form-group">
                                             <label className="form-label" htmlFor="units">Units</label>
                                             <input type="number" value={form.units} onChange={handleChange} id="units" name="units" className="form-control" />
+                                            {bloodRequests.formErrors.units && <div style={{color:'black'}}>{bloodRequests.formErrors.units}</div>}
                                         </div>
                                     </Col>
-
-                                    {/* Blood Type */}
                                     <Col md={6}>
                                         <div className="form-group">
                                             <label className="form-label" htmlFor="bloodType">Blood Type</label>
@@ -164,6 +233,7 @@ export default function BloodRequestForm() {
                                                 <option value="platelet">Platelet</option>
                                                 <option value="rbc">RBC</option>
                                             </select>
+                                            {bloodRequests.formErrors.blood?.bloodType && <div style={{color:'black'}}>{bloodRequests.formErrors.blood.bloodType}</div>}
                                         </div>
                                     </Col>
 
@@ -177,40 +247,43 @@ export default function BloodRequestForm() {
                                                 <option value="A-">A-</option>
                                                 <option value="AB+">AB+</option>
                                                 <option value="AB-">AB-</option>
+                                                <option value="B+">B+</option>
+                                                <option value="B-">B-</option>
                                                 <option value="O+">O+</option>
                                                 <option value="O-">O-</option>
                                             </select>
+                                            {bloodRequests.formErrors.blood?.bloodGroup && <div style={{color:'black'}}>{bloodRequests.formErrors.blood.bloodGroup}</div>}
                                         </div>
                                     </Col>
 
-                                    {/* Date */}
                                     <Col md={6}>
                                         <div className="form-group">
-                                            <label className="form-label" htmlFor="date">Date</label>
+                                            <label className="form-label" htmlFor="date">Donation Date</label>
                                             <input type="date" value={form.date} onChange={handleChange} id="date" name="date" className="form-control" />
+                                            {bloodRequests.formErrors.date && <div style={{color:'black'}}>{bloodRequests.formErrors.date}</div>}
                                         </div>
                                     </Col>
 
-                                    {/* Attendee Phone Number */}
                                     <Col md={6}>
                                         <div className="form-group">
                                             <label className="form-label" htmlFor="atendeePhNumber">Attendee Phone Number</label>
                                             <input type="text" value={form.atendeePhNumber} onChange={handleChange} id="atendeePhNumber" name="atendeePhNumber" className="form-control" />
+                                            {bloodRequests.formErrors.atendeePhNumber && <div style={{color:'black'}}>{bloodRequests.formErrors.atendeePhNumber}</div>}
                                         </div>
                                     </Col>
 
-                                    {/* Critical */}
                                     <Col md={6}>
                                         <div className="form-group">
-                                            <label className="form-label">Critical</label><br />
-                                            <input type="radio" value="yes" checked={form.critical === "yes"} onChange={handleRadioChange} id="yes" name="critical" />
-                                            <label htmlFor="yes">Yes</label>{" "}
-                                            <input type="radio" value="no" checked={form.critical === "no"} onChange={handleRadioChange} id="no" name="critical" />
-                                            <label htmlFor="no">No</label>
+                                            <label className="form-label" htmlFor="critical">Critical</label>
+                                            <select value={form.critical} onChange={handleChange} id="critical" name="critical" className="form-select">
+                                                <option value="">Select Critical</option>
+                                                <option value="yes">Yes</option>
+                                                <option value="no">No</option>
+                                            </select>
+                                            {bloodRequests.formErrors.critical && <div style={{color:'black'}}>{bloodRequests.formErrors.critical}</div>}
                                         </div>
                                     </Col>
 
-                                    {/* Request Type */}
                                     <Col md={6}>
                                         <div className="form-group">
                                             <label className="form-label" htmlFor="requestType">Request Type</label>
@@ -220,65 +293,71 @@ export default function BloodRequestForm() {
                                                 <option value="bloodbank">Blood Bank</option>
                                                 <option value="both">Both</option>
                                             </select>
+                                            {bloodRequests.formErrors.requestType && <div style={{color:'black'}}>{bloodRequests.formErrors.requestType}</div>}
                                         </div>
                                     </Col>
 
-                                    {/* Building No */}
                                     <Col md={6}>
                                         <div className="form-group">
-                                            <label className="form-label" htmlFor="building">Building No</label>
+                                            <label className="form-label" htmlFor="building">Building Number</label>
                                             <input type="text" value={form.donationAddress.building} onChange={handleChange} id="building" name="donationAddress.building" className="form-control" />
+                                            {bloodRequests.formErrors.donationAddress?.building && <div style={{color:'black'}}>{bloodRequests.formErrors.donationAddress.building}</div>}
                                         </div>
                                     </Col>
-
-                                    {/* Locality */}
                                     <Col md={6}>
                                         <div className="form-group">
                                             <label className="form-label" htmlFor="locality">Locality</label>
                                             <input type="text" value={form.donationAddress.locality} onChange={handleChange} id="locality" name="donationAddress.locality" className="form-control" />
+                                            {bloodRequests.formErrors.donationAddress?.locality && <div style={{color:'black'}}>{bloodRequests.formErrors.donationAddress.locality}</div>}
                                         </div>
                                     </Col>
-
-                                    {/* City */}
                                     <Col md={6}>
                                         <div className="form-group">
                                             <label className="form-label" htmlFor="city">City</label>
                                             <input type="text" value={form.donationAddress.city} onChange={handleChange} id="city" name="donationAddress.city" className="form-control" />
+                                            {bloodRequests.formErrors.donationAddress?.city && <div style={{color:'black'}}>{bloodRequests.formErrors.donationAddress.city}</div>}
                                         </div>
                                     </Col>
-
-                                    {/* State */}
                                     <Col md={6}>
                                         <div className="form-group">
                                             <label className="form-label" htmlFor="state">State</label>
                                             <input type="text" value={form.donationAddress.state} onChange={handleChange} id="state" name="donationAddress.state" className="form-control" />
+                                            {bloodRequests.formErrors.donationAddress?.state && <div style={{color:'black'}}>{bloodRequests.formErrors.donationAddress.state}</div>}
                                         </div>
                                     </Col>
-
-                                    {/* Pincode */}
                                     <Col md={6}>
                                         <div className="form-group">
                                             <label className="form-label" htmlFor="pincode">Pincode</label>
                                             <input type="text" value={form.donationAddress.pincode} onChange={handleChange} id="pincode" name="donationAddress.pincode" className="form-control" />
+                                            {bloodRequests.formErrors.donationAddress?.pincode && <div style={{color:'black'}}>{bloodRequests.formErrors.donationAddress.pincode}</div>}
                                         </div>
                                     </Col>
-
-                                    {/* Country */}
                                     <Col md={6}>
                                         <div className="form-group">
                                             <label className="form-label" htmlFor="country">Country</label>
                                             <input type="text" value={form.donationAddress.country} onChange={handleChange} id="country" name="donationAddress.country" className="form-control" />
+                                            {bloodRequests.formErrors.donationAddress?.country && <div style={{color:'black'}}>{bloodRequests.formErrors.donationAddress.country}</div>}
                                         </div>
                                     </Col>
                                 </Row>
-                                <Col md={12}>
-                                    <Button type="submit" color="primary">Submit</Button>
-                                </Col>
+
+                                <Button type="submit" className="btn btn-primary">Submit</Button>
                             </form>
                         </CardBody>
                     </Card>
                 </Col>
             </Row>
+            {bloodRequests.serverErrors && bloodRequests.serverErrors.length > 0 && (
+    <div className="mb-3">
+        <h5 style={{ color: 'black' }}>Server Errors:</h5>
+        <ul>
+            {bloodRequests.serverErrors.map((error, index) => (
+                <li key={index}>{error.msg}</li>
+            ))}
+        </ul>
+    </div>
+)}
         </Container>
     );
 }
+export default BloodRequestForm;
