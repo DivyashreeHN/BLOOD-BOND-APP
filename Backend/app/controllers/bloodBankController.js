@@ -1,5 +1,6 @@
 const {validationResult}=require('express-validator')
 const BloodBank=require('../models/bloodBankModel')
+const User=require('../models/user-model')
 const Profile=require('../models/userProfile-model')
 const axios=require('axios')
 const _=require('lodash')
@@ -23,7 +24,7 @@ bloodBankCtrlr.create=async(req,res)=>{
         if(user){
             return res.status(400).json({error:'each BloodBank can have only one profile'})
         }
-
+        const registeredUser=await User.findById(req.user.id)
         const address=_.pick(req.body.address,['building','locality','city','state','pincode','country'])
         const searchString=`${address.building}%2C%20${address.locality}%2C%20${address.city}%2C%20$${address.state}%2C%20$${address.pincode}%2C%20${address.country}`
         const mapResponse=await axios.get(`https://api.geoapify.com/v1/geocode/search?text=${searchString}&apiKey=${process.env.GEOAPIFYKEY}`) 
@@ -39,6 +40,7 @@ bloodBankCtrlr.create=async(req,res)=>{
             user:req.user.id,
         phoneNumber:body.phoneNumber,
         address:body.address,
+        email:registeredUser.email,
         geoLocation:{
             type:'Point',
             coordinates:[lon,lat]

@@ -6,6 +6,7 @@ const bloodBankSchema=new Schema({
     },
     name:String,
     phoneNumber:String,
+    email:String,
     address:{
         building:{
             type:String,
@@ -62,6 +63,10 @@ const bloodBankSchema=new Schema({
     isApproved:{
     type:String,
     default:'pending'
+    },
+    ratings:{
+        type:Number,
+        default:0
     }
 },{timestamps:true})
 const BloodBank=model('BloodBank',bloodBankSchema)

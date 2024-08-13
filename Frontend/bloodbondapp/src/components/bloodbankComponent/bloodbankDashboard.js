@@ -10,6 +10,7 @@ export default function BloodBankDashboard() {
     const [showForm, setShowForm] = useState(false);
     const dispatch = useDispatch();
     const bloodBank = useSelector((state) => state.bloodbanks.bloodbank);
+    console.log(bloodBank.length)
 
     useEffect(() => {
         dispatch(startFetchingBloodBank());

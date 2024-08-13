@@ -27,6 +27,7 @@
                         Authorization:localStorage.getItem('token')
                     }
                 })
+                console.log('bloodbank',response.data)
                 dispatch(displayBloodBank(response.data))
             }catch(err){
                 console.log(err)

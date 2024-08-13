@@ -30,6 +30,7 @@ const bloodBankCtrlr=require('./app/controllers/bloodBankController')
 const bloodInventoryCtrlr=require('./app/controllers/bloodInventoryController')
 const invoiceCtrlr=require('./app/controllers/invoiceController')
 const paymentsCltr=require('./app/controllers/paymentController')
+const reviewCtrlr=require('./app/controllers/reviewController')
 //2)***(VALIDATORS)***//
 
 //IMPORTING BLOOD-REQUEST-VALIDATION-SCHEMA
@@ -131,6 +132,12 @@ app.put('/api/payments/:id/failed',paymentsCltr.failedUpdate)
 
 app.get('/api/user/histories/:id',authenticateUser,authorizeUser(['user']),userResponseHistory.historyOfUser)
 app.delete('/api/user/history/delete/:responderId/:bloodRequestId',authenticateUser,authorizeUser(['user']),userResponseHistory.deleteAndUpdatedResponse)
+
+//ROUTES FOR REVIEW
+app.post('/api/review/:bloodbankId',authenticateUser,authorizeUser(['user']),checkSchema(reviewValidationSchema),reviewCtrlr.create)
+app.put('/api/review/:reviewId',authenticateUser,authorizeUser(['user']),checkSchema(reviewValidationSchema),reviewCtrlr.update)
+app.get('/api/reviews/:bloodbankId',authenticateUser,authorizeUser(['user']),reviewCtrlr.list)
+app.delete('/api/review/:reviewId',authenticateUser,authorizeUser(['user']),reviewCtrlr.delete)
 
 app.listen(port,()=>
 {
