@@ -104,6 +104,7 @@ export default function ViewRequests() {
             ) : (
                 <p>No blood requests to user found.</p>
             )}
+            
             {errors?.length>0 && <Alert variant="danger">{errors}</Alert>}
         </div>
     );

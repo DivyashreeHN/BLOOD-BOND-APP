@@ -86,7 +86,7 @@ const basicProfileValidationSchema={
     },
     weight:{
         notEmpty:{
-            errorMessage:'Last blood donate date cannot be empty'
+            errorMessage:'weight cannot be empty'
         },
         isNumeric:{
             errorMessage:'weight must be a numeric value '

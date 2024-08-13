@@ -1,14 +1,20 @@
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { useState, useEffect } from "react"
 import { Row, Col, Container, Card, CardBody, CardTitle } from "reactstrap"
 import { startAddProfile, startEditingUserProfile } from '../../actions/userprofileActions'
 import { useLocation, useNavigate } from 'react-router-dom'
 
+
 export default function ProfileForm() {
+    const serverErrors=useSelector((state=>state.profiles.serverErrors))
+    const formErrors=useSelector((state=>state.profiles.formErrors))
+    console.log('form error',formErrors)
+    console.log('server error',serverErrors)
     const location = useLocation()
     const { profileData } = location.state || {}
     const dispatch = useDispatch()
     const navigate = useNavigate()
+    const [clearServerErrorsTimeout, setClearServerErrorsTimeout] = useState(null);
     const [form, setForm] = useState({
         firstName: '',
         lastName: '',
@@ -68,13 +74,13 @@ export default function ProfileForm() {
                 ...prevForm,
                 [keys[0]]: {
                     ...prevForm[keys[0]],
-                    [keys[1]]: value,
+                    [keys[1]]: value || '',
                 },
             }));
         } else {
             setForm((prevForm) => ({
                 ...prevForm,
-                [name]: value,
+                [name]: value || '',
             }));
         }
     };
@@ -116,6 +122,21 @@ export default function ProfileForm() {
             tattoBodyPiercing: ''
         });
     };
+    const clearServerErrors = () => {
+        dispatch({ type: "SET_SERVER_ERRORS", payload: [] });
+    };
+    
+    useEffect(() => {
+        if (serverErrors && serverErrors.length > 0) {
+            if (clearServerErrorsTimeout) {
+                clearTimeout(clearServerErrorsTimeout);
+            }
+            const timeout = setTimeout(() => {
+                clearServerErrors();
+            }, 5000); // Adjust the timeout duration as needed
+            setClearServerErrorsTimeout(timeout);
+        }
+    }, [serverErrors]);
 
     const handleSubmit = async (e) => {
         e.preventDefault()
@@ -123,8 +144,8 @@ export default function ProfileForm() {
         try {
             const formattedForm = {
                 ...form,
-                dob: new Date(form.dob).toISOString().split('T')[0],
-                lastBloodDonationDate: new Date(form.lastBloodDonationDate).toISOString().split('T')[0]
+                dob: form.dob ? new Date(form.dob).toISOString().split('T')[0]:'',
+                lastBloodDonationDate: form.lastBloodDonationDate ? new Date(form.lastBloodDonationDate).toISOString().split('T')[0]:''
             };
 
             if (profileData) {
@@ -132,8 +153,9 @@ export default function ProfileForm() {
             } else {
                 dispatch(startAddProfile(formattedForm, clearForm))
             }
-
-            navigate('/user/dashboard')
+            console.log('after sub form error',formErrors)
+            console.log('after sub server error',serverErrors)
+           // navigate('/user/dashboard')
         } catch (err) {
             console.log(err, 'error in submitting form')
         }
@@ -158,6 +180,7 @@ export default function ProfileForm() {
                                                 id="firstName"
                                                 name="firstName"
                                                 className="form-control" />
+                                                 {formErrors.firstName && <div style={{color:'black'}}>{formErrors.firstName}</div>}
                                         </div>
                                     </Col>
 
@@ -171,6 +194,7 @@ export default function ProfileForm() {
                                                 id="lastName"
                                                 name="lastName"
                                                 className="form-control" />
+                                                {formErrors.lastName && <div style={{color:'black'}}>{formErrors.lastName}</div>}
                                         </div>
                                     </Col>
 
@@ -182,6 +206,7 @@ export default function ProfileForm() {
                                                 id="dob"
                                                 name="dob"
                                                 className="form-control" />
+                                                {formErrors.dob && <div style={{color:'black'}}>{formErrors.dob}</div>}
                                         </div>
                                     </Col>
 
@@ -193,6 +218,7 @@ export default function ProfileForm() {
                                                 id="lastBloodDonationDate"
                                                 name="lastBloodDonationDate"
                                                 className="form-control" />
+                                                {formErrors.lastBloodDonationDate && <div style={{color:'black'}}>{formErrors.lastBloodDonationDate}</div>}
                                         </div>
                                     </Col>
 
@@ -204,6 +230,7 @@ export default function ProfileForm() {
                                                 id="weight"
                                                 name="weight"
                                                 className="form-control" />
+                                                {formErrors.weight && <div style={{color:'black'}}>{formErrors.weight}</div>}
                                         </div>
                                     </Col>
 
@@ -217,6 +244,7 @@ export default function ProfileForm() {
                                                 id="phNo"
                                                 name="phNo"
                                                 className="form-control" />
+                                                {formErrors.phNo && <div style={{color:'black'}}>{formErrors.phNo}</div>}
                                         </div>
                                     </Col>
 
@@ -230,6 +258,9 @@ export default function ProfileForm() {
                                                 id="building"
                                                 name="address.building"
                                                 className="form-control" />
+                                               {formErrors.address?.building && <div style={{color:'black'}}>{formErrors.address.building}</div>}
+
+
                                         </div>
                                     </Col>
 
@@ -243,6 +274,8 @@ export default function ProfileForm() {
                                                 id="locality"
                                                 name="address.locality"
                                                 className="form-control" />
+                                                {formErrors.address?.locality && <div style={{color:'black'}}>{formErrors.address.locality}</div>}
+
                                         </div>
                                     </Col>
 
@@ -256,6 +289,8 @@ export default function ProfileForm() {
                                                 id="city"
                                                 name="address.city"
                                                 className="form-control" />
+                                                {formErrors.address?.city && <div style={{color:'black'}}>{formErrors.address.city}</div>}
+
                                         </div>
                                     </Col>
 
@@ -269,6 +304,8 @@ export default function ProfileForm() {
                                                 id="state"
                                                 name="address.state"
                                                 className="form-control" />
+                                                {formErrors.address?.state && <div style={{color:'black'}}>{formErrors.address.state}</div>}
+
                                         </div>
                                     </Col>
 
@@ -282,6 +319,8 @@ export default function ProfileForm() {
                                                 id="pincode"
                                                 name="address.pincode"
                                                 className="form-control" />
+{formErrors.address?.pincode && <div style={{color:'black'}}>{formErrors.address.pincode}</div>}
+
                                         </div>
                                     </Col>
 
@@ -295,6 +334,8 @@ export default function ProfileForm() {
                                                 id="country"
                                                 name="address.country"
                                                 className="form-control" />
+                                                {formErrors.address?.country && <div style={{color:'black'}}>{formErrors.address.country}</div>}
+
                                         </div>
                                     </Col>
 
@@ -320,6 +361,8 @@ export default function ProfileForm() {
                                                 <option value="O-">O-</option>
                                             </select>
                                         </div>
+                                        {formErrors.blood?.bloodGroup && <div style={{color:'black'}}>{formErrors.blood.bloodGroup}</div>}
+
                                     </Col>
 {/* 14) gender */}
 <Col md={6}>
@@ -339,6 +382,7 @@ export default function ProfileForm() {
                                                 onChange={handleRadioChange}
                                                 id="female" name="gender" />
                                             <label htmlFor="female">Female</label>
+                                            {formErrors.gender && <div style={{color:'black'}}>{formErrors.gender}</div>}
                                         </div>
                                     </Col>
 
@@ -360,6 +404,7 @@ export default function ProfileForm() {
                                                 onChange={handleRadioChange}
                                                 id="no" name="tattoBodyPiercing" />
                                             <label htmlFor="no">No</label>
+                                            {formErrors.tattoBodyPiercing && <div style={{color:'black'}}>{formErrors.tattoBodyPiercing}</div>}
                                         </div>
                                     </Col>
 
@@ -381,6 +426,7 @@ export default function ProfileForm() {
                                                 onChange={handleRadioChange}
                                                 id="no" name="testedPositiveForHiv" />
                                             <label htmlFor="no">No</label>
+                                            {formErrors.testedPositiveForHiv && <div style={{color:'black'}}>{formErrors.testedPositiveForHiv}</div>}
                                         </div>
                                     </Col>
 
@@ -394,6 +440,16 @@ export default function ProfileForm() {
                     </Card>
                 </Col>
             </Row>
+            {serverErrors && serverErrors.length > 0 && (
+                                        <div className="mb-3">
+                                            <h5 style={{ color: 'black' }}>Server Errors:</h5>
+                                            <ul>
+                                                {serverErrors.map((error, index) => (
+                                                    <li key={index}>{error.msg}</li>
+                                                ))}
+                                            </ul>
+                                        </div>
+                                    )}
         </Container>
     );
 }

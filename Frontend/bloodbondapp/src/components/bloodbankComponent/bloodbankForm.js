@@ -2,8 +2,13 @@ import { useState } from "react";
 import { useDispatch } from 'react-redux';
 import { Card, Row, Col, Container } from 'react-bootstrap';
 import { startAddBloodBank } from "../../actions/bloodbankActions";
+import { useSelector } from "react-redux";
 
 export default function BloodBankForm() {
+    const serverErrors=useSelector((state=>state.bloodbanks.serverErrors))
+    const formErrors=useSelector((state=>state.bloodbanks.formErrors))
+    console.log('form errors',formErrors)
+
         
     const dispatch=useDispatch()
     const [form,setForm]=useState({
@@ -161,7 +166,8 @@ export default function BloodBankForm() {
             });
         };
         dispatch(startAddBloodBank(formData, clearForm,form));
-        
+        console.log('after sub form error',formErrors)
+            console.log('after sub server error',serverErrors)
     }
 
     return (
@@ -184,6 +190,7 @@ export default function BloodBankForm() {
                 id="name"
                 name="name"
                 className="form-control"/>
+                {formErrors.name && <div style={{color:'black'}}>{formErrors.name}</div>}
             </div></Col>
             <Col md={6}>
             <div className="form-group">

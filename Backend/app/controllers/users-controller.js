@@ -59,7 +59,7 @@ userCltr.login=async(req,res)=>
         const user=await User.findOne({email:body.email})
         if(!user)
         {
-            return res.status(404).json({errors:[{msg:'invalid email/password'}]})
+            return res.status(404).json({errors:[{msg:'invalid email/passwords'}]})
         }
         const checkPassword=await bcryptjs.compare(body.password,user.password)
         if(!checkPassword)

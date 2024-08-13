@@ -51,6 +51,7 @@ function App() {
   const bloodInventoryInitialState = {
     bloodInventoryDetails: [],
     serverErrors: [],
+    formErrors: {}
   };
 
   const bloodRequestInitialState = {
@@ -60,7 +61,8 @@ function App() {
     requestToUser: [],
     otherRequestToUser: [],
     bloodbankBloodRequests: [],
-    serverErrors: []
+    serverErrors: [],
+    formErrors:[]
   };
 
   const responseInitialState = {
