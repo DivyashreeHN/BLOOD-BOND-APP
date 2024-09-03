@@ -72,7 +72,7 @@ export default function ViewInvoice() {
                                 ))}
                             </ListGroup>
                             <Card.Body>
-                                <Button onClick={() => handlePayNow(invoice)}>Pay Now</Button>
+                                <Button onClick={() => handlePayNow(invoice)} className="btn btn-danger">Pay Now</Button>
                             </Card.Body>
                         </Card>
                     ))}

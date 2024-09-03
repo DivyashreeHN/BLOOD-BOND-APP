@@ -2,7 +2,7 @@ import {useEffect,useContext} from 'react'
 import { useParams } from 'react-router-dom';
 import axios from 'axios'
 import ResponseContext from '../../contexts/responseContext';
-import {Alert} from 'react-bootstrap'
+import Swal from 'sweetalert2';
 export default function UserResponses(){
     const {responses,responseDispatch}=useContext(ResponseContext)
     const {requestId}=useParams()
@@ -26,11 +26,30 @@ export default function UserResponses(){
     },[requestId,responseDispatch])
     console.log('responses',responses.responsesData)
     const handleMail=async(response)=>{
-        
+        try{
+            const mailResponse=await axios.post('http://localhost:3080/api/conformation/mail',{
+                donorEmail:response.responderId.email,
+                donorName:`${response.responderId.firstName} ${response.responderId.lastName}`,
+                bloodGroup: response.responderId.blood?.bloodGroup,
+                requestId:response.bloodRequestId._id,
+                donationAddress:response.bloodRequestId.donationAddress,
+                donationDate:response.bloodRequestId.date
+            })
+            console.log('Email sent:', mailResponse.data)
+            Swal.fire({
+                icon: 'success',
+                title: 'Success!',
+                text: 'conformation mail sent succesfully',
+                showConfirmButton: true,
+                confirmButtonText: 'OK'
+            })
+        }catch(err){
+
+        }
     }
     return (
         <div>
-            <h1>Responses from Users</h1>
+            <h1 className='d-flex justify-content-center align-items-center'>Responses from Users</h1>
             {responses?.responsesData?.length>0 ? (<div>
                <table className="table table-striped table-bordered">
                 <thead>
@@ -51,13 +70,13 @@ export default function UserResponses(){
                             <td>{response.responderId.blood?.bloodGroup}</td>
                             <td>{response.responderId.address.building}, {response.responderId.address.locality}, {response.responderId.address.city}, {response.responderId.address.state},{response.responderId.address.pincode}</td>
                             <td>{new Date(response.createdAt).toLocaleDateString()}</td>
-                            <td><button onClick={()=>{handleMail(response)}}>Send Confirmation</button></td>
+                            <td><button onClick={()=>{handleMail(response)}} className='btn btn-danger'>Send Confirmation</button></td>
                         </tr>
                     })}
                 </tbody>
                </table>
                 
-            </div>):(<div><Alert variant="danger">Zero response from donors for this request</Alert></div>)}       </div>
+            </div>):(<div className='d-flex justify-content-center align-items-center btn btn-danger' style={{width:'400px',marginLeft:'490px'}}>Zero response from donors for this request</div>)}       </div>
         
     )
 }

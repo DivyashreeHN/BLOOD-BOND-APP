@@ -38,7 +38,7 @@ export default function UserLoginForm() {
       userDispatch({ type: 'LOGIN_USER', payload: token });
       userDispatch({ type: 'SET_SERVER_ERRORS', payload: [] });
       localStorage.setItem('token', token);
-      
+      localStorage.setItem('email',form.email)
       alert('Logged in successfully');
 
       const userDetails = await axios.get('http://localhost:3080/api/user/account', {
@@ -125,7 +125,7 @@ export default function UserLoginForm() {
                 </div>
                 <div className='form-group'>
                 <label className='form-label' htmlFor='password'><Lock/> Password</label>
-                <input type="text"
+                <input type="password"
                 placeholder='Enter Password'
                 value={form.password}
                 onChange={handleChange}

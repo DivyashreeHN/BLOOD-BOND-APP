@@ -74,6 +74,12 @@ export const startAddProfile=(form,clearForm)=>{
             dispatch(setServerError([]))
             dispatch(setFormErrors({}))
             clearForm()
+            Swal.fire({
+                title: 'Success',
+                text: 'Profile added succesfully',
+                icon: 'success',
+                confirmButtonText: 'OK'
+            });
             console.log('cleared form',form)
         }catch (err) {
             if (err.name === 'ValidationError') {

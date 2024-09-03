@@ -38,10 +38,47 @@ try{
 }
 }
 bloodInventoryCtrlr.list=async(req,res)=>{
+    const filters=req.query
+    const page=parseInt(filters.page)||1
+    const limit=parseInt(filters.limit)||10
+    const skip=(page-1)*limit
+        console.log('incoming filters', filters)
+        const query={}
     try{
         const id=req.params.id
-        const bloods=await BloodInventory.find({bloodBank:id})
-        res.status(201).json(bloods)
+        if (filters.bloodGroup) {
+            query['blood.bloodGroup'] = new RegExp(filters.bloodGroup, 'i');
+        }
+        if (filters.bloodType) {
+            query['blood.bloodType'] = new RegExp(filters.bloodType, 'i');
+        }
+        if (filters.status) query.status=new RegExp(filters.status,'i')
+            const expiryDate = filters.expiryDate;
+        if (expiryDate && expiryDate.trim() !== '' && !isNaN(Date.parse(expiryDate))) {
+            query.expiryDate = new Date(expiryDate);
+        }
+        console.log('query',query)
+        let bloods=await BloodInventory.find({bloodBank:id})
+        console.log('blood',bloods)
+        const today = new Date();
+        const updates = bloods.map(async (blood) => {
+            if (blood.expiryDate < today) {
+                return BloodInventory.updateOne(
+                    { _id: blood._id },
+                    { status: 'expired' }
+                );
+            }
+        }).filter(update => update !== undefined);
+        await Promise.all(updates)
+        bloods = await BloodInventory.find({ bloodBank: id, ...query }).
+        skip(skip).limit(limit)
+        const totalBloods=await BloodInventory.countDocuments({bloodBank:id, ...query})
+        res.status(201).json({
+            bloods,
+            totalBloods,
+            totalPages:Math.ceil(totalBloods/limit),
+            currentPage:page
+        })
     }
     catch(err){
         console.log(err)

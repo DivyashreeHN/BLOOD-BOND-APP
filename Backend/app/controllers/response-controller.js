@@ -65,7 +65,7 @@ responseCtrl.listOfBloodbank=async(req,res)=>{
 responseCtrl.listOfUser=async(req,res)=>{
     const id=req.params.requestId
     try{
-        const responses=await Response.find({responderType:'user',bloodRequestId:id}).populate('responderId')
+        const responses=await Response.find({responderType:'user',bloodRequestId:id}).populate('responderId').populate('bloodRequestId');
         if(responses.length===0){
             return res.status(400).json({errors:'zero responses from users for this request'})
         }

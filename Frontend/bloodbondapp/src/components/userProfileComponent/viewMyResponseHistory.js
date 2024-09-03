@@ -102,7 +102,7 @@ export default function UserResponseHistory() {
                                                 <p>Critical:  {response.bloodRequest ? response.bloodRequest.critical : ''}</p>
                                                 <p>Units:  {response.bloodRequest ? response.bloodRequest.units: ''}</p>
                                                 
-                                                <Button className="btn-btn-primary"
+                                                <Button className="btn btn-dark"
                                                     variant="primary"
                                                     onClick={() => handleDelete(singlePro && singlePro.length > 0 ? singlePro[0]._id : 'Unknown', response.bloodRequest ? response.bloodRequest._id : 'Unknown')}
                                                 >
@@ -112,7 +112,7 @@ export default function UserResponseHistory() {
                                         ) : null
                                     ))
                                 ) : (
-                                    <p>No responses found.</p>
+                                    <p className="d-flex justify-content-center">No response history found.</p>
                                 )}
                             </div>
                         </Card.Body>

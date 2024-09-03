@@ -33,12 +33,15 @@ export default function BloodbankResponses(){
         console.log(response.bloodRequestId)
         navigate(`/view/invoice/${response.bloodRequestId}/${response.responderId._id}`)
     }
+    const handleReview=(bloodbankId)=>{
+        navigate(`/add/review/${bloodbankId}`)
+    }
     return (
         <div>
-            <h1>Responses from Bloodbank</h1>
+            <h1 className='d-flex justify-content-center align-items-center'>Responses from Bloodbank</h1>
             {responses?.responsesData?.length>0 ? (<div>
                <table className="table table-striped table-bordered">
-                <thead>
+                <thead className="table-dark"> 
                     <tr>
                         <th>Donor Name</th>
                         <th>Mobile No</th>
@@ -58,15 +61,19 @@ export default function BloodbankResponses(){
                             <td><Link to={`/map/${response.responderId.geoLocation.coordinates[1]}/${response.responderId.geoLocation.coordinates[0]}/${encodeURIComponent(`${response.responderId.address.building}, ${response.responderId.address.locality}, ${response.responderId.address.city}, ${response.responderId.address.state}, ${response.responderId.address.pincode}, ${response.responderId.address.country}`)}`}>
                                         <BiMap size={24} />
                                     </Link></td>
-                            <td><button onClick={()=>{
+                            <td><button className='btn btn-danger' onClick={()=>{
                                 handleViewInvoice(response)
-                            }}>View Invoice</button></td>
+                            }}>View Invoice</button>
+                            <button style={{marginLeft:'10px'}} className="btn btn-danger" onClick={()=>{
+                                handleReview(response.responderId._id)
+                            }}>Rate Us</button></td>
+                           
                         </tr>
                     })}
                 </tbody>
                </table>
                 
-            </div>):(<div><Alert variant="danger">Zero response from donors for this request</Alert></div>)}       </div>
+            </div>):(<div className='d-flex justify-content-center align-items-center btn btn-danger' style={{width:'400px',marginLeft:'490px'}}>Zero response from bloodbanks for this request</div>)}       </div>
         
     )
 }

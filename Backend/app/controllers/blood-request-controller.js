@@ -63,53 +63,47 @@ bloodRequestCltr.create=async(req,res)=>
 bloodRequestCltr.display = async (req, res) => {
     try {
         const personDetails = await Profile.findOne({ user: req.user.id });
-        
+
         if (!personDetails) {
-            return res.status(404).json({ error: 'profile not found' });
+            return res.status(404).json({ error: 'Profile not found' });
         }
-        
-        
+
+        const currentDate = new Date();
+
         const bloodRequestType = await BloodRequest.find({
             $and: [
                 { 'donationAddress.pincode': personDetails.address.pincode },
                 { 'blood.bloodGroup': personDetails.blood.bloodGroup },
                 { 'requestType': { $in: [req.user.role, 'both'] } },
-                { user: { $ne: req.user.id } }
+                { user: { $ne: req.user.id } },
+                { date: { $gte: currentDate } }
             ]
         });
-        console.log('requests matching user profile', bloodRequestType)
-       
+
         if (bloodRequestType.length === 0) {
-            return res.status(404).json({ errors: [{ msg: 'No blood requests found' }] })
+            return res.status(404).json({ errors: [{ msg: 'No blood requests found' }] });
         }
 
         // Filter blood requests based on whether there are responses from the user
         const bloodRequestsWithoutResponses = await Promise.all(
-    bloodRequestType.map(async (request) => {
-        // Check if there's a response for this request from the user
-        const existingResponse = await Response.findOne({
-            bloodRequestId: request._id,
-            responderId: personDetails._id
-        });
-        console.log('response',existingResponse)
+            bloodRequestType.map(async (request) => {
+                const existingResponse = await Response.findOne({
+                    bloodRequestId: request._id,
+                    responderId: personDetails._id
+                });
 
-        // Include request only if no response exists from the user
-        if (!existingResponse) {
-            return request; // Include the request in the filtered array
-        } 
-    })
-);
-console.log('filtered',bloodRequestsWithoutResponses)
+                // Return the request if no response exists, else return null
+                return !existingResponse ? request : null;
+            })
+        );
 
-// Remove undefined elements from the array (requests with responses)
-const filteredBloodRequests = bloodRequestsWithoutResponses.filter(Boolean);
+        // Filter out null values from the array
+        const filteredBloodRequests = bloodRequestsWithoutResponses.filter(Boolean);
 
-        // If no requests remain after filtering, return a 404 error
         if (filteredBloodRequests.length === 0) {
-            return res.json([])
+            return res.status(404).json({ errors: [{ msg: 'No blood requests found' }] });
         }
 
-        // Return the filtered blood requests
         res.json(filteredBloodRequests);
     } catch (err) {
         console.error(err);
@@ -149,15 +143,16 @@ bloodRequestCltr.list=async(req,res)=>
         if (!profile) {
           return res.status(404).json({ error: 'Profile not found' });
         }
-  
+        const currentDate = new Date();
+
         const bloodRequests = await BloodRequest.find({
-          $and: [
-            { 'donationAddress.country': profile.address.country },
-            { 'requestType': { $in: [req.user.role] } },
-            { user: { $ne: req.user.id } },
-            { 'donationAddress.pincode': { $ne: profile.address.pincode } },
-            { 'blood.bloodGroup': { $ne: profile.blood.bloodGroup } }
-          ]
+            $and: [
+                { 'donationAddress.pincode': profile.address.pincode },
+                { 'blood.bloodGroup': { $ne: profile.blood?.bloodGroup } },
+                { 'requestType': { $in: [req.user.role, 'both'] } },
+                { user: { $ne: req.user.id } },
+                { date: { $gte: currentDate } }
+            ]
         });
   
         if (!bloodRequests.length) {

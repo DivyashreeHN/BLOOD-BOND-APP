@@ -1,6 +1,7 @@
 const { validationResult } = require('express-validator');
 const { pick } = require('lodash');
 const Payment = require('../models/paymentModel');
+const BloodBank=require('../models/bloodBankModel')
 const Invoice = require('../models/invoiceModel');
 const nodemailer=require('nodemailer')
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
@@ -34,7 +35,7 @@ paymentsCltr.pay = async (req, res) => {
                 price_data: {
                     currency: 'inr',
                     product_data: {
-                        name: `Blood Request ${body.requestId}`
+                        name: `Blood Request ${body.request}`
                     },
                     unit_amount: body.amount * 100
                 },
@@ -73,6 +74,7 @@ paymentsCltr.successUpdate=async(req,res)=>{
         const id = req.params.id
         const body = pick(req.body,['paymentStatus'])
         const updatedPayment = await Payment.findOneAndUpdate({transactionId:id}, body) 
+        const bloodbank=await BloodBank.findOne({_id:updatedPayment.bloodBank})
         res.json(updatedPayment)
         const transporter = nodemailer.createTransport({
             service: 'gmail', 
@@ -83,9 +85,9 @@ paymentsCltr.successUpdate=async(req,res)=>{
         });
         const mailOptions = {
             from: process.env.EMAIL,
-            to: 'amkruthika@gmail.com', // The recipient email address
+            to: bloodbank.email,
             subject: 'Payment Confirmation',
-            text: `Payment with transaction ID ${id} was successful.`
+            text: `Payment with transaction ID ${id} for requestId(${updatedPayment.request}) was successful.`
         };
         await transporter.sendMail(mailOptions)
     }catch(err){

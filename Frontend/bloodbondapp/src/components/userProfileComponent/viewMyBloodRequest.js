@@ -91,7 +91,7 @@ export default function ViewMyRequests() {
                                         </div>
                                     ))
                                 ) : (
-                                    <p>No blood requests found.</p>
+                                    <p style={{marginLeft:'250px'}}>No blood requests found</p>
                                 )}
                             </div>
                         </Card.Body>

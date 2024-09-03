@@ -1,5 +1,6 @@
 const {validationResult}=require('express-validator')
 const Profile = require('../models/userProfile-model')
+const User=require('../models/user-model')
 const _=require('lodash')
 const axios=require('axios')
 const { lastName } = require('../validators/userProfile-validation-schema')
@@ -24,7 +25,7 @@ userProfilecltr.create=async(req,res)=>
         return res.status(400).json({error:'user cannot create more than one profile'})
      } 
     
-   
+     const registeredUser=await User.findById(req.user.id)
     const address=_.pick(req.body.address,['building','locality','city','state','pincode','country'])
         const searchString=`${address.building}%2C%20${address.locality}%2C%20${address.city}%2C%20${address.state}%2C%20${address.pincode}%2C%20${address.country}`
         const mapResponse=await axios.get(`https://api.geoapify.com/v1/geocode/search?text=${searchString}&apiKey=${process.env.GEOAPIFYKEY}`)
@@ -38,6 +39,7 @@ userProfilecltr.create=async(req,res)=>
 
         const profile=new Profile({
             ...body,
+            email:registeredUser.email,
             address:req.body.address,
             lastName:"hn",
             geoLocation:{

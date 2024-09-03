@@ -145,19 +145,24 @@ export const startAddBloodBank = (formData, clearForm) => {
     
                 }
             }
-            export const startFetchingBloodBanksForUsers=()=>{
+            export const startFetchingBloodBanksForUsers=(page,limit,search,setTotalPages)=>{
                 return async(dispatch)=>{
                     try{
+                      console.log('name',search)
                         const response=await axios.get('http://localhost:3080/api/bloodbanks/list',{
                             headers:{
                                 Authorization:localStorage.getItem('token')
-                            }
+                            },
+                            params: { page:1, limit:5, name:search}
                         })
-                        dispatch(displayBloodBankForUsers(response.data))
-                        console.log('bloodbanks',response.data)
+                        console.log(response.data)
+                        const { bloodBanks, totalBloodbanks, totalPages, currentPage } = response.data|| {};
+                        dispatch(displayBloodBankForUsers(bloodBanks))
+                        console.log('bloodbanks',response.data.bloodBanks)
+                        setTotalPages(totalPages)
                     }catch(err){
                         console.log(err)
-                            dispatch(setServerError(err.response.data.errors))
+                            dispatch(setServerError(err.response?.data?.errors))
                     }
                 }
             }

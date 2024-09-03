@@ -22,13 +22,14 @@ export default function ViewRequests() {
                 const data = response.data;
                 bloodRequestDispatch({ type: "DISPLAY_BLOODREQUEST_TO_USER", payload: data })
                 bloodRequestDispatch({ type: 'SET_SERVER_ERRORS', payload: [] })
+                
             } catch (err) {
                 bloodRequestDispatch({ type: 'SET_SERVER_ERRORS', payload: err.response?.data?.errors })
-                console.error(err, 'error in fetching request to user')
+                console.error(err)
             }
         }
         fetchRequests()
-    }, [bloodRequestDispatch])
+    }, [bloodRequestDispatch,responseDispatch])
 
     const handleResponseByUser = async (id, value) => {
         try {
@@ -39,10 +40,11 @@ export default function ViewRequests() {
             });
             responseDispatch({ type: 'RESPONSE_ADDED_BY_USER', payload: response.data })
             responseDispatch({type:'SET_SERVER_ERRORS',payload:[]})
+           
             console.log('response by user', response.data)
             setErrors([])
 
-            // Show SweetAlert2 based on the response
+            
             if (value === 'accepted') {
                 Swal.fire({
                     icon: 'success',
@@ -64,7 +66,7 @@ export default function ViewRequests() {
 
     return (
         <div className="container">
-            <h1 className="my-4">All Blood Requests</h1>
+            <h1 className="d-flex justify-content-center">All Blood Requests</h1>
             {bloodRequests.requestToUser && bloodRequests.requestToUser.length > 0 ? (
                 <table className="table table-striped table-bordered">
                     <thead className="table-dark">
@@ -90,11 +92,11 @@ export default function ViewRequests() {
                                 <td>{request.blood.bloodType}</td>
                                 <td>{request.blood.bloodGroup}</td>
                                 <td>{request.units}</td>
-                                <td>{request.date}</td>
+                                <td>{new Date(request.date).toLocaleDateString()}</td>
                                 <td>{request.critical}</td>
                                 <td>{`${request.donationAddress.building}, ${request.donationAddress.locality}, ${request.donationAddress.city}, ${request.donationAddress.pincode}, ${request.donationAddress.state}, ${request.donationAddress.country}`}</td>
                                 <td>
-                                    <Button onClick={() => handleResponseByUser(request._id, 'accepted')}>Accept</Button>
+                                    <Button  className="btn btn-danger" onClick={() => handleResponseByUser(request._id, 'accepted')}>Accept</Button>
                                     
                                 </td>
                             </tr>
@@ -102,7 +104,9 @@ export default function ViewRequests() {
                     </tbody>
                 </table>
             ) : (
-                <p>No blood requests to user found.</p>
+                <div className="d-flex justify-content-center btn btn-danger" style={{height:'50px',width:'300px',marginLeft:'400px'}}>
+                <p>No blood requests to user found</p>
+                </div>
             )}
             
             {errors?.length>0 && <Alert variant="danger">{errors}</Alert>}

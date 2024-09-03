@@ -7,8 +7,14 @@ export default function userHistoryReducer(state,action){
         
                   return {...state,userResponsesHistory:action.payload}
               }
-        
-            
+    case 'BLOODBANK_RESPONSES':{
+        return {...state,bloodBankResponsesHistory:action.payload}
+    } 
+    case 'DELETE_RESPONSE':{
+        return {...state,bloodBankResponsesHistory:state.bloodBankResponsesHistory.filter((data)=>{
+            return data._id!==action.payload._id
+        })}
+    }      
               
       default:
         return state

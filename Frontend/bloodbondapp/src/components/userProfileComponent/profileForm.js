@@ -432,7 +432,7 @@ export default function ProfileForm() {
 
                                     {/* submit button */}
                                     <Col md={12}>
-                                        <input type="submit" className="btn btn-primary mt-3" />
+                                        <input type="submit" className="btn btn-dark" style={{marginLeft:'275px'}}/>
                                     </Col>
                                 </Row>
                             </form>

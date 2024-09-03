@@ -91,7 +91,7 @@ export default function BloodRequestsTable() {
                                         <BiMap size={24} />
                                     </Link>
                                 </td>
-                                <td><Button className='' onClick={()=>{
+                                <td><Button className='btn btn-dark' onClick={()=>{
                                     handleResponse(request._id)
                                 }}>Accept</Button></td>
                             </tr>

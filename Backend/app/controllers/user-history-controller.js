@@ -1,5 +1,6 @@
 const Response = require('../models/responseModel');
 const BloodRequest = require('../models/bloodRequest-model');
+const BloodBank=require('../models/bloodBankModel')
 const userResponseHistory = {};
 
 userResponseHistory.historyOfUser = async (req, res) => {
@@ -48,10 +49,35 @@ userResponseHistory.deleteAndUpdatedResponse = async (req, res) => {
         res.json({ msg: 'Response deleted successfully', updatedResponses });
     } catch (err) {
         console.error(err.message);
-        res.status(500).send('Server Error');
+        res.status(500).send({error:'Internal Server Error'});
     }
 };
-    
-    
+  userResponseHistory.bloodbankList=async(req,res)=>{
+    const id=req.user.id
+    try{
+        const bloodbank=await BloodBank.findOne({user:id})
+        const responses=await Response.find({responderId:bloodbank._id}).populate('bloodRequestId')
+        if(!responses){
+            return res.status(404).json({msg:'No response history found for your bloodbank'})
+        }
+        res.status(201).json(responses)
+    }catch(err){
+        console.log(err.message)
+        res.status(500).json({error:'Internal Server Error'})
+    }
+
+  }  
+  userResponseHistory.bloodbankDelete=async(req,res)=>{
+    const responseId=req.params.responseId
+    try{
+        const response=await Response.findByIdAndDelete({_id:responseId})
+        if(!response){
+           return res.status(404).json({msg:`This response doesn't exists`})
+        }
+        res.status(201).json(response)
+    }catch(err){
+        res.status(500).json({error:'Internal Server Error'})
+    }
+  }  
 
 module.exports = userResponseHistory;

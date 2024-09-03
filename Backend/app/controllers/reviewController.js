@@ -18,9 +18,18 @@ reviewCtrlr.create=async(req,res)=>{
     review.user=id
     review.bloodBank=bloodbankId
     const noOfReviews=await Review.countDocuments({bloodBank:bloodbankId})
+    console.log(noOfReviews)
     const bloodbank=await BloodBank.findById(bloodbankId)
     const prevRating=bloodbank.ratings
-    const newRating =(prevRating * noOfReviews + body.ratings) / (noOfReviews + 1)
+    console.log(prevRating)
+    console.log(body.ratings)
+    const bodyRatings = Number(body.ratings)
+    const num1=(prevRating * noOfReviews + bodyRatings)
+    console.log('1',num1)
+    const num2=(noOfReviews + 1)
+    console.log('2',num2)
+    const newRating = num1/num2
+    console.log(newRating)
     bloodbank.ratings=newRating
     await bloodbank.save()
     await review.save()

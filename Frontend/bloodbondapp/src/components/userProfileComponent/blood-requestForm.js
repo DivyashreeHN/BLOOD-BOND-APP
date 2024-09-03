@@ -9,18 +9,8 @@ import Swal from 'sweetalert2';
 
 const userAddRequestValidationSchema = yup.object().shape({
     patientName: yup.string().required('Patient Name is required'),
-    // units: yup.number()
-    //     .transform((value, originalValue) => {
-    //         if (originalValue && typeof originalValue === 'string') {
-    //             return originalValue.trim() === "" ? null : value;
-    //         }
-    //         return value;
-    //     })
-    //     .required('Units is required')
-    //     .positive('Units must be a positive number'),
     units: yup.number()
         .transform((value, originalValue) => {
-            // Handle null, undefined, or non-string originalValue
             if (typeof originalValue !== 'string') return value;
             return originalValue.trim() === "" ? null : value;
         })
@@ -161,6 +151,11 @@ const BloodRequestForm = () => {
                         Authorization: localStorage.getItem('token')
                     }
                 });
+                Swal.fire({
+                    icon: 'success',
+                    title: 'success',
+                    text: 'Request edited succesfully',
+                })
             } else {
                 response = await axios.post('http://localhost:3080/api/blood/request', formattedForm, {
                     headers: {
@@ -168,6 +163,11 @@ const BloodRequestForm = () => {
                         Authorization: localStorage.getItem('token')
                     }
                 });
+                Swal.fire({
+                    icon: 'success',
+                    title: 'success',
+                    text: 'Request added succesfully',
+                })
             }
 
             const data = response.data;
@@ -207,7 +207,7 @@ const BloodRequestForm = () => {
                 <Col md={8}>
                     <Card className="bg-danger text-white">
                         <CardBody>
-                            <CardTitle>Blood Request Form</CardTitle>
+                            <CardTitle className="d-flex justify-content-center" style={{fontSize:'20px'}}>Blood Request Form</CardTitle>
                             <form onSubmit={handleSubmit}>
                                 <Row>
                                     <Col md={6}>
@@ -341,7 +341,7 @@ const BloodRequestForm = () => {
                                     </Col>
                                 </Row>
 
-                                <Button type="submit" className="btn btn-primary">Submit</Button>
+                                <Button type="submit" className="btn btn-dark" style={{marginLeft:'310px',marginTop:'10px'}}>Submit</Button>
                             </form>
                         </CardBody>
                     </Card>

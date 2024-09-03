@@ -19,6 +19,9 @@ import ShowBloodBankRequests from './components/adminComponent/showBloodBanksReq
 import BloodRequestForm from './components/userProfileComponent/blood-requestForm';
 import BloodRequestsTable from './components/bloodbankComponent/bloodRequestsTable';
 import InvoiceForm from './components/bloodbankComponent/invoiceForm';
+import AllReviews from './components/bloodbankComponent/viewAllReviews';
+import ReviewForm from './components/bloodbankComponent/reviewForm';
+import ViewAllResponses from './components/bloodbankComponent/viewAllResponses';
 import './App.css';
 import userReducer from './reducers/userReducer';
 import UserContext from './contexts/userContext';
@@ -39,7 +42,8 @@ import MapView from './components/userProfileComponent/mapView';
 import userHistoryReducer from './reducers/userHistoryReducer';
 import UserHistoryContext from './contexts/userHistoryContext';
 import UserResponseHistory from './components/userProfileComponent/viewMyResponseHistory';
-
+import ReviewReducer from './reducers/reviewReducer';
+import ReviewContext from './contexts/reviewContext';
 function App() {
   const userInitialState = {
     userDetails: [],
@@ -77,15 +81,19 @@ function App() {
 
   const userHistoryInitialState={
     userResponsesHistory:[],
+    bloodBankResponsesHistory:[],
     serverErrors:[]
   }
-
+  const reviewsInitialState={
+    reviewsData:[],
+    serverErrors:[]
+  }
   const [users, userDispatch] = useReducer(userReducer, userInitialState);
   const [bloodInventory, bloodInventoryDispatch] = useReducer(bloodInventoryReducer, bloodInventoryInitialState);
   const [bloodRequests, bloodRequestDispatch] = useReducer(bloodRequestReducer, bloodRequestInitialState);
   const [responses, responseDispatch] = useReducer(responseReducer, responseInitialState);
   const [invoices, invoiceDispatch] = useReducer(InvoiceReducer, invoiceInitialState);
-
+  const [reviews,reviewDispatch]=useReducer(ReviewReducer,reviewsInitialState)
   const[userHistories,userHistoryDispatch]=useReducer(userHistoryReducer,userHistoryInitialState)
   const [showRegistrationForm, setShowRegistrationForm] = useState(false);
 
@@ -110,6 +118,7 @@ function App() {
           <ResponseContext.Provider value={{ responses, responseDispatch }}>
             <InvoiceContext.Provider value={{ invoices, invoiceDispatch }}>
               <UserHistoryContext.Provider value={{userHistories,userHistoryDispatch}}>
+                <ReviewContext.Provider value={{reviews,reviewDispatch}}>
               <div>
              <Header
                   handleShowRegistration={handleShowRegistration}
@@ -148,8 +157,12 @@ function App() {
                   <Route path="/cancel" element={<Cancel />} />
                   <Route path="/map/:lat/:lng/:address" element={<MapView />} />
                   <Route path='/user/response/history' element={<UserResponseHistory/>}/>
+                  <Route path='/view/reviews/:bloodbankId' element={<AllReviews/>}/>
+                  <Route path='/add/review/:bloodbankId' element={<ReviewForm/>}/>
+                  <Route path='/view/all/bloodbank/responses' element={<ViewAllResponses/>}/>
                 </Routes>
                 </div>
+                </ReviewContext.Provider>
                 </UserHistoryContext.Provider>
             </InvoiceContext.Provider>
           </ResponseContext.Provider>

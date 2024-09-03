@@ -11,17 +11,49 @@ export default function BloodInventoryTable(){
 const {bloodInventory,bloodInventoryDispatch}=useContext(BloodInventoryContext)
 const {id}=useParams()
 const [editBlood,setEditBlood]=useState('')
-const [modal,setModal]=useState(false)
-useEffect(()=>{
-(async()=>{
-const response=await axios.get(`http://localhost:3080/api/bloodinventries/${id}`,{
-    headers:{
-        Authorization:localStorage.getItem('token')
-    }
+const [filters,setFilters]=useState({
+    bloodGroup:'',
+    bloodType:'',
+    status:'',
+    expiryDate:''
 })
-bloodInventoryDispatch({type:'LIST_BLOODINVENTORY', payload:response.data})
-})();
+const [modal,setModal]=useState(false)
+const [page,setPage]=useState(1)
+const [totalPages,setTotalPages]=useState(1)
+useEffect(()=>{
+fetchBloodInventory();
 },[bloodInventoryDispatch,id])
+const fetchBloodInventory=async()=>{
+    try{
+        const response=await axios.get(`http://localhost:3080/api/bloodinventries/${id}`,{
+             params: {...filters,page,limit:10} ,
+            headers:{
+                Authorization:localStorage.getItem('token')
+            }
+        })
+        const { bloods, totalBloods, totalPages, currentPage } = response.data;
+        bloodInventoryDispatch({type:'LIST_BLOODINVENTORY', payload:bloods})
+        bloodInventoryDispatch({type:'SET_SERVER_ERRORS', payload:[]})
+        setTotalPages(totalPages); 
+        setFilters({
+            bloodGroup:'',
+            bloodType:'',
+            status:'',
+            expiryDate:''
+        })
+    }catch(err){
+        if (err.response && err.response.status === 401) {
+            // Handle unauthorized access, e.g., redirect to login
+            alert('Session expired. Please log in again.');
+            // Redirect to login or re-authenticate
+        } else {
+            bloodInventoryDispatch({
+                type: 'SET_SERVER_ERRORS',
+                payload: err.response?.data?.errors || ['An error occurred while processing your request.']
+            });
+        }
+    }
+}
 const toggle=()=>{
     setModal(!modal)
 }
@@ -42,6 +74,53 @@ bloodInventoryDispatch({type:'SET_SERVER_ERRORS',payload:err.response.data.error
         <div>
             <Container>
             <h4 className="text-center" >Blood Inventory</h4>
+            <Row>
+                <Col>
+                <select value={filters.bloodGroup}
+                onChange={(e)=>setFilters({...filters,bloodGroup:e.target.value})}>
+                    <option>select bloodGroup</option>
+                    <option value="AB+">AB+</option>
+                    <option value="AB-">AB-</option>
+                    <option value="B+">B+</option>
+                    <option value="B-">B-</option>
+                    <option value="A+">A+</option>
+                    <option value="A-">A-</option>
+                    <option value="O+">O+</option>
+                    <option value="O-">O-</option>
+                </select>
+                </Col>
+                <Col>
+                <select value={filters.bloodType}
+                onChange={(e)=>setFilters({...filters,bloodType:e.target.value})}>
+                    <option>select bloodType</option>
+                    <option value="RBC">RBC</option>
+                    <option value="platelets">platelets</option>
+                    <option value="plasma">plasma</option>
+                    <option value="wholeBlood">wholeBlood</option>
+                </select>
+                </Col>
+                <Col md={3}>
+                        <input 
+                            type="text" 
+                            placeholder="Status" 
+                            value={filters.status}
+                            onChange={(e) => setFilters({ ...filters, status: e.target.value })}
+                        />
+                    </Col>
+                    <Col md={3}>
+                        <input 
+                            type="date" 
+                            placeholder="Expiry Date" 
+                            value={filters.expiryDate}
+                            onChange={(e) => setFilters({ ...filters, expiryDate: e.target.value })}
+                            className="form-control"
+                        />
+                    </Col>
+                    <Col md={2}>
+                        <Button onClick={fetchBloodInventory} className="btn btn-dark">Filter</Button>
+                    </Col>
+
+                </Row>
             <Row className="justify-content-center">
                 {bloodInventory.bloodInventoryDetails.length>0?(bloodInventory.bloodInventoryDetails.map((Blood)=>{
                     return <Col md={6} className="mb-4" key={Blood._id}>
@@ -66,9 +145,21 @@ bloodInventoryDispatch({type:'SET_SERVER_ERRORS',payload:err.response.data.error
                     </Card>
                     </Col>
                 })):(<Col>
-                <p>No blood found in inventory</p>
+                <div className="d-flex justify-content-center btn btn-danger" style={{marginTop:'50px',width:'250px',marginLeft:'400px'}}>
+                    No blood found in inventory
+                </div>
                 </Col>)}
             </Row>
+            {bloodInventory.bloodInventoryDetails.length>0 && (
+                <Row>
+                <Col className="d-flex justify-content-center">
+                    <Button disabled={page === 1} onClick={() => setPage(page - 1)} className="btn btn-danger">Previous</Button>
+                    <span style={{ margin: '0 10px' }}>Page {page} of {totalPages}</span>
+                    <Button disabled={page === totalPages} onClick={() => setPage(page + 1)} className="btn btn-danger">Next</Button>
+                </Col>
+            </Row>
+            )}
+            
             </Container>
             <Modal isOpen={modal} toggle={toggle} >
         <ModalHeader toggle={toggle}>BloodInventory</ModalHeader>

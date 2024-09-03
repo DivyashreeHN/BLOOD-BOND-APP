@@ -123,14 +123,35 @@ bloodBankCtrlr.show=async(req,res)=>{
     }
 }
 bloodBankCtrlr.listAll=async(req,res)=>{
+    const filters=req.query
+    console.log('filter',filters)
+    const page=parseInt(filters.page)
+    const limit=parseInt(filters.limit)
+    const skip=(page-1)*limit
     try{
         const id=req.user.id
         const profile=await Profile.find({user:id})
         if(!profile){
             res.status(404).json({error:'Profile not found'})
         }
-        const bloodBanks= await BloodBank.find({isApproved:'approved','address?.city':profile.address?.city})
-        res.status(200).json(bloodBanks)
+        const query={
+            isApproved:'approved',
+            'address.city':profile[0].address?.city
+        }
+        if(filters.name){
+            query.name=new RegExp(filters.name,'i')
+        }
+        console.log('query',query)
+        const totalBloodbanks=await BloodBank.countDocuments(query)
+        const bloodBanks= await BloodBank.find(query).skip(skip).limit(limit)
+        console.log('bb',bloodBanks)
+        const totalPages = Math.max(Math.ceil(totalBloodbanks / limit), 1);
+        res.status(200).json({
+            bloodBanks,
+            totalBloodbanks,
+            currentPage:page,
+            totalPages,
+        })
     }catch(err){
         console.log(err)
         res.status(500).json({error:'Internal Server Error'})

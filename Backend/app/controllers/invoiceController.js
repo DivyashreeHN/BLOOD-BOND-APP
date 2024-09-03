@@ -62,4 +62,17 @@ invoiceCtrlr.list=async(req,res)=>{
         res.status(500).json({error:'Internal Server Error'})
     }
 }
+invoiceCtrlr.delete=async(req,res)=>{
+    const requestId=req.params.requestId
+    try{
+        const invoice=await Invoice.findOneAndDelete({request:requestId})
+        if(!invoice){
+            return res.status(404).json({msg:'No invoice for this response'})
+        }
+        res.status(200).json(invoice)
+    }catch(err){
+        console.log(err)
+        res.status(500).json({error:'Internal Server Error'})
+    }
+}
 module.exports=invoiceCtrlr

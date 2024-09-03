@@ -58,7 +58,7 @@ const responseCtrl=require('./app/controllers/response-controller')
 
 const userResponseHistory=require('./app/controllers/user-history-controller')
 //3)***(AUTHENTICATION && AUTHORIZATION)***//
-
+const mailCtrlr=require('./app/controllers/mailController')
 //IMPORTING AUTHENTICATION AND AUTHORIZATION
 const {authenticateUser,authorizeUser}=require('./app/middlewares/auth')
 const upload=require('./app/middlewares/multer')
@@ -105,23 +105,19 @@ app.get('/api/bloodbanks/request',authenticateUser,authorizeUser(['bloodbank']),
 
 //ROUTES FOR BLOOD INVENTORY MODEL
 app.post('/api/bloodinventries/:id',authenticateUser,authorizeUser(['bloodbank']),checkSchema(bloodInventoryValidationSchema),bloodInventoryCtrlr.create)
-//i merged local and remote changes
-//ROUTES FOR RESPONSE MODEL
-app.post('/api/response/:requestId',authenticateUser,authorizeUser(['bloodbank','user']),checkSchema(responseValidationSchema),responseCtrl.create)
-app.get('/api/response/user/:requestId',authenticateUser,authorizeUser(['user']),responseCtrl.listOfUser)
-app.get('/api/response/bloodbank/:requestId',authenticateUser,authorizeUser(['user']),responseCtrl.listOfBloodbank)
-//RESPONSE EDITTED BY USER 
-
-//app.put('/api/response/:id',authenticateUser,authorizeUser(['user']),checkSchema(responseValidationSchema),responseCtrl.userResponse)
-
-
 app.get('/api/bloodinventries/:id',authenticateUser,authorizeUser(['bloodbank']),bloodInventoryCtrlr.list)
 app.delete('/api/bloodinventries/:id',authenticateUser,authorizeUser(['bloodbank']),bloodInventoryCtrlr.delete)
 app.put('/api/bloodinventries/:id',authenticateUser,authorizeUser(['bloodbank']),checkSchema(bloodInventoryValidationSchema),bloodInventoryCtrlr.update)
 
+//ROUTES FOR RESPONSE MODEL
+app.post('/api/response/:requestId',authenticateUser,authorizeUser(['bloodbank','user']),checkSchema(responseValidationSchema),responseCtrl.create)
+app.get('/api/response/user/:requestId',authenticateUser,authorizeUser(['user']),responseCtrl.listOfUser)
+app.get('/api/response/bloodbank/:requestId',authenticateUser,authorizeUser(['user']),responseCtrl.listOfBloodbank)
+
 //ROUTES FOR INVOICE
 app.post('/api/invoices/:requestId',authenticateUser,authorizeUser(['bloodbank']),checkSchema(invoiceValidationSchema),invoiceCtrlr.create)
 app.get('/api/invoice/:requestId/:responderId',authenticateUser,authorizeUser(['user']),invoiceCtrlr.list)
+app.delete('/api/invoice/:requestId',authenticateUser,authorizeUser(['bloodbank']),invoiceCtrlr.delete)
 //ROUTES FOR PAYMENT
 app.post('/api/create-checkout-session',authenticateUser,authorizeUser(['user']),checkSchema(paymentsValidationSchema),paymentsCltr.pay)
 app.put('/api/payments/:id/success',paymentsCltr.successUpdate)
@@ -132,13 +128,16 @@ app.put('/api/payments/:id/failed',paymentsCltr.failedUpdate)
 
 app.get('/api/user/histories/:id',authenticateUser,authorizeUser(['user']),userResponseHistory.historyOfUser)
 app.delete('/api/user/history/delete/:responderId/:bloodRequestId',authenticateUser,authorizeUser(['user']),userResponseHistory.deleteAndUpdatedResponse)
-
+app.get('/api/bloodbank/histories',authenticateUser,authorizeUser(['bloodbank']),userResponseHistory.bloodbankList)
+app.delete('/api/bloodbank/response/delete/:responseId',authenticateUser,authorizeUser(['bloodbank']),userResponseHistory.bloodbankDelete)
 //ROUTES FOR REVIEW
 app.post('/api/review/:bloodbankId',authenticateUser,authorizeUser(['user']),checkSchema(reviewValidationSchema),reviewCtrlr.create)
 app.put('/api/review/:reviewId',authenticateUser,authorizeUser(['user']),checkSchema(reviewValidationSchema),reviewCtrlr.update)
 app.get('/api/reviews/:bloodbankId',authenticateUser,authorizeUser(['user']),reviewCtrlr.list)
 app.delete('/api/review/:reviewId',authenticateUser,authorizeUser(['user']),reviewCtrlr.delete)
-
+//ROUTES FOR MAIL
+app.post('/api/conformation/mail',mailCtrlr.confirmation)
+app.post('/api/request/share',mailCtrlr.shareRequest)
 app.listen(port,()=>
 {
     console.log('Blood-Bond-App is successfully running on the port',port)

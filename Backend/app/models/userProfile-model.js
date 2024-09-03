@@ -11,6 +11,7 @@ const userProfileSchema=new Schema({
     lastName:String,
     dob:Date,
     gender:String,
+    email:String,
     phNo:String,
     blood:{
         bloodType:String,
